@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "10kprinter",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "cb27e1a67198789eb42d11ab90737652",
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "10kprinter",
+      "database_id": "43cc3f56-b4da-4ba9-b5d4-3bb03fd5e066"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "ASSETS_BUCKET",
+      "bucket_name": "10kprinter-assets"
+    }
+  ],
+
+  "browser": {
+    "binding": "BROWSER"
+  },
+
+  "workflows": [
+    {
+      "name": "lead-pipeline",
+      "binding": "LEAD_PIPELINE",
+      "class_name": "LeadPipeline"
+    }
+  ],
+
+  "observability": {
+    "enabled": true
+  }
+}
