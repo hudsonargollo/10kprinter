@@ -67,6 +67,19 @@ app.get("/api/leads/:leadId/prds/:prdId/markdown", async (c) => {
   return new Response(obj.body, { headers: { "content-type": "text/markdown; charset=utf-8" } });
 });
 
+// Re-run a lead's pipeline from scratch (e.g. after a failed/errored run) with a fresh Workflow instance.
+app.post("/api/leads/:id/retry", async (c) => {
+  const id = c.req.param("id");
+  const lead = await c.env.DB.prepare("SELECT * FROM leads WHERE id = ?").bind(id).first<LeadRow>();
+  if (!lead) return c.json({ error: "not found" }, 404);
+
+  await c.env.DB.prepare("UPDATE leads SET status = 'discovered' WHERE id = ?").bind(id).run();
+  const instance = await c.env.LEAD_PIPELINE.create({ params: { leadId: id } });
+  await c.env.DB.prepare("UPDATE leads SET workflow_instance_id = ? WHERE id = ?").bind(instance.id, id).run();
+
+  return c.json({ workflowInstanceId: instance.id });
+});
+
 app.get("/api/leads/:id/screenshot", async (c) => {
   const id = c.req.param("id");
   const scrape = await c.env.DB.prepare("SELECT r2_screenshot_key FROM scrapes WHERE lead_id = ? ORDER BY scraped_at DESC LIMIT 1")

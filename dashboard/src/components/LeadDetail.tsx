@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getLead, getPrdMarkdown, updateLeadStatus } from "../api";
+import { getLead, getPrdMarkdown, retryLead, updateLeadStatus } from "../api";
 import type { AuditFinding, BrandTokens, LeadDetail as LeadDetailData, LeadStatus, Prd } from "../types";
 import { STATUS_LABELS, STATUS_ORDER, VERTICAL_LABELS } from "../types";
 
@@ -56,6 +56,11 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span className="badge">{STATUS_LABELS[lead.status]}</span>
+            {lead.status === "failed" && (
+              <button className="btn" onClick={() => retryLead(leadId).then(refresh)}>
+                Retry
+              </button>
+            )}
             <select value={lead.status} onChange={(e) => onStatusChange(e.target.value as LeadStatus)}>
               {STATUS_ORDER.map((s) => (
                 <option key={s} value={s}>

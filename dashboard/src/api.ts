@@ -28,6 +28,10 @@ export function updateLeadStatus(id: string, status: LeadStatus): Promise<void> 
   return request(`/api/leads/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) });
 }
 
+export function retryLead(id: string): Promise<{ workflowInstanceId: string }> {
+  return request(`/api/leads/${id}/retry`, { method: "POST" });
+}
+
 export async function getPrdMarkdown(leadId: string, prdId: string): Promise<string> {
   const res = await fetch(`/api/leads/${leadId}/prds/${prdId}/markdown`);
   if (!res.ok) throw new Error(`Failed to load PRD: ${res.status}`);

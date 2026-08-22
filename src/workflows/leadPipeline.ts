@@ -36,6 +36,20 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
     const { leadId } = event.payload;
     const env = this.env;
 
+    try {
+      await this.runPipeline(leadId, step);
+    } catch (err) {
+      await step.do("mark-failed", async () => {
+        await setLeadStatus(env.DB, leadId, "failed");
+        await logEvent(env.DB, leadId, "pipeline", "failed", err instanceof Error ? err.message : String(err));
+      });
+      throw err;
+    }
+  }
+
+  private async runPipeline(leadId: string, step: WorkflowStep) {
+    const env = this.env;
+
     const lead = await step.do("load-lead", async () => {
       const row = await getLead(env.DB, leadId);
       if (!row) throw new Error(`Lead not found: ${leadId}`);
