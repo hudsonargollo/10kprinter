@@ -43,9 +43,9 @@ app.get("/api/leads/:id", async (c) => {
   if (!lead) return c.json({ error: "not found" }, 404);
 
   const [scrapes, audits, prds, events] = await Promise.all([
-    c.env.DB.prepare("SELECT * FROM scrapes WHERE lead_id = ?").bind(id).all(),
-    c.env.DB.prepare("SELECT * FROM audits WHERE lead_id = ?").bind(id).all(),
-    c.env.DB.prepare("SELECT * FROM prds WHERE lead_id = ?").bind(id).all(),
+    c.env.DB.prepare("SELECT * FROM scrapes WHERE lead_id = ? ORDER BY scraped_at").bind(id).all(),
+    c.env.DB.prepare("SELECT * FROM audits WHERE lead_id = ? ORDER BY created_at").bind(id).all(),
+    c.env.DB.prepare("SELECT * FROM prds WHERE lead_id = ? ORDER BY created_at").bind(id).all(),
     c.env.DB.prepare("SELECT * FROM pipeline_events WHERE lead_id = ? ORDER BY created_at").bind(id).all(),
   ]);
 

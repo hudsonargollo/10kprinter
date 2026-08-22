@@ -4,6 +4,7 @@ import type { ScrapeSummary } from "../types";
 interface ScrapeResult {
   html: string;
   screenshot: Uint8Array;
+  heroScreenshot: Uint8Array;
   summary: ScrapeSummary;
 }
 
@@ -12,6 +13,7 @@ export async function scrapeSite(browserBinding: Fetcher, url: string): Promise<
   const browser = await puppeteer.launch(browserBinding);
   try {
     const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
     const start = Date.now();
     await page.goto(url, { waitUntil: "networkidle0", timeout: 30_000 });
     const loadTimeMs = Date.now() - start;
@@ -38,6 +40,9 @@ export async function scrapeSite(browserBinding: Fetcher, url: string): Promise<
       return { headings, imageAltTexts, bodyText, ctaTexts, title, metaDescription, phoneMatches, hasEmailCaptureForm };
     });
 
+    // Viewport-only screenshot for the brand-token vision call — Anthropic caps image dimensions at
+    // 8000px, which a fullPage screenshot of a long page can exceed.
+    const heroScreenshot = (await page.screenshot({ fullPage: false })) as Uint8Array;
     const screenshot = (await page.screenshot({ fullPage: true })) as Uint8Array;
 
     const summary: ScrapeSummary = {
@@ -52,7 +57,7 @@ export async function scrapeSite(browserBinding: Fetcher, url: string): Promise<
       loadTimeMs,
     };
 
-    return { html, screenshot, summary };
+    return { html, screenshot, heroScreenshot, summary };
   } finally {
     await browser.close();
   }

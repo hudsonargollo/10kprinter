@@ -33,14 +33,22 @@ export async function logEvent(
 export async function insertScrape(
   db: D1Database,
   leadId: string,
-  data: { r2HtmlKey: string; r2ScreenshotKey: string; summary: ScrapeSummary },
+  data: { r2HtmlKey: string; r2ScreenshotKey: string; r2HeroScreenshotKey: string; summary: ScrapeSummary },
 ): Promise<string> {
   const id = newId();
   await db
     .prepare(
-      "INSERT INTO scrapes (id, lead_id, r2_html_key, r2_screenshot_key, summary_json, load_time_ms) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO scrapes (id, lead_id, r2_html_key, r2_screenshot_key, r2_hero_screenshot_key, summary_json, load_time_ms) VALUES (?, ?, ?, ?, ?, ?, ?)",
     )
-    .bind(id, leadId, data.r2HtmlKey, data.r2ScreenshotKey, JSON.stringify(data.summary), data.summary.loadTimeMs)
+    .bind(
+      id,
+      leadId,
+      data.r2HtmlKey,
+      data.r2ScreenshotKey,
+      data.r2HeroScreenshotKey,
+      JSON.stringify(data.summary),
+      data.summary.loadTimeMs,
+    )
     .run();
   return id;
 }

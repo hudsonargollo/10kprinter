@@ -10,6 +10,12 @@ export async function putScreenshot(bucket: R2Bucket, leadId: string, screenshot
   return key;
 }
 
+export async function putHeroScreenshot(bucket: R2Bucket, leadId: string, screenshot: Uint8Array): Promise<string> {
+  const key = `scrapes/${leadId}/hero.png`;
+  await bucket.put(key, screenshot, { httpMetadata: { contentType: "image/png" } });
+  return key;
+}
+
 export async function putPrdMarkdown(
   bucket: R2Bucket,
   leadId: string,

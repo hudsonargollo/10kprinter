@@ -1,7 +1,7 @@
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from "cloudflare:workers";
 import type { AuditFinding, BrandTokens, Env, LeadRow, ScrapeSummary, WorkflowPayload } from "../types";
 import { scrapeSite } from "../lib/scrape";
-import { putHtml, putScreenshot, putPrdMarkdown, getScreenshotBase64 } from "../lib/r2";
+import { putHtml, putScreenshot, putHeroScreenshot, putPrdMarkdown, getScreenshotBase64 } from "../lib/r2";
 import { getLead, setLeadStatus, insertScrape, insertAudit, insertPrd, logEvent } from "../lib/db";
 import { generateStructured, generateText, generateStructuredFromImage } from "../lib/anthropic";
 import { VERTICALS } from "../verticals";
@@ -58,13 +58,14 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
 
     const scrapeData = await step.do("scrape", async () => {
       await setLeadStatus(env.DB, leadId, "scraping");
-      const { html, screenshot, summary } = await scrapeSite(env.BROWSER, lead.url);
+      const { html, screenshot, heroScreenshot, summary } = await scrapeSite(env.BROWSER, lead.url);
       const r2HtmlKey = await putHtml(env.ASSETS_BUCKET, leadId, html);
       const r2ScreenshotKey = await putScreenshot(env.ASSETS_BUCKET, leadId, screenshot);
-      await insertScrape(env.DB, leadId, { r2HtmlKey, r2ScreenshotKey, summary });
+      const r2HeroScreenshotKey = await putHeroScreenshot(env.ASSETS_BUCKET, leadId, heroScreenshot);
+      await insertScrape(env.DB, leadId, { r2HtmlKey, r2ScreenshotKey, r2HeroScreenshotKey, summary });
       await setLeadStatus(env.DB, leadId, "scraped");
       await logEvent(env.DB, leadId, "scrape", "completed");
-      return { r2HtmlKey, r2ScreenshotKey, summary };
+      return { r2HtmlKey, r2ScreenshotKey, r2HeroScreenshotKey, summary };
     });
 
     const audits: AuditFinding[] = [];
@@ -103,7 +104,7 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
     }
 
     const brandTokens = await step.do("brand-tokens", async () => {
-      const imageBase64 = await getScreenshotBase64(env.ASSETS_BUCKET, scrapeData.r2ScreenshotKey);
+      const imageBase64 = await getScreenshotBase64(env.ASSETS_BUCKET, scrapeData.r2HeroScreenshotKey);
       return generateStructuredFromImage<BrandTokens>(env.ANTHROPIC_API_KEY, {
         system:
           "You are a brand designer extracting a usable Tailwind color-token palette from a screenshot of a business's existing website.",
