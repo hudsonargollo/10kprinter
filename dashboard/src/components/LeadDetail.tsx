@@ -1,0 +1,231 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getLead, getPrdMarkdown, updateLeadStatus } from "../api";
+import type { AuditFinding, BrandTokens, LeadDetail as LeadDetailData, LeadStatus, Prd } from "../types";
+import { STATUS_LABELS, STATUS_ORDER, VERTICAL_LABELS } from "../types";
+
+const IN_PROGRESS: LeadStatus[] = ["discovered", "scraping", "scraped", "audited"];
+
+type Tab = "overview" | "audits" | "prds" | "timeline";
+
+export function LeadDetailView({ leadId }: { leadId: string }) {
+  const [data, setData] = useState<LeadDetailData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("overview");
+  const pollRef = useRef<number | null>(null);
+
+  const refresh = useCallback(() => {
+    getLead(leadId)
+      .then(setData)
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load lead"));
+  }, [leadId]);
+
+  useEffect(() => {
+    setData(null);
+    refresh();
+  }, [refresh]);
+
+  useEffect(() => {
+    if (data && IN_PROGRESS.includes(data.lead.status)) {
+      pollRef.current = window.setInterval(refresh, 4000);
+      return () => {
+        if (pollRef.current) window.clearInterval(pollRef.current);
+      };
+    }
+  }, [data, refresh]);
+
+  if (error) return <div className="error-banner">{error}</div>;
+  if (!data) return <p className="empty-state">Loading…</p>;
+
+  const { lead, scrapes, audits, prds, events } = data;
+  const latestScrape = scrapes[scrapes.length - 1];
+
+  async function onStatusChange(status: LeadStatus) {
+    await updateLeadStatus(leadId, status);
+    refresh();
+  }
+
+  return (
+    <>
+      <div className="card">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+          <div>
+            <h2 style={{ marginBottom: 4 }}>{lead.business_name || lead.url}</h2>
+            <a href={lead.url} target="_blank" rel="noreferrer" style={{ color: "var(--text-muted)", fontSize: 13 }}>
+              {lead.url}
+            </a>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span className="badge">{STATUS_LABELS[lead.status]}</span>
+            <select value={lead.status} onChange={(e) => onStatusChange(e.target.value as LeadStatus)}>
+              {STATUS_ORDER.map((s) => (
+                <option key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="tabs">
+        {(["overview", "audits", "prds", "timeline"] as Tab[]).map((t) => (
+          <div key={t} className={`tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)}>
+            {t === "overview" ? "Overview" : t === "audits" ? `Audits (${audits.length})` : t === "prds" ? `PRDs (${prds.length})` : "Timeline"}
+          </div>
+        ))}
+      </div>
+
+      {tab === "overview" && <OverviewTab leadId={leadId} scrape={latestScrape} />}
+      {tab === "audits" && <AuditsTab audits={audits} />}
+      {tab === "prds" && <PrdsTab leadId={leadId} prds={prds} />}
+      {tab === "timeline" && <TimelineTab events={events} />}
+    </>
+  );
+}
+
+function OverviewTab({ leadId, scrape }: { leadId: string; scrape: LeadDetailData["scrapes"][number] | undefined }) {
+  if (!scrape) return <p className="empty-state">Scrape hasn't completed yet.</p>;
+  const summary = scrape.summary_json ? JSON.parse(scrape.summary_json) : null;
+  return (
+    <div className="card">
+      <h2>Scraped page</h2>
+      <img
+        src={`/api/leads/${leadId}/screenshot`}
+        alt="Site screenshot"
+        style={{ maxWidth: "100%", border: "1px solid var(--border)", borderRadius: 8, marginBottom: 16 }}
+      />
+      {summary && (
+        <dl style={{ fontSize: 13, display: "grid", gridTemplateColumns: "140px 1fr", rowGap: 6 }}>
+          <dt style={{ color: "var(--text-muted)" }}>Title</dt>
+          <dd style={{ margin: 0 }}>{summary.title ?? "—"}</dd>
+          <dt style={{ color: "var(--text-muted)" }}>Load time</dt>
+          <dd style={{ margin: 0 }}>{summary.loadTimeMs}ms</dd>
+          <dt style={{ color: "var(--text-muted)" }}>Email capture form</dt>
+          <dd style={{ margin: 0 }}>{summary.hasEmailCaptureForm ? "Yes" : "No"}</dd>
+          <dt style={{ color: "var(--text-muted)" }}>Phone numbers found</dt>
+          <dd style={{ margin: 0 }}>{summary.phoneNumbersFound?.join(", ") || "—"}</dd>
+        </dl>
+      )}
+    </div>
+  );
+}
+
+function AuditsTab({ audits }: { audits: LeadDetailData["audits"] }) {
+  if (audits.length === 0) return <p className="empty-state">No audits yet.</p>;
+  return (
+    <>
+      {audits.map((audit) => {
+        const finding: AuditFinding = JSON.parse(audit.findings_json);
+        return (
+          <div className="card" key={audit.id}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h2>{VERTICAL_LABELS[audit.vertical]}</h2>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <span className={`badge ${audit.qualifies ? "badge-good" : "badge-bad"}`}>
+                  {audit.qualifies ? "Qualifies" : "Does not qualify"}
+                </span>
+                <span className="badge">Score {audit.score}/100</span>
+              </div>
+            </div>
+            <div className="findings-grid">
+              <div className="findings-col">
+                <h4>Good</h4>
+                <ul>{finding.good.map((g, i) => <li key={i}>{g}</li>)}</ul>
+              </div>
+              <div className="findings-col">
+                <h4>Bad</h4>
+                <ul>{finding.bad.map((b, i) => <li key={i}>{b}</li>)}</ul>
+              </div>
+              <div className="findings-col">
+                <h4>Fix</h4>
+                <ul>{finding.fix.map((f, i) => <li key={i}>{f}</li>)}</ul>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+function PrdsTab({ leadId, prds }: { leadId: string; prds: Prd[] }) {
+  const [activeId, setActiveId] = useState<string | null>(prds[0]?.id ?? null);
+  const [markdown, setMarkdown] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!activeId) return;
+    setLoading(true);
+    getPrdMarkdown(leadId, activeId)
+      .then(setMarkdown)
+      .finally(() => setLoading(false));
+  }, [leadId, activeId]);
+
+  if (prds.length === 0) return <p className="empty-state">No PRDs generated yet — this lead may not have qualified for any vertical.</p>;
+
+  const active = prds.find((p) => p.id === activeId);
+  const tokens: BrandTokens | null = active ? JSON.parse(active.brand_tokens_json) : null;
+
+  function download() {
+    if (!active) return;
+    const blob = new Blob([markdown], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${active.vertical}-prd.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <div className="card">
+      <div className="tabs" style={{ marginBottom: 12 }}>
+        {prds.map((p) => (
+          <div key={p.id} className={`tab ${p.id === activeId ? "active" : ""}`} onClick={() => setActiveId(p.id)}>
+            {VERTICAL_LABELS[p.vertical]}
+          </div>
+        ))}
+      </div>
+
+      {tokens && (
+        <div style={{ marginBottom: 16 }}>
+          <div className="swatch-row">
+            {(["primary", "background", "backgroundAlt"] as const).map((key) => (
+              <div key={key} className="swatch" style={{ background: tokens[key], color: tokens.textOnBackground }}>
+                {key}
+              </div>
+            ))}
+          </div>
+          <p style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 6 }}>{tokens.rationale}</p>
+        </div>
+      )}
+
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+        <button className="btn" onClick={download} disabled={loading}>
+          Download .md
+        </button>
+      </div>
+
+      <div className="prd-markdown">{loading ? "Loading…" : markdown}</div>
+    </div>
+  );
+}
+
+function TimelineTab({ events }: { events: LeadDetailData["events"] }) {
+  if (events.length === 0) return <p className="empty-state">No events yet.</p>;
+  return (
+    <div className="card">
+      <ul className="event-timeline">
+        {events.map((e) => (
+          <li key={e.id}>
+            <span>
+              <span className="stage">{e.stage}</span> — {e.status}
+              {e.message ? `: ${e.message}` : ""}
+            </span>
+            <span className="time">{e.created_at}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

@@ -66,6 +66,17 @@ app.get("/api/leads/:leadId/prds/:prdId/markdown", async (c) => {
   return new Response(obj.body, { headers: { "content-type": "text/markdown; charset=utf-8" } });
 });
 
+app.get("/api/leads/:id/screenshot", async (c) => {
+  const id = c.req.param("id");
+  const scrape = await c.env.DB.prepare("SELECT r2_screenshot_key FROM scrapes WHERE lead_id = ? ORDER BY scraped_at DESC LIMIT 1")
+    .bind(id)
+    .first<{ r2_screenshot_key: string | null }>();
+  if (!scrape?.r2_screenshot_key) return c.json({ error: "not found" }, 404);
+  const obj = await c.env.ASSETS_BUCKET.get(scrape.r2_screenshot_key);
+  if (!obj) return c.json({ error: "screenshot not found in storage" }, 404);
+  return new Response(obj.body, { headers: { "content-type": "image/png", "cache-control": "public, max-age=31536000" } });
+});
+
 app.patch("/api/leads/:id/status", async (c) => {
   const id = c.req.param("id");
   const { status } = await c.req.json<{ status: string }>();
