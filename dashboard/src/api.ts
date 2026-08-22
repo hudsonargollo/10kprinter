@@ -1,4 +1,4 @@
-import type { Lead, LeadDetail, LeadStatus } from "./types";
+import type { Lead, LeadDetail, LeadSource, LeadStatus } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -32,4 +32,24 @@ export async function getPrdMarkdown(leadId: string, prdId: string): Promise<str
   const res = await fetch(`/api/leads/${leadId}/prds/${prdId}/markdown`);
   if (!res.ok) throw new Error(`Failed to load PRD: ${res.status}`);
   return res.text();
+}
+
+export function listSources(): Promise<LeadSource[]> {
+  return request("/api/sources");
+}
+
+export function createSource(input: { query: string; region?: string; category?: string }): Promise<{ id: string }> {
+  return request("/api/sources", { method: "POST", body: JSON.stringify(input) });
+}
+
+export function setSourceCronEnabled(id: string, cronEnabled: boolean): Promise<void> {
+  return request(`/api/sources/${id}`, { method: "PATCH", body: JSON.stringify({ cronEnabled }) });
+}
+
+export function deleteSource(id: string): Promise<void> {
+  return request(`/api/sources/${id}`, { method: "DELETE" });
+}
+
+export function runSourceNow(id: string): Promise<{ newLeadIds: string[]; skippedNoWebsite: number; skippedExisting: number }> {
+  return request(`/api/sources/${id}/run`, { method: "POST" });
 }

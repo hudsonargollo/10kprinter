@@ -71,6 +71,16 @@ export interface BrandTokens {
   rationale: string;
 }
 
+export interface LeadSource {
+  id: string;
+  query: string;
+  region: string | null;
+  category: string | null;
+  cron_enabled: number;
+  last_run_at: string | null;
+  created_at: string;
+}
+
 export interface PipelineEvent {
   id: string;
   lead_id: string;

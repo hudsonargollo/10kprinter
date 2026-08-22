@@ -72,3 +72,13 @@ export interface BrandTokens {
 export interface WorkflowPayload {
   leadId: string;
 }
+
+export interface LeadSourceRow {
+  id: string;
+  query: string;
+  region: string | null;
+  category: string | null;
+  cron_enabled: number;
+  last_run_at: string | null;
+  created_at: string;
+}
