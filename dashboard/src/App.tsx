@@ -26,7 +26,7 @@ export function App() {
     <div>
       <header className="app-header">
         <h1>
-          10kPrinter <span className="subtitle">The Hudson System</span>
+          TheLeadMachine <span className="subtitle">Ops</span>
         </h1>
         <div style={{ display: "flex", gap: 8 }}>
           {route.name !== "board" && (

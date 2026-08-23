@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "build": "npm run build --prefix landing && npm run build --prefix dashboard",
+    "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "db:migrate:local": "wrangler d1 migrations apply 10kprinter --local",
     "db:migrate:remote": "wrangler d1 migrations apply 10kprinter --remote"
