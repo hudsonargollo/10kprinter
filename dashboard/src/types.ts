@@ -12,6 +12,8 @@ export type LeadStatus =
   | "lost"
   | "failed";
 
+export type LeadTier = "hot" | "warm" | "cold";
+
 export interface Lead {
   id: string;
   business_name: string | null;
@@ -25,6 +27,12 @@ export interface Lead {
   workflow_instance_id: string | null;
   discovered_at: string;
   showcase_url: string | null;
+  tier: LeadTier | null;
+  score: number | null;
+  notes: string | null;
+  lost_reason: string | null;
+  closed_amount_usd: number | null;
+  closed_at: string | null;
 }
 
 export interface Scrape {
@@ -65,6 +73,8 @@ export interface Prd {
 }
 
 export const CONSULT_ADDON_USD = 100;
+
+export const TIER_LABELS: Record<LeadTier, string> = { hot: "Hot", warm: "Warm", cold: "Cold" };
 
 export interface BrandTokens {
   primary: string;

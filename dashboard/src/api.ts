@@ -36,6 +36,18 @@ export function setShowcaseUrl(id: string, showcaseUrl: string): Promise<void> {
   return request(`/api/leads/${id}/showcase`, { method: "PATCH", body: JSON.stringify({ showcaseUrl }) });
 }
 
+export function transitionLeadStage(
+  id: string,
+  status: "reviewed" | "proposal_sent" | "won" | "lost",
+  opts?: { lostReason?: string; closedAmountUsd?: number },
+): Promise<void> {
+  return request(`/api/leads/${id}/stage`, { method: "POST", body: JSON.stringify({ status, ...opts }) });
+}
+
+export function setLeadNotes(id: string, notes: string): Promise<void> {
+  return request(`/api/leads/${id}/notes`, { method: "PATCH", body: JSON.stringify({ notes }) });
+}
+
 export async function getPrdMarkdown(leadId: string, prdId: string): Promise<string> {
   const res = await fetch(`/api/leads/${leadId}/prds/${prdId}/markdown`);
   if (!res.ok) throw new Error(`Failed to load PRD: ${res.status}`);

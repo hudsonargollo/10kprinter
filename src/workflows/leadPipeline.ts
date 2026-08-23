@@ -2,7 +2,8 @@ import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from "cloud
 import type { AuditFinding, BrandTokens, Env, LeadRow, ScrapeSummary, WorkflowPayload } from "../types";
 import { scrapeSite } from "../lib/scrape";
 import { putHtml, putScreenshot, putHeroScreenshot, putPrdMarkdown, getScreenshotBase64 } from "../lib/r2";
-import { getLead, setLeadStatus, insertScrape, insertAudit, insertPrd, logEvent } from "../lib/db";
+import { getLead, setLeadStatus, setLeadScoring, insertScrape, insertAudit, insertPrd, logEvent } from "../lib/db";
+import { computeLeadScoring } from "../lib/scoring";
 import { generateStructured, generateStructuredFromImage } from "../lib/anthropic";
 import { VERTICALS } from "../verticals";
 
@@ -105,6 +106,10 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
       await setLeadStatus(env.DB, leadId, "audited");
       const qualifyingCount = audits.filter((a) => a.qualifies).length;
       await logEvent(env.DB, leadId, "audit", "completed", `${qualifyingCount}/${audits.length} verticals qualify`);
+
+      const { score, tier } = computeLeadScoring(audits);
+      await setLeadScoring(env.DB, leadId, score, tier);
+      await logEvent(env.DB, leadId, "scoring", "computed", `score=${score} tier=${tier}`);
     });
 
     const qualifyingVerticals = VERTICALS.filter((v) =>

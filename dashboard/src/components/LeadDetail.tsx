@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getLead, getPrdMarkdown, retryLead, setShowcaseUrl, updateLeadStatus } from "../api";
+import {
+  getLead,
+  getPrdMarkdown,
+  retryLead,
+  setLeadNotes,
+  setShowcaseUrl,
+  transitionLeadStage,
+  updateLeadStatus,
+} from "../api";
+import { waLink } from "../lib/waLink";
 import type { AuditFinding, BrandTokens, LeadDetail as LeadDetailData, LeadStatus, Prd } from "../types";
-import { CONSULT_ADDON_USD, STATUS_LABELS, STATUS_ORDER, VERTICAL_LABELS } from "../types";
+import { CONSULT_ADDON_USD, STATUS_LABELS, STATUS_ORDER, TIER_LABELS, VERTICAL_LABELS } from "../types";
 
 const IN_PROGRESS: LeadStatus[] = ["discovered", "scraping", "scraped", "audited"];
 
-type Tab = "offer" | "overview" | "audits" | "prds" | "timeline";
+type Tab = "offer" | "sales" | "overview" | "audits" | "prds" | "timeline";
 
 export function LeadDetailView({ leadId }: { leadId: string }) {
   const [data, setData] = useState<LeadDetailData | null>(null);
@@ -55,6 +64,11 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
             </a>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {lead.tier && (
+              <span className={`badge tier-${lead.tier}`}>
+                {TIER_LABELS[lead.tier]} · {lead.score}
+              </span>
+            )}
             <span className="badge">{STATUS_LABELS[lead.status]}</span>
             {lead.status === "failed" && (
               <button className="btn" onClick={() => retryLead(leadId).then(refresh)}>
@@ -73,27 +87,162 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
       </div>
 
       <div className="tabs">
-        {(["offer", "overview", "audits", "prds", "timeline"] as Tab[]).map((t) => (
+        {(["offer", "sales", "overview", "audits", "prds", "timeline"] as Tab[]).map((t) => (
           <div key={t} className={`tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)}>
             {t === "offer"
               ? "Offer"
-              : t === "overview"
-                ? "Overview"
-                : t === "audits"
-                  ? `Audits (${audits.length})`
-                  : t === "prds"
-                    ? `PRDs (${prds.length})`
-                    : "Timeline"}
+              : t === "sales"
+                ? "Sales"
+                : t === "overview"
+                  ? "Overview"
+                  : t === "audits"
+                    ? `Audits (${audits.length})`
+                    : t === "prds"
+                      ? `PRDs (${prds.length})`
+                      : "Timeline"}
           </div>
         ))}
       </div>
 
       {tab === "offer" && <OfferTab lead={lead} prds={prds} onRefresh={refresh} />}
+      {tab === "sales" && <SalesTab lead={lead} audits={audits} prds={prds} onRefresh={refresh} />}
       {tab === "overview" && <OverviewTab leadId={leadId} scrape={latestScrape} />}
       {tab === "audits" && <AuditsTab audits={audits} />}
       {tab === "prds" && <PrdsTab leadId={leadId} prds={prds} />}
       {tab === "timeline" && <TimelineTab events={events} />}
     </>
+  );
+}
+
+function SalesTab({
+  lead,
+  audits,
+  prds,
+  onRefresh,
+}: {
+  lead: LeadDetailData["lead"];
+  audits: LeadDetailData["audits"];
+  prds: Prd[];
+  onRefresh: () => void;
+}) {
+  const [notesDraft, setNotesDraft] = useState(lead.notes ?? "");
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [amountDraft, setAmountDraft] = useState(
+    String(prds.reduce((sum, p) => sum + (p.price_usd ?? 0), 0) + CONSULT_ADDON_USD),
+  );
+  const [lostReasonDraft, setLostReasonDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const qualifyingCount = audits.filter((a) => a.qualifies).length;
+
+  async function saveNotes() {
+    setSavingNotes(true);
+    try {
+      await setLeadNotes(lead.id, notesDraft);
+      onRefresh();
+    } finally {
+      setSavingNotes(false);
+    }
+  }
+
+  async function doTransition(status: "reviewed" | "proposal_sent" | "won" | "lost", opts?: { closedAmountUsd?: number; lostReason?: string }) {
+    setBusy(true);
+    try {
+      await transitionLeadStage(lead.id, status, opts);
+      onRefresh();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const wa = waLink(lead.phone, `Hi ${lead.business_name ?? "there"}, `);
+
+  return (
+    <div className="card">
+      <h2>Lead thermometer</h2>
+      {lead.tier ? (
+        <p style={{ marginTop: -6 }}>
+          <span className={`badge tier-${lead.tier}`}>
+            {TIER_LABELS[lead.tier]} · {lead.score}
+          </span>{" "}
+          <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
+            {qualifyingCount}/{audits.length} verticals qualify
+          </span>
+        </p>
+      ) : (
+        <p className="empty-state">Not scored yet — waiting on audits.</p>
+      )}
+
+      <h2 style={{ marginTop: 24 }}>Contact</h2>
+      {wa ? (
+        <a className="btn" href={wa} target="_blank" rel="noreferrer">
+          Message on WhatsApp
+        </a>
+      ) : (
+        <p className="empty-state">No phone number found.</p>
+      )}
+
+      <h2 style={{ marginTop: 24 }}>Notes</h2>
+      <textarea
+        style={{ width: "100%", minHeight: 80, padding: 10, borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontFamily: "inherit" }}
+        value={notesDraft}
+        onChange={(e) => setNotesDraft(e.target.value)}
+      />
+      <div style={{ marginTop: 8 }}>
+        <button className="btn btn-primary" onClick={saveNotes} disabled={savingNotes}>
+          {savingNotes ? "Saving…" : "Save notes"}
+        </button>
+      </div>
+
+      <h2 style={{ marginTop: 24 }}>Stage</h2>
+      {(lead.status === "prd_ready" || lead.status === "reviewed") && (
+        <button className="btn btn-primary" onClick={() => doTransition("proposal_sent")} disabled={busy}>
+          Send Proposal
+        </button>
+      )}
+      {lead.status === "proposal_sent" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input
+              type="number"
+              style={{ width: 120, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
+              value={amountDraft}
+              onChange={(e) => setAmountDraft(e.target.value)}
+            />
+            <button className="btn btn-primary" onClick={() => doTransition("won", { closedAmountUsd: Number(amountDraft) })} disabled={busy}>
+              Mark Won
+            </button>
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input
+              placeholder="Reason (optional)"
+              style={{ flex: 1, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
+              value={lostReasonDraft}
+              onChange={(e) => setLostReasonDraft(e.target.value)}
+            />
+            <button className="btn" onClick={() => doTransition("lost", { lostReason: lostReasonDraft })} disabled={busy}>
+              Mark Lost
+            </button>
+          </div>
+        </div>
+      )}
+      {lead.status === "won" && (
+        <p>
+          Closed <strong>${lead.closed_amount_usd}</strong> on {lead.closed_at ? new Date(lead.closed_at).toLocaleDateString() : "—"}
+        </p>
+      )}
+      {lead.status === "lost" && (
+        <>
+          <p>Lost: {lead.lost_reason || "no reason given"}</p>
+          <button className="btn" onClick={() => doTransition("proposal_sent")} disabled={busy}>
+            Reopen
+          </button>
+        </>
+      )}
+      {!["prd_ready", "reviewed", "proposal_sent", "won", "lost"].includes(lead.status) && (
+        <p className="empty-state">Sales stages open up once this lead reaches PRD Ready.</p>
+      )}
+    </div>
   );
 }
 

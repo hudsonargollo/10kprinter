@@ -37,6 +37,13 @@ export interface LeadRow {
   status: LeadStatus;
   workflow_instance_id: string | null;
   discovered_at: string;
+  showcase_url: string | null;
+  tier: "hot" | "warm" | "cold" | null;
+  score: number | null;
+  notes: string | null;
+  lost_reason: string | null;
+  closed_amount_usd: number | null;
+  closed_at: string | null;
 }
 
 export interface ScrapeSummary {

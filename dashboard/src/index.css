@@ -8,6 +8,9 @@
   --primary-text: #ffffff;
   --good: #1a7f4e;
   --bad: #b0271e;
+  --tier-hot: var(--primary);
+  --tier-warm: #c98a1f;
+  --tier-cold: #4f7ea8;
   --radius: 10px;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
@@ -155,6 +158,9 @@ button, input, select {
 
 .badge-good { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
 .badge-bad { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
+.tier-hot { background: color-mix(in srgb, var(--tier-hot) 18%, transparent); color: var(--tier-hot); }
+.tier-warm { background: color-mix(in srgb, var(--tier-warm) 18%, transparent); color: var(--tier-warm); }
+.tier-cold { background: color-mix(in srgb, var(--tier-cold) 18%, transparent); color: var(--tier-cold); }
 
 .card {
   background: var(--bg-elevated);

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { Env, LeadRow, LeadSourceRow } from "./types";
-import { newId } from "./lib/db";
+import { newId, setLeadNotes, transitionLeadStage } from "./lib/db";
 import { runHunterCycle, runHunterForSource } from "./hunter";
 
 export { LeadPipeline } from "./workflows/leadPipeline";
@@ -95,6 +95,28 @@ app.get("/api/leads/:id/screenshot", async (c) => {
   const obj = await c.env.ASSETS_BUCKET.get(scrape.r2_screenshot_key);
   if (!obj) return c.json({ error: "screenshot not found in storage" }, 404);
   return new Response(obj.body, { headers: { "content-type": "image/png", "cache-control": "public, max-age=31536000" } });
+});
+
+const SALES_STAGES = new Set(["reviewed", "proposal_sent", "won", "lost"]);
+
+app.post("/api/leads/:id/stage", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{ status: string; lostReason?: string; closedAmountUsd?: number }>();
+  if (!SALES_STAGES.has(body.status)) {
+    return c.json({ error: `invalid sales stage: ${body.status}` }, 400);
+  }
+  await transitionLeadStage(c.env.DB, id, body.status as "reviewed" | "proposal_sent" | "won" | "lost", {
+    lostReason: body.lostReason,
+    closedAmountUsd: body.closedAmountUsd,
+  });
+  return c.json({ ok: true });
+});
+
+app.patch("/api/leads/:id/notes", async (c) => {
+  const id = c.req.param("id");
+  const { notes } = await c.req.json<{ notes: string }>();
+  await setLeadNotes(c.env.DB, id, notes);
+  return c.json({ ok: true });
 });
 
 app.patch("/api/leads/:id/showcase", async (c) => {

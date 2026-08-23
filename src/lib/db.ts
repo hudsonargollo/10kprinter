@@ -1,4 +1,7 @@
 import type { AuditFinding, BrandTokens, LeadRow, LeadStatus, ScrapeSummary, VerticalKey } from "../types";
+import type { LeadTier } from "./scoring";
+
+type SalesStage = "reviewed" | "proposal_sent" | "won" | "lost";
 
 export function newId(): string {
   return crypto.randomUUID();
@@ -15,6 +18,42 @@ export async function setLeadStatus(db: D1Database, leadId: string, status: Lead
 
 export async function setLeadWorkflowInstance(db: D1Database, leadId: string, instanceId: string): Promise<void> {
   await db.prepare("UPDATE leads SET workflow_instance_id = ? WHERE id = ?").bind(instanceId, leadId).run();
+}
+
+export async function setLeadScoring(db: D1Database, leadId: string, score: number, tier: LeadTier): Promise<void> {
+  await db.prepare("UPDATE leads SET score = ?, tier = ? WHERE id = ?").bind(score, tier, leadId).run();
+}
+
+export async function setLeadNotes(db: D1Database, leadId: string, notes: string): Promise<void> {
+  await db.prepare("UPDATE leads SET notes = ? WHERE id = ?").bind(notes, leadId).run();
+}
+
+/**
+ * The CRM-owned counterpart to setLeadStatus, for the manually-driven sales
+ * stages only — captures the side-effect fields those stages need and logs
+ * to pipeline_events. setLeadStatus remains the primitive the Workflow uses.
+ */
+export async function transitionLeadStage(
+  db: D1Database,
+  leadId: string,
+  status: SalesStage,
+  opts: { lostReason?: string; closedAmountUsd?: number } = {},
+): Promise<void> {
+  if (status === "won") {
+    await db
+      .prepare("UPDATE leads SET status = ?, closed_amount_usd = ?, closed_at = datetime('now') WHERE id = ?")
+      .bind(status, opts.closedAmountUsd ?? null, leadId)
+      .run();
+  } else if (status === "lost") {
+    await db
+      .prepare("UPDATE leads SET status = ?, lost_reason = ? WHERE id = ?")
+      .bind(status, opts.lostReason ?? null, leadId)
+      .run();
+  } else {
+    await db.prepare("UPDATE leads SET status = ? WHERE id = ?").bind(status, leadId).run();
+  }
+  const message = status === "won" ? `$${opts.closedAmountUsd ?? "?"}` : status === "lost" ? (opts.lostReason ?? null) : null;
+  await logEvent(db, leadId, "sales", status, message ?? undefined);
 }
 
 export async function logEvent(
