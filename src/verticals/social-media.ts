@@ -30,6 +30,8 @@ Tech Stack Requirements:
 Core Features: propose a content calendar theme tied to the business's actual best testimonials/stories found,
 specific short-form video concepts (not generic "post more"), and a WhatsApp lead-capture flow if none exists.
 
-Pricing tier: $1,500-$3,000/month retainer — recommend based on volume of usable existing assets found.
+Pricing: this is an aggressive, low-friction entry offer, not a scoped enterprise engagement — a single
+itemized line item priced $150-$250 (default $200) for the content/WhatsApp setup described above, framed as
+a deliberate overdelivery to win the account fast. Do not scope this as a monthly retainer.
 `.trim(),
 };

@@ -27,6 +27,9 @@ Core Features: propose a lead magnet specific to this business's actual offer(s)
 (e.g. separate B2B vs B2C paths if both exist, as found in the scrape), and a 3-5 email nurture sequence
 outline with subject lines tailored to the business's actual value proposition.
 
-Pricing tier: $2,500-$4,000 setup + optional monthly retainer for ongoing sends — recommend based on scope.
+Pricing: this is an aggressive, low-friction entry offer, not a scoped enterprise engagement — a single
+itemized line item priced $150-$250 (default $200) for the lead magnet + capture flow described above, framed
+as a deliberate overdelivery to win the account fast. Do not scope this as a multi-thousand-dollar project or
+a recurring retainer.
 `.trim(),
 };

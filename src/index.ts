@@ -73,7 +73,13 @@ app.post("/api/leads/:id/retry", async (c) => {
   const lead = await c.env.DB.prepare("SELECT * FROM leads WHERE id = ?").bind(id).first<LeadRow>();
   if (!lead) return c.json({ error: "not found" }, 404);
 
-  await c.env.DB.prepare("UPDATE leads SET status = 'discovered' WHERE id = ?").bind(id).run();
+  // Clear stale rows from prior attempts so a retry doesn't leave duplicate/superseded data.
+  await c.env.DB.batch([
+    c.env.DB.prepare("DELETE FROM scrapes WHERE lead_id = ?").bind(id),
+    c.env.DB.prepare("DELETE FROM audits WHERE lead_id = ?").bind(id),
+    c.env.DB.prepare("DELETE FROM prds WHERE lead_id = ?").bind(id),
+    c.env.DB.prepare("UPDATE leads SET status = 'discovered' WHERE id = ?").bind(id),
+  ]);
   const instance = await c.env.LEAD_PIPELINE.create({ params: { leadId: id } });
   await c.env.DB.prepare("UPDATE leads SET workflow_instance_id = ? WHERE id = ?").bind(instance.id, id).run();
 
@@ -89,6 +95,13 @@ app.get("/api/leads/:id/screenshot", async (c) => {
   const obj = await c.env.ASSETS_BUCKET.get(scrape.r2_screenshot_key);
   if (!obj) return c.json({ error: "screenshot not found in storage" }, 404);
   return new Response(obj.body, { headers: { "content-type": "image/png", "cache-control": "public, max-age=31536000" } });
+});
+
+app.patch("/api/leads/:id/showcase", async (c) => {
+  const id = c.req.param("id");
+  const { showcaseUrl } = await c.req.json<{ showcaseUrl: string }>();
+  await c.env.DB.prepare("UPDATE leads SET showcase_url = ? WHERE id = ?").bind(showcaseUrl, id).run();
+  return c.json({ ok: true });
 });
 
 app.patch("/api/leads/:id/status", async (c) => {

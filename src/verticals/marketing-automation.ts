@@ -29,6 +29,9 @@ Core Features: propose 3-5 concrete automations tailored to this business's actu
 (e.g. auto-routing a lead form by inquiry type instead of "call Bob or Chris", automated quote/follow-up
 sequences, calendar-based booking replacing phone scheduling).
 
-Pricing tier: $4,000-$7,000 depending on number of workflows required — state the recommended number and why.
+Pricing: this is an aggressive, low-friction entry offer, not a scoped enterprise engagement — a single
+itemized line item priced $150-$250 (default $200) for the single highest-impact automation described above,
+framed as a deliberate overdelivery to win the account fast. Do not scope this as a multi-thousand-dollar
+project.
 `.trim(),
 };

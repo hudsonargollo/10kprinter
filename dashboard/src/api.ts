@@ -32,6 +32,10 @@ export function retryLead(id: string): Promise<{ workflowInstanceId: string }> {
   return request(`/api/leads/${id}/retry`, { method: "POST" });
 }
 
+export function setShowcaseUrl(id: string, showcaseUrl: string): Promise<void> {
+  return request(`/api/leads/${id}/showcase`, { method: "PATCH", body: JSON.stringify({ showcaseUrl }) });
+}
+
 export async function getPrdMarkdown(leadId: string, prdId: string): Promise<string> {
   const res = await fetch(`/api/leads/${leadId}/prds/${prdId}/markdown`);
   if (!res.ok) throw new Error(`Failed to load PRD: ${res.status}`);

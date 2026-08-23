@@ -24,6 +24,7 @@ export interface Lead {
   status: LeadStatus;
   workflow_instance_id: string | null;
   discovered_at: string;
+  showcase_url: string | null;
 }
 
 export interface Scrape {
@@ -58,9 +59,12 @@ export interface Prd {
   vertical: VerticalKey;
   r2_markdown_key: string;
   brand_tokens_json: string;
+  price_usd: number | null;
   status: string;
   created_at: string;
 }
+
+export const CONSULT_ADDON_USD = 100;
 
 export interface BrandTokens {
   primary: string;

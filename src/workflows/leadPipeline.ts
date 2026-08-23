@@ -3,7 +3,7 @@ import type { AuditFinding, BrandTokens, Env, LeadRow, ScrapeSummary, WorkflowPa
 import { scrapeSite } from "../lib/scrape";
 import { putHtml, putScreenshot, putHeroScreenshot, putPrdMarkdown, getScreenshotBase64 } from "../lib/r2";
 import { getLead, setLeadStatus, insertScrape, insertAudit, insertPrd, logEvent } from "../lib/db";
-import { generateStructured, generateText, generateStructuredFromImage } from "../lib/anthropic";
+import { generateStructured, generateStructuredFromImage } from "../lib/anthropic";
 import { VERTICALS } from "../verticals";
 
 const AUDIT_SCHEMA = {
@@ -16,6 +16,15 @@ const AUDIT_SCHEMA = {
     fix: { type: "array", items: { type: "string" } },
   },
   required: ["qualifies", "score", "good", "bad", "fix"],
+};
+
+const PRD_SCHEMA = {
+  type: "object",
+  properties: {
+    markdown: { type: "string" },
+    priceUsd: { type: "integer", minimum: 100, maximum: 300 },
+  },
+  required: ["markdown", "priceUsd"],
 };
 
 const BRAND_TOKENS_SCHEMA = {
@@ -77,7 +86,14 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
           toolName: "submit_audit",
           schema: AUDIT_SCHEMA,
         });
-        return { vertical: vertical.key, ...result } as AuditFinding;
+        return {
+          vertical: vertical.key,
+          qualifies: result.qualifies,
+          score: result.score,
+          good: toStringArray(result.good),
+          bad: toStringArray(result.bad),
+          fix: toStringArray(result.fix),
+        } as AuditFinding;
       });
       audits.push(finding);
       await step.do(`persist-audit-${vertical.key}`, async () => {
@@ -122,13 +138,18 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
     for (const vertical of qualifyingVerticals) {
       const finding = audits.find((a) => a.vertical === vertical.key)!;
       await step.do(`prd-${vertical.key}`, async () => {
-        const markdown = await generateText(env.ANTHROPIC_API_KEY, {
-          system: `You are a product architect writing a PRD for a development team.\n${vertical.prdTemplate.replace("{{businessName}}", lead.business_name ?? lead.url)}`,
-          user: buildPrdContextPrompt(lead, scrapeData.summary, finding, brandTokens),
-          maxTokens: 4096,
-        });
+        const { markdown, priceUsd } = await generateStructured<{ markdown: string; priceUsd: number }>(
+          env.ANTHROPIC_API_KEY,
+          {
+            system: `You are a product architect writing a PRD for a development team.\n${vertical.prdTemplate.replace("{{businessName}}", lead.business_name ?? lead.url)}`,
+            user: buildPrdContextPrompt(lead, scrapeData.summary, finding, brandTokens),
+            toolName: "submit_prd",
+            schema: PRD_SCHEMA,
+            maxTokens: 4096,
+          },
+        );
         const r2Key = await putPrdMarkdown(env.ASSETS_BUCKET, leadId, vertical.key, markdown);
-        await insertPrd(env.DB, leadId, vertical.key, r2Key, brandTokens);
+        await insertPrd(env.DB, leadId, vertical.key, r2Key, brandTokens, priceUsd);
       });
     }
 
@@ -137,6 +158,13 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
       await logEvent(env.DB, leadId, "prd", "completed", `${qualifyingVerticals.length} PRD(s) generated`);
     });
   }
+}
+
+/** Claude's tool-forced JSON isn't always perfectly schema-conformant — guard against a stray string. */
+function toStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === "string" && value.length > 0) return [value];
+  return [];
 }
 
 function buildScrapeContextPrompt(lead: LeadRow, summary: ScrapeSummary): string {

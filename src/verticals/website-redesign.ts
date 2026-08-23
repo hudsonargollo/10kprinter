@@ -37,7 +37,9 @@ calculator specific to this business's offer.
 Design Tokens: reference the brand tokens generated separately for this lead (primary/background colors +
 rationale) and specify typography (sans-serif, heavily weighted headers).
 
-Pricing tier: $10,000 flat engagement (standard tier) unless the scraped content suggests materially more or
-less scope, in which case note the deviation and why.
+Pricing: this is an aggressive, low-friction entry offer, not a scoped enterprise engagement — a single
+itemized line item priced $150-$250 (default $200) for the core deliverable described above, framed as a
+deliberate overdelivery (far more value than the price implies) to win the account fast. Do not scope this
+as a multi-thousand-dollar project.
 `.trim(),
 };

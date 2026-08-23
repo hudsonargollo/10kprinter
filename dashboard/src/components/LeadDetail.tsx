@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getLead, getPrdMarkdown, retryLead, updateLeadStatus } from "../api";
+import { getLead, getPrdMarkdown, retryLead, setShowcaseUrl, updateLeadStatus } from "../api";
 import type { AuditFinding, BrandTokens, LeadDetail as LeadDetailData, LeadStatus, Prd } from "../types";
-import { STATUS_LABELS, STATUS_ORDER, VERTICAL_LABELS } from "../types";
+import { CONSULT_ADDON_USD, STATUS_LABELS, STATUS_ORDER, VERTICAL_LABELS } from "../types";
 
 const IN_PROGRESS: LeadStatus[] = ["discovered", "scraping", "scraped", "audited"];
 
-type Tab = "overview" | "audits" | "prds" | "timeline";
+type Tab = "offer" | "overview" | "audits" | "prds" | "timeline";
 
 export function LeadDetailView({ leadId }: { leadId: string }) {
   const [data, setData] = useState<LeadDetailData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>("offer");
   const pollRef = useRef<number | null>(null);
 
   const refresh = useCallback(() => {
@@ -73,18 +73,106 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
       </div>
 
       <div className="tabs">
-        {(["overview", "audits", "prds", "timeline"] as Tab[]).map((t) => (
+        {(["offer", "overview", "audits", "prds", "timeline"] as Tab[]).map((t) => (
           <div key={t} className={`tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)}>
-            {t === "overview" ? "Overview" : t === "audits" ? `Audits (${audits.length})` : t === "prds" ? `PRDs (${prds.length})` : "Timeline"}
+            {t === "offer"
+              ? "Offer"
+              : t === "overview"
+                ? "Overview"
+                : t === "audits"
+                  ? `Audits (${audits.length})`
+                  : t === "prds"
+                    ? `PRDs (${prds.length})`
+                    : "Timeline"}
           </div>
         ))}
       </div>
 
+      {tab === "offer" && <OfferTab lead={lead} prds={prds} onRefresh={refresh} />}
       {tab === "overview" && <OverviewTab leadId={leadId} scrape={latestScrape} />}
       {tab === "audits" && <AuditsTab audits={audits} />}
       {tab === "prds" && <PrdsTab leadId={leadId} prds={prds} />}
       {tab === "timeline" && <TimelineTab events={events} />}
     </>
+  );
+}
+
+function OfferTab({
+  lead,
+  prds,
+  onRefresh,
+}: {
+  lead: LeadDetailData["lead"];
+  prds: Prd[];
+  onRefresh: () => void;
+}) {
+  const [urlDraft, setUrlDraft] = useState(lead.showcase_url ?? "");
+  const [saving, setSaving] = useState(false);
+
+  const itemTotal = prds.reduce((sum, p) => sum + (p.price_usd ?? 0), 0);
+  const bundleTotal = itemTotal + CONSULT_ADDON_USD;
+
+  async function saveShowcaseUrl() {
+    setSaving(true);
+    try {
+      await setShowcaseUrl(lead.id, urlDraft);
+      onRefresh();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2>Showcase page</h2>
+      <p style={{ color: "var(--text-muted)", fontSize: 13, marginTop: -6, marginBottom: 12 }}>
+        Send this first — before walking the prospect through pain points or pricing.
+      </p>
+      <div style={{ display: "flex", gap: 8, marginBottom: lead.showcase_url ? 12 : 0 }}>
+        <input
+          style={{ flex: 1, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
+          placeholder="https://... (paste the finished demo page link)"
+          value={urlDraft}
+          onChange={(e) => setUrlDraft(e.target.value)}
+        />
+        <button className="btn btn-primary" onClick={saveShowcaseUrl} disabled={saving}>
+          {saving ? "Saving…" : "Save"}
+        </button>
+      </div>
+      {lead.showcase_url && (
+        <a className="btn" href={lead.showcase_url} target="_blank" rel="noreferrer">
+          Open showcase page →
+        </a>
+      )}
+
+      <h2 style={{ marginTop: 24 }}>Offer</h2>
+      {prds.length === 0 ? (
+        <p className="empty-state">No priced line items yet — waiting on audits/PRDs.</p>
+      ) : (
+        <>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
+            {prds.map((p) => (
+              <li key={p.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--border)" }}>
+                <span>{VERTICAL_LABELS[p.vertical]}</span>
+                <strong>${p.price_usd ?? "—"}</strong>
+              </li>
+            ))}
+            <li style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--border)" }}>
+              <span>+ Add-on: 1-hour strategy consultation with Hudson</span>
+              <strong>${CONSULT_ADDON_USD}</strong>
+            </li>
+          </ul>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 16, fontWeight: 700 }}>
+            <span>Full bundle total</span>
+            <span>${bundleTotal}</span>
+          </div>
+          <p style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 8 }}>
+            Each line item is also sellable standalone at its own price — lead with the cheapest, highest-impact
+            one, then stack.
+          </p>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -115,12 +203,19 @@ function OverviewTab({ leadId, scrape }: { leadId: string; scrape: LeadDetailDat
   );
 }
 
+function asStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === "string" && value.length > 0) return [value];
+  return [];
+}
+
 function AuditsTab({ audits }: { audits: LeadDetailData["audits"] }) {
   if (audits.length === 0) return <p className="empty-state">No audits yet.</p>;
   return (
     <>
       {audits.map((audit) => {
-        const finding: AuditFinding = JSON.parse(audit.findings_json);
+        const raw = JSON.parse(audit.findings_json);
+        const finding: AuditFinding = { good: asStringArray(raw.good), bad: asStringArray(raw.bad), fix: asStringArray(raw.fix) };
         return (
           <div className="card" key={audit.id}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

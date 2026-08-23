@@ -70,13 +70,14 @@ export async function insertPrd(
   vertical: VerticalKey,
   r2MarkdownKey: string,
   brandTokens: BrandTokens,
+  priceUsd: number,
 ): Promise<string> {
   const id = newId();
   await db
     .prepare(
-      "INSERT INTO prds (id, lead_id, vertical, r2_markdown_key, brand_tokens_json, status) VALUES (?, ?, ?, ?, ?, 'draft')",
+      "INSERT INTO prds (id, lead_id, vertical, r2_markdown_key, brand_tokens_json, price_usd, status) VALUES (?, ?, ?, ?, ?, ?, 'draft')",
     )
-    .bind(id, leadId, vertical, r2MarkdownKey, JSON.stringify(brandTokens))
+    .bind(id, leadId, vertical, r2MarkdownKey, JSON.stringify(brandTokens), priceUsd)
     .run();
   return id;
 }

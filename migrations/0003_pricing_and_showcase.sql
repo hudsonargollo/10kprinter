@@ -1,0 +1,2 @@
+ALTER TABLE prds ADD COLUMN price_usd INTEGER;
+ALTER TABLE leads ADD COLUMN showcase_url TEXT;
