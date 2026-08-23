@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const ACCENT = "#d64520";
+const ACCENT = "#e8ff5c";
 
 function Globe() {
   const group = useRef<THREE.Group>(null);
@@ -78,7 +78,7 @@ export function ThreeHero() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at 50% 42%, rgba(214,69,32,0.22), transparent 55%), #0a0a0a",
+            "radial-gradient(circle at 50% 42%, rgba(232,255,92,0.14), transparent 55%), #17111d",
         }}
       />
       <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={[1, 1.5]} className="absolute inset-0">
