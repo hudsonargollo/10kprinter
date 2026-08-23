@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createSource, deleteSource, listSources, runSourceNow, setSourceCronEnabled } from "../api";
 import type { LeadSource } from "../types";
+import { PlaceAutocomplete } from "./PlaceAutocomplete";
 
 export function SourcesView() {
   const [sources, setSources] = useState<LeadSource[] | null>(null);
@@ -122,7 +123,7 @@ function NewSourceForm({ onCreated }: { onCreated: () => void }) {
       </div>
       <div className="form-row">
         <label htmlFor="region">Region (optional)</label>
-        <input id="region" placeholder="Maryland" value={region} onChange={(e) => setRegion(e.target.value)} />
+        <PlaceAutocomplete id="region" placeholder="Maryland" value={region} onChange={setRegion} />
       </div>
       <div className="form-row">
         <label htmlFor="category">Category tag (optional)</label>
