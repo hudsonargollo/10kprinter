@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createHuntSession, createSource, generateOutreachTimeline, runSourceNow } from "../api";
 import type { NicheDef } from "../types";
 import { NICHE_PACKAGE } from "../types";
+import { PlaceAutocomplete } from "./PlaceAutocomplete";
 
 type Step = "place" | "niches" | "run" | "interview" | "timeline";
 
@@ -103,12 +104,7 @@ export function HuntWizard() {
         <>
           <div className="form-row">
             <label htmlFor="region">Place</label>
-            <input
-              id="region"
-              placeholder="Santa Cruz de la Sierra, Bolivia"
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-            />
+            <PlaceAutocomplete id="region" placeholder="Santa Cruz de la Sierra, Bolivia" value={region} onChange={setRegion} />
           </div>
           <button className="btn btn-primary" disabled={!region} onClick={() => setStep("niches")}>
             Next: Niches

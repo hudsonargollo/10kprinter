@@ -3,6 +3,7 @@ import type { Env, HuntSessionRow, LeadRow, LeadSourceRow, OutreachTimelineRow }
 import { newId, setLeadNotes, transitionLeadStage } from "./lib/db";
 import { runHunterCycle, runHunterForSource } from "./hunter";
 import { generateText } from "./lib/anthropic";
+import { autocompleteCities } from "./lib/places";
 
 export { LeadPipeline } from "./workflows/leadPipeline";
 
@@ -190,6 +191,14 @@ app.post("/api/sources/:id/run", async (c) => {
     }
   }
   return c.json(result);
+});
+
+// Proxies Google Places Autocomplete so the API key never reaches the browser.
+app.get("/api/places/autocomplete", async (c) => {
+  const input = c.req.query("input") ?? "";
+  if (input.length < 2) return c.json([]);
+  const predictions = await autocompleteCities(c.env.GOOGLE_PLACES_API_KEY, input);
+  return c.json(predictions.map((p) => ({ description: p.description, placeId: p.place_id })));
 });
 
 // --- Hunt sessions (the Hunt Wizard) ---

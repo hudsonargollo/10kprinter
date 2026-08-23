@@ -23,6 +23,27 @@ export async function searchPlaces(apiKey: string, query: string): Promise<TextS
   return body.results ?? [];
 }
 
+interface AutocompletePrediction {
+  description: string;
+  place_id: string;
+}
+
+/** City/region suggestions for the Hunt Wizard's Place field, not full-address autocomplete. */
+export async function autocompleteCities(apiKey: string, input: string): Promise<AutocompletePrediction[]> {
+  const url = new URL("https://maps.googleapis.com/maps/api/place/autocomplete/json");
+  url.searchParams.set("input", input);
+  url.searchParams.set("types", "(cities)");
+  url.searchParams.set("key", apiKey);
+
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Places autocomplete failed: ${res.status}`);
+  const body = (await res.json()) as { status: string; predictions: AutocompletePrediction[]; error_message?: string };
+  if (body.status !== "OK" && body.status !== "ZERO_RESULTS") {
+    throw new Error(`Places autocomplete error: ${body.status} ${body.error_message ?? ""}`);
+  }
+  return body.predictions ?? [];
+}
+
 export async function getPlaceDetails(apiKey: string, placeId: string): Promise<PlaceDetails> {
   const url = new URL("https://maps.googleapis.com/maps/api/place/details/json");
   url.searchParams.set("place_id", placeId);

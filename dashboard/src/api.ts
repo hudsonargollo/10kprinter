@@ -79,6 +79,10 @@ export function runSourceNow(id: string): Promise<{ newLeadIds: string[]; skippe
   return request(`/api/sources/${id}/run`, { method: "POST" });
 }
 
+export function autocompletePlaces(input: string): Promise<{ description: string; placeId: string }[]> {
+  return request(`/api/places/autocomplete?input=${encodeURIComponent(input)}`);
+}
+
 export function createHuntSession(input: { region: string; niches: NicheDef[]; leadsPerNiche: number }): Promise<{ id: string }> {
   return request("/api/hunt-sessions", { method: "POST", body: JSON.stringify(input) });
 }
