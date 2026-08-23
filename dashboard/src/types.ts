@@ -93,6 +93,42 @@ export interface LeadSource {
   cron_enabled: number;
   last_run_at: string | null;
   created_at: string;
+  hunt_session_id: string | null;
+}
+
+export interface NicheDef {
+  key: string;
+  label: string;
+  queryVariants: string[];
+}
+
+export const NICHE_PACKAGE: NicheDef[] = [
+  { key: "dental", label: "Dental Clinics", queryVariants: ["dentists", "dental clinics", "dental offices"] },
+  { key: "real-estate", label: "Real Estate Agencies", queryVariants: ["real estate agencies", "realtors", "property agents"] },
+  { key: "law", label: "Law Firms", queryVariants: ["law firms", "attorneys", "legal services"] },
+  { key: "restaurants", label: "Restaurants", queryVariants: ["restaurants", "family restaurants", "fine dining restaurants"] },
+  { key: "gyms", label: "Gyms", queryVariants: ["gyms", "fitness centers", "crossfit"] },
+  { key: "auto-repair", label: "Auto Repair Shops", queryVariants: ["auto repair shops", "car mechanics", "auto service centers"] },
+  { key: "beauty", label: "Beauty Salons", queryVariants: ["beauty salons", "hair salons", "spas"] },
+  { key: "contractors", label: "General Contractors", queryVariants: ["general contractors", "construction companies", "home renovation contractors"] },
+];
+
+export interface HuntSession {
+  id: string;
+  region: string;
+  niches_json: string;
+  leads_per_niche: number;
+  created_at: string;
+}
+
+export interface OutreachTimeline {
+  id: string;
+  hunt_session_id: string;
+  capacity_per_week: number;
+  priority_order_json: string;
+  contact_method: string;
+  timeline_markdown: string;
+  created_at: string;
 }
 
 export interface PipelineEvent {

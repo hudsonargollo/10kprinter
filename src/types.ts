@@ -88,4 +88,23 @@ export interface LeadSourceRow {
   cron_enabled: number;
   last_run_at: string | null;
   created_at: string;
+  hunt_session_id: string | null;
+}
+
+export interface HuntSessionRow {
+  id: string;
+  region: string;
+  niches_json: string;
+  leads_per_niche: number;
+  created_at: string;
+}
+
+export interface OutreachTimelineRow {
+  id: string;
+  hunt_session_id: string;
+  capacity_per_week: number;
+  priority_order_json: string;
+  contact_method: string;
+  timeline_markdown: string;
+  created_at: string;
 }

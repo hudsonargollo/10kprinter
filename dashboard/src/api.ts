@@ -1,4 +1,4 @@
-import type { Lead, LeadDetail, LeadSource, LeadStatus } from "./types";
+import type { HuntSession, Lead, LeadDetail, LeadSource, LeadStatus, NicheDef, OutreachTimeline } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -58,7 +58,12 @@ export function listSources(): Promise<LeadSource[]> {
   return request("/api/sources");
 }
 
-export function createSource(input: { query: string; region?: string; category?: string }): Promise<{ id: string }> {
+export function createSource(input: {
+  query: string;
+  region?: string;
+  category?: string;
+  huntSessionId?: string;
+}): Promise<{ id: string }> {
   return request("/api/sources", { method: "POST", body: JSON.stringify(input) });
 }
 
@@ -72,4 +77,21 @@ export function deleteSource(id: string): Promise<void> {
 
 export function runSourceNow(id: string): Promise<{ newLeadIds: string[]; skippedNoWebsite: number; skippedExisting: number }> {
   return request(`/api/sources/${id}/run`, { method: "POST" });
+}
+
+export function createHuntSession(input: { region: string; niches: NicheDef[]; leadsPerNiche: number }): Promise<{ id: string }> {
+  return request("/api/hunt-sessions", { method: "POST", body: JSON.stringify(input) });
+}
+
+export function getHuntSession(
+  id: string,
+): Promise<{ session: HuntSession; sources: LeadSource[]; leads: Lead[]; timeline: OutreachTimeline | null }> {
+  return request(`/api/hunt-sessions/${id}`);
+}
+
+export function generateOutreachTimeline(
+  id: string,
+  input: { capacityPerWeek: number; priorityOrder: string[]; contactMethod: string },
+): Promise<{ id: string; timelineMarkdown: string }> {
+  return request(`/api/hunt-sessions/${id}/timeline`, { method: "POST", body: JSON.stringify(input) });
 }

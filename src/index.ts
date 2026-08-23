@@ -1,7 +1,8 @@
 import { Hono } from "hono";
-import type { Env, LeadRow, LeadSourceRow } from "./types";
+import type { Env, HuntSessionRow, LeadRow, LeadSourceRow, OutreachTimelineRow } from "./types";
 import { newId, setLeadNotes, transitionLeadStage } from "./lib/db";
 import { runHunterCycle, runHunterForSource } from "./hunter";
+import { generateText } from "./lib/anthropic";
 
 export { LeadPipeline } from "./workflows/leadPipeline";
 
@@ -141,11 +142,19 @@ app.get("/api/sources", async (c) => {
 });
 
 app.post("/api/sources", async (c) => {
-  const body = await c.req.json<{ query: string; region?: string; category?: string; cronEnabled?: boolean }>();
+  const body = await c.req.json<{
+    query: string;
+    region?: string;
+    category?: string;
+    cronEnabled?: boolean;
+    huntSessionId?: string;
+  }>();
   if (!body.query) return c.json({ error: "query is required" }, 400);
   const id = newId();
-  await c.env.DB.prepare("INSERT INTO lead_sources (id, query, region, category, cron_enabled) VALUES (?, ?, ?, ?, ?)")
-    .bind(id, body.query, body.region ?? null, body.category ?? null, body.cronEnabled === false ? 0 : 1)
+  await c.env.DB.prepare(
+    "INSERT INTO lead_sources (id, query, region, category, cron_enabled, hunt_session_id) VALUES (?, ?, ?, ?, ?, ?)",
+  )
+    .bind(id, body.query, body.region ?? null, body.category ?? null, body.cronEnabled === false ? 0 : 1, body.huntSessionId ?? null)
     .run();
   return c.json({ id }, 201);
 });
@@ -181,6 +190,93 @@ app.post("/api/sources/:id/run", async (c) => {
     }
   }
   return c.json(result);
+});
+
+// --- Hunt sessions (the Hunt Wizard) ---
+
+app.post("/api/hunt-sessions", async (c) => {
+  const body = await c.req.json<{
+    region: string;
+    niches: { key: string; label: string; queryVariants: string[] }[];
+    leadsPerNiche: number;
+  }>();
+  if (!body.region || !body.niches?.length) return c.json({ error: "region and niches are required" }, 400);
+  const id = newId();
+  await c.env.DB.prepare(
+    "INSERT INTO hunt_sessions (id, region, niches_json, leads_per_niche) VALUES (?, ?, ?, ?)",
+  )
+    .bind(id, body.region, JSON.stringify(body.niches), body.leadsPerNiche)
+    .run();
+  return c.json({ id }, 201);
+});
+
+app.get("/api/hunt-sessions/:id", async (c) => {
+  const id = c.req.param("id");
+  const session = await c.env.DB.prepare("SELECT * FROM hunt_sessions WHERE id = ?").bind(id).first<HuntSessionRow>();
+  if (!session) return c.json({ error: "not found" }, 404);
+
+  const [sources, leads, timeline] = await Promise.all([
+    c.env.DB.prepare("SELECT * FROM lead_sources WHERE hunt_session_id = ?").bind(id).all<LeadSourceRow>(),
+    c.env.DB.prepare(
+      "SELECT leads.* FROM leads JOIN lead_sources ON leads.source_id = lead_sources.id WHERE lead_sources.hunt_session_id = ? ORDER BY leads.discovered_at",
+    )
+      .bind(id)
+      .all<LeadRow>(),
+    c.env.DB.prepare("SELECT * FROM outreach_timelines WHERE hunt_session_id = ? ORDER BY created_at DESC LIMIT 1")
+      .bind(id)
+      .first<OutreachTimelineRow>(),
+  ]);
+
+  return c.json({ session, sources: sources.results, leads: leads.results, timeline: timeline ?? null });
+});
+
+app.post("/api/hunt-sessions/:id/timeline", async (c) => {
+  const id = c.req.param("id");
+  const session = await c.env.DB.prepare("SELECT * FROM hunt_sessions WHERE id = ?").bind(id).first<HuntSessionRow>();
+  if (!session) return c.json({ error: "not found" }, 404);
+
+  const body = await c.req.json<{ capacityPerWeek: number; priorityOrder: string[]; contactMethod: string }>();
+
+  const { results: leads } = await c.env.DB.prepare(
+    "SELECT leads.business_name, leads.category, leads.url FROM leads JOIN lead_sources ON leads.source_id = lead_sources.id WHERE lead_sources.hunt_session_id = ? ORDER BY leads.discovered_at",
+  )
+    .bind(id)
+    .all<{ business_name: string | null; category: string | null; url: string }>();
+
+  const niches: { key: string; label: string }[] = JSON.parse(session.niches_json);
+  const nicheLabel = (key: string) => niches.find((n) => n.key === key)?.label ?? key;
+
+  const leadsByNiche = new Map<string, string[]>();
+  for (const lead of leads) {
+    const label = lead.category ?? "Uncategorized";
+    if (!leadsByNiche.has(label)) leadsByNiche.set(label, []);
+    leadsByNiche.get(label)!.push(lead.business_name ?? lead.url);
+  }
+
+  const leadListText = body.priorityOrder
+    .map((key) => {
+      const label = nicheLabel(key);
+      const names = leadsByNiche.get(label) ?? [];
+      return names.length ? `${label} (${names.length}): ${names.join(", ")}` : null;
+    })
+    .filter(Boolean)
+    .join("\n");
+
+  const timelineMarkdown = await generateText(c.env.ANTHROPIC_API_KEY, {
+    system:
+      "You are a sales operations consultant writing a week-by-week outreach plan for a solo operator working through a freshly-hunted batch of local-business leads. Be concrete: name actual businesses from the list provided, group them into weekly batches sized to the stated capacity, and respect the given niche priority order (earlier niches get contacted first). Output clean markdown with a heading per week.",
+    user: `Region: ${session.region}\nWeekly capacity: ${body.capacityPerWeek} leads/week\nPreferred contact method: ${body.contactMethod}\nNiche priority order (highest first): ${body.priorityOrder.map(nicheLabel).join(" > ")}\n\nLeads found, grouped by niche:\n${leadListText}\n\nWrite the week-by-week outreach plan.`,
+    maxTokens: 2048,
+  });
+
+  const timelineId = newId();
+  await c.env.DB.prepare(
+    "INSERT INTO outreach_timelines (id, hunt_session_id, capacity_per_week, priority_order_json, contact_method, timeline_markdown) VALUES (?, ?, ?, ?, ?, ?)",
+  )
+    .bind(timelineId, id, body.capacityPerWeek, JSON.stringify(body.priorityOrder), body.contactMethod, timelineMarkdown)
+    .run();
+
+  return c.json({ id: timelineId, timelineMarkdown });
 });
 
 export default {
