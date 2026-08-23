@@ -1,3 +1,5 @@
+import { NonRetryableError } from "cloudflare:workflows";
+
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 const MODEL = "claude-sonnet-5";
@@ -32,7 +34,14 @@ async function callAnthropic(apiKey: string, body: Record<string, unknown>): Pro
 
   if (!res.ok) {
     const errText = await res.text();
-    throw new Error(`Anthropic API error ${res.status}: ${errText}`);
+    const message = `Anthropic API error ${res.status}: ${errText}`;
+    // 400/401 (bad request, auth, insufficient credits) will never self-resolve on retry —
+    // fail the step immediately instead of burning through Workflows' default 5 retries with
+    // exponential backoff. 429/5xx (rate limit, overload) are transient and should retry.
+    if (res.status === 400 || res.status === 401) {
+      throw new NonRetryableError(message);
+    }
+    throw new Error(message);
   }
 
   return (await res.json()) as AnthropicResponse;
