@@ -1,3 +1,10 @@
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+}
+
 export type VerticalKey = "website-redesign" | "marketing-automation" | "email-marketing" | "social-media";
 
 export type LeadStatus =

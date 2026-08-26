@@ -3,6 +3,9 @@ import { LeadsBoard } from "./components/LeadsBoard";
 import { LeadDetailView } from "./components/LeadDetail";
 import { SourcesView } from "./components/Sources";
 import { HuntWizard } from "./components/HuntWizard";
+import { Login } from "./components/Login";
+import { logout, me } from "./api";
+import type { AuthUser } from "./types";
 
 type Route = { name: "board" } | { name: "lead"; id: string } | { name: "sources" } | { name: "hunt" };
 
@@ -17,6 +20,7 @@ function parseHash(): Route {
 
 export function App() {
   const [route, setRoute] = useState<Route>(parseHash());
+  const [user, setUser] = useState<AuthUser | null | undefined>(undefined); // undefined = checking
 
   useEffect(() => {
     const onHashChange = () => setRoute(parseHash());
@@ -24,13 +28,27 @@ export function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
+  useEffect(() => {
+    me()
+      .then(({ user }) => setUser(user))
+      .catch(() => setUser(null));
+  }, []);
+
+  async function onLogout() {
+    await logout();
+    setUser(null);
+  }
+
+  if (user === undefined) return null;
+  if (!user) return <Login onLoggedIn={setUser} />;
+
   return (
     <div>
       <header className="app-header">
         <h1>
           MoneyMachine <span className="subtitle">Ops</span>
         </h1>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {route.name !== "board" && (
             <a className="btn" href="#/">
               ← All leads
@@ -46,6 +64,9 @@ export function App() {
               Lead sources
             </a>
           )}
+          <button className="btn" onClick={onLogout}>
+            Sign out
+          </button>
         </div>
       </header>
       <div className="container">

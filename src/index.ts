@@ -1,10 +1,12 @@
 import { Hono } from "hono";
+import type { Context, Next } from "hono";
 import type { Env, HuntSessionRow, LeadRow, LeadSourceRow, OutreachTimelineRow } from "./types";
 import { newId, setLeadNotes, transitionLeadStage } from "./lib/db";
 import { runHunterCycle, runHunterForSource } from "./hunter";
 import { generateText } from "./lib/anthropic";
 import { autocompleteCities } from "./lib/places";
 import { verifyCrmWebhookSignature } from "./lib/crmSync";
+import { getSessionUserId, getUserByEmail, getUserById, verifyPassword, createSessionCookie, clearSessionCookie } from "./lib/auth";
 
 export { LeadPipeline } from "./workflows/leadPipeline";
 
@@ -14,6 +16,60 @@ app.onError((err, c) => {
   console.error(err);
   return c.json({ error: err.message }, 500);
 });
+
+// ── Auth (self-contained, no external provider — see AGENTS.md) ────────
+app.get("/api/auth/me", async (c) => {
+  const userId = await getSessionUserId(c.req.raw, c.env);
+  if (!userId) return c.json({ error: "not signed in" }, 401);
+  const user = await getUserById(c.env.DB, userId);
+  if (!user) return c.json({ error: "not signed in" }, 401);
+  return c.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+});
+
+app.post("/api/auth/login", async (c) => {
+  const { email, password } = await c.req.json<{ email: string; password: string }>();
+  const user = await getUserByEmail(c.env.DB, email || "");
+  if (!user || !(await verifyPassword(password || "", user.password_hash))) {
+    return c.json({ error: "Incorrect email or password." }, 401);
+  }
+  c.header("Set-Cookie", await createSessionCookie(c.env, user.id));
+  return c.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+});
+
+app.post("/api/auth/logout", async (c) => {
+  c.header("Set-Cookie", clearSessionCookie());
+  return c.json({ ok: true });
+});
+
+async function requireAuth(c: Context<{ Bindings: Env }>, next: Next) {
+  const userId = await getSessionUserId(c.req.raw, c.env);
+  if (!userId) return c.json({ error: "unauthorized" }, 401);
+  await next();
+}
+
+// Every internal ops route requires a session. Deliberately excluded:
+// /api/auth/*, the two /api/leads/:id/proposals/* routes (meant to be sent
+// to prospects), and /api/webhooks/* (HMAC-verified, not cookie-based).
+for (const path of [
+  "/api/leads",
+  "/api/leads/:id",
+  "/api/leads/:leadId/prds/:prdId/markdown",
+  "/api/leads/:id/retry",
+  "/api/leads/:id/screenshot",
+  "/api/leads/:id/stage",
+  "/api/leads/:id/notes",
+  "/api/leads/:id/showcase",
+  "/api/leads/:id/status",
+  "/api/sources",
+  "/api/sources/:id",
+  "/api/sources/:id/run",
+  "/api/places/autocomplete",
+  "/api/hunt-sessions",
+  "/api/hunt-sessions/:id",
+  "/api/hunt-sessions/:id/timeline",
+]) {
+  app.use(path, requireAuth);
+}
 
 // Create a lead and immediately kick off its pipeline run (the "manual single-URL" path).
 app.post("/api/leads", async (c) => {

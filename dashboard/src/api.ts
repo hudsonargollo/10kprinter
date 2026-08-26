@@ -1,4 +1,4 @@
-import type { HuntSession, Lead, LeadDetail, LeadSource, LeadStatus, NicheDef, OutreachTimeline } from "./types";
+import type { AuthUser, HuntSession, Lead, LeadDetail, LeadSource, LeadStatus, NicheDef, OutreachTimeline } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -10,6 +10,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error((body as { error?: string }).error ?? `Request failed: ${res.status}`);
   }
   return res.json() as Promise<T>;
+}
+
+export function me(): Promise<{ user: AuthUser }> {
+  return request("/api/auth/me");
+}
+
+export function login(email: string, password: string): Promise<{ user: AuthUser }> {
+  return request("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+}
+
+export function logout(): Promise<{ ok: true }> {
+  return request("/api/auth/logout", { method: "POST" });
 }
 
 export function listLeads(): Promise<Lead[]> {
