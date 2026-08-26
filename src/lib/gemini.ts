@@ -1,8 +1,12 @@
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 // Try the fastest current model first; fall back to an older one if this key/project
-// doesn't have access to it yet (surfaces as a 404 on the model resource).
-const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
+// doesn't have access to it yet (surfaces as a 404 on the model resource). Google retires
+// model IDs outright (not just deprecates) — verified live 2026-08-26 that both
+// gemini-2.5-flash and gemini-2.0-flash now 404 with "no longer available to new users"
+// for this project's key, silently breaking this entire fallback tier. Re-verify against
+// https://generativelanguage.googleapis.com/v1beta/models if this list 404s again.
+const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-flash-latest"];
 
 interface GeminiPart {
   text?: string;
