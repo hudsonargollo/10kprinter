@@ -5,6 +5,14 @@ export interface Env {
   LEAD_PIPELINE: Workflow;
   ANTHROPIC_API_KEY: string;
   GOOGLE_PLACES_API_KEY: string;
+  GEMINI_API_KEY: string;
+  FALAI_TOKEN: string;
+  // TheLeadMachine CRM integration (this project's provisioned instance —
+  // see theleadmachine/docs/PRD.md §2). Sync is best-effort/non-fatal;
+  // these being unset just means sync/webhook silently no-op.
+  THELEADMACHINE_SYNC_URL?: string;
+  THELEADMACHINE_SYNC_TOKEN?: string;
+  THELEADMACHINE_WEBHOOK_SECRET?: string;
 }
 
 export type VerticalKey =

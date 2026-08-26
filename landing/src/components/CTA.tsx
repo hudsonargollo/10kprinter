@@ -10,7 +10,7 @@ export function CTA() {
             Built by Hudson. Running live right now.
           </h2>
           <p className="mt-4 text-lg text-white/60">
-            See TheLeadMachine work on a real city and niche of your choosing.
+            See MoneyMachine work on a real city and niche of your choosing.
           </p>
           <div className="mt-8">
             <Button asChild size="lg" className="h-11 px-6 text-base rounded-full">
@@ -29,7 +29,7 @@ export function CTA() {
       </div>
 
       <div className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/40 border-t border-white/10 pt-8 max-w-6xl mx-auto">
-        <span>TheLeadMachine</span>
+        <span>MoneyMachine</span>
         <div className="flex gap-6">
           <a href="#how-it-works" className="hover:text-white/70">How it works</a>
           <a href="#pricing" className="hover:text-white/70">Pricing</a>

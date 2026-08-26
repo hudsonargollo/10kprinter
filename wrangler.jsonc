@@ -13,6 +13,13 @@
     "directory": "public"
   },
 
+  "vars": {
+    // TheLeadMachine CRM integration (theleadmachine/docs/PRD.md §2).
+    // THELEADMACHINE_SYNC_TOKEN and THELEADMACHINE_WEBHOOK_SECRET are set
+    // as secrets (`wrangler secret put ...`), not here.
+    "THELEADMACHINE_SYNC_URL": "https://leadmachine.clubemkt.digital/api/integrations/leads/sync"
+  },
+
   "d1_databases": [
     {
       "binding": "DB",

@@ -9,7 +9,7 @@ export function UseCaseBanner() {
         <FadeIn className="text-center mb-8">
           <Badge className="rounded-full bg-primary text-primary-foreground font-semibold">LIVE NOW</Badge>
           <h2 className="mt-4 font-heading text-3xl md:text-4xl font-bold tracking-tight">
-            TheLeadMachine in production
+            MoneyMachine in production
           </h2>
         </FadeIn>
         <FadeIn delay={0.15}>

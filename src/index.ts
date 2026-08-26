@@ -4,6 +4,7 @@ import { newId, setLeadNotes, transitionLeadStage } from "./lib/db";
 import { runHunterCycle, runHunterForSource } from "./hunter";
 import { generateText } from "./lib/anthropic";
 import { autocompleteCities } from "./lib/places";
+import { verifyCrmWebhookSignature } from "./lib/crmSync";
 
 export { LeadPipeline } from "./workflows/leadPipeline";
 
@@ -132,6 +133,32 @@ app.patch("/api/leads/:id/status", async (c) => {
   const id = c.req.param("id");
   const { status } = await c.req.json<{ status: string }>();
   await c.env.DB.prepare("UPDATE leads SET status = ? WHERE id = ?").bind(status, id).run();
+  return c.json({ ok: true });
+});
+
+// Won-webhook receiver, called by this project's provisioned TheLeadMachine
+// CRM instance when a synced lead is marked won there — see
+// theleadmachine/docs/PRD.md §2. HMAC-verified against the shared secret
+// set on both sides; externalRef is this project's own lead id (round-
+// tripped from the sync call), so no lookup table is needed.
+app.post("/api/webhooks/theleadmachine-won", async (c) => {
+  const rawBody = await c.req.text();
+  const signature = c.req.header("X-TheLeadMachine-Signature");
+  if (!c.env.THELEADMACHINE_WEBHOOK_SECRET) {
+    return c.json({ error: "webhook not configured" }, 501);
+  }
+  const valid = await verifyCrmWebhookSignature(c.env.THELEADMACHINE_WEBHOOK_SECRET, rawBody, signature ?? null);
+  if (!valid) return c.json({ error: "invalid signature" }, 401);
+
+  const body = JSON.parse(rawBody) as { externalRef?: string };
+  const leadId = body.externalRef;
+  if (!leadId) return c.json({ error: "externalRef is required" }, 400);
+
+  const lead = await c.env.DB.prepare("SELECT id, status FROM leads WHERE id = ?").bind(leadId).first<{ id: string; status: string }>();
+  if (!lead) return c.json({ error: "not found" }, 404);
+  if (lead.status !== "won") {
+    await transitionLeadStage(c.env.DB, leadId, "won", {});
+  }
   return c.json({ ok: true });
 });
 
@@ -276,6 +303,8 @@ app.post("/api/hunt-sessions/:id/timeline", async (c) => {
       "You are a sales operations consultant writing a week-by-week outreach plan for a solo operator working through a freshly-hunted batch of local-business leads. Be concrete: name actual businesses from the list provided, group them into weekly batches sized to the stated capacity, and respect the given niche priority order (earlier niches get contacted first). Output clean markdown with a heading per week.",
     user: `Region: ${session.region}\nWeekly capacity: ${body.capacityPerWeek} leads/week\nPreferred contact method: ${body.contactMethod}\nNiche priority order (highest first): ${body.priorityOrder.map(nicheLabel).join(" > ")}\n\nLeads found, grouped by niche:\n${leadListText}\n\nWrite the week-by-week outreach plan.`,
     maxTokens: 2048,
+    geminiApiKey: c.env.GEMINI_API_KEY,
+    groqProxyToken: c.env.FALAI_TOKEN,
   });
 
   const timelineId = newId();

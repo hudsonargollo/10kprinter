@@ -27,7 +27,7 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
             className="mt-6 text-lg text-white/60 max-w-lg"
           >
-            TheLeadMachine hunts local businesses with a weak digital presence, audits them like a
+            MoneyMachine hunts local businesses with a weak digital presence, audits them like a
             paid conversion consultant would, and writes a priced, ready-to-send proposal — before
             you've made first contact.
           </motion.p>
@@ -55,7 +55,7 @@ export function Hero() {
             className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
             style={{ transform: "perspective(1200px) rotateY(-6deg) rotateX(2deg)" }}
           >
-            <img src={offerTab} alt="TheLeadMachine's Offer tab, showing itemized pricing for a real lead" className="w-full block" />
+            <img src={offerTab} alt="MoneyMachine's Offer tab, showing itemized pricing for a real lead" className="w-full block" />
           </div>
         </motion.div>
       </div>

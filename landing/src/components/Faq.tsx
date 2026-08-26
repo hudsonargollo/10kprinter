@@ -13,7 +13,7 @@ const FAQS = [
   },
   {
     q: "Do you contact leads for me?",
-    a: "No — TheLeadMachine finds and audits businesses and drafts the pitch. Outreach (WhatsApp, calls, email) is still you, though a hot/warm/cold score and a suggested weekly cadence come with every batch.",
+    a: "No — MoneyMachine finds and audits businesses and drafts the pitch. Outreach (WhatsApp, calls, email) is still you, though a hot/warm/cold score and a suggested weekly cadence come with every batch.",
   },
   {
     q: "What does the audit actually check?",

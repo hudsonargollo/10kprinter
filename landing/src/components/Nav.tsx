@@ -11,7 +11,7 @@ export function Nav() {
   return (
     <header className="fixed top-4 inset-x-0 z-50 flex justify-center px-4">
       <div className="flex items-center gap-2 rounded-full border border-white/10 bg-[#211a29]/90 backdrop-blur-md px-2 py-2 shadow-2xl">
-        <span className="font-heading font-bold tracking-tight pl-3 pr-2 text-sm">TheLeadMachine</span>
+        <span className="font-heading font-bold tracking-tight pl-3 pr-2 text-sm">MoneyMachine</span>
         <nav className="hidden md:flex items-center gap-1">
           {LINKS.map((l) => (
             <a

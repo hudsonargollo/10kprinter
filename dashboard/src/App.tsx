@@ -28,7 +28,7 @@ export function App() {
     <div>
       <header className="app-header">
         <h1>
-          TheLeadMachine <span className="subtitle">Ops</span>
+          MoneyMachine <span className="subtitle">Ops</span>
         </h1>
         <div style={{ display: "flex", gap: 8 }}>
           {route.name !== "board" && (

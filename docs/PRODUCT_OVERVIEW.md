@@ -1,4 +1,4 @@
-# TheLeadMachine — Product Documentation
+# MoneyMachine — Product Documentation
 
 Reference doc for competitor research. Describes what the product actually does today (not
 aspirational), so it can be compared honestly against adjacent tools.
