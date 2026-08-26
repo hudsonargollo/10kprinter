@@ -9,12 +9,14 @@ import { ValueStrip } from "@/components/ValueStrip";
 import { OfferTiers } from "@/components/OfferTiers";
 import { Faq } from "@/components/Faq";
 import { CTA } from "@/components/CTA";
+import { useLanguage } from "@/i18n/LanguageContext";
 import offerTab from "@/assets/screenshots/offer-tab.jpg";
 import auditsTab from "@/assets/screenshots/audits-tab.jpg";
 import salesTab from "@/assets/screenshots/sales-tab.jpg";
 import huntWizard from "@/assets/screenshots/hunt-wizard.jpg";
 
 function App() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
@@ -24,29 +26,29 @@ function App() {
       <StatementSection />
       <div id="features">
         <FeatureSection
-          title="Real audits, not generic advice"
-          body="Every finding is specific to the actual business — what's good, what's leaking revenue, and exactly how to fix it. No boilerplate checklists."
+          title={t.features.audits.title}
+          body={t.features.audits.body}
           image={auditsTab}
-          imageAlt="A real audit for a dental clinic, showing good/bad/fix findings"
+          imageAlt={t.features.audits.alt}
         />
         <FeatureSection
-          title="Pricing that's already done for you"
-          body="Findings become an itemized, priced offer automatically — lead with the cheapest line item, then stack toward the full bundle."
+          title={t.features.pricing.title}
+          body={t.features.pricing.body}
           image={offerTab}
-          imageAlt="An itemized offer with pricing per service and a bundle total"
+          imageAlt={t.features.pricing.alt}
           reverse
         />
         <FeatureSection
-          title="A thermometer for every lead"
-          body="Hot, warm, cold — scored from the audit itself. Track notes, message on WhatsApp, and move every deal through a real pipeline."
+          title={t.features.sales.title}
+          body={t.features.sales.body}
           image={salesTab}
-          imageAlt="A lead's sales tab showing its hot/warm/cold score and WhatsApp contact button"
+          imageAlt={t.features.sales.alt}
         />
         <FeatureSection
-          title="Self-serve discovery, one city at a time"
-          body="Pick a place, pick niches, run the hunt. Live progress per niche, no manual API calls."
+          title={t.features.hunt.title}
+          body={t.features.hunt.body}
           image={huntWizard}
-          imageAlt="The Hunt Wizard's niche-selection step"
+          imageAlt={t.features.hunt.alt}
           reverse
         />
       </div>
