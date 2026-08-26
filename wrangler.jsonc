@@ -6,7 +6,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "account_id": "cb27e1a67198789eb42d11ab90737652",
 
-  "routes": [{ "pattern": "1kprint.clubemkt.digital", "custom_domain": true }],
+  "routes": [
+    { "pattern": "1kprint.clubemkt.digital", "custom_domain": true },
+    { "pattern": "moneymachine.clubemkt.digital", "custom_domain": true }
+  ],
   "workers_dev": true,
 
   "assets": {
