@@ -24,6 +24,7 @@ Target Audience: infer from the scraped content (e.g. B2B buyers, B2C consumers,
 Tech Stack Requirements:
 - Framework: Next.js 14 (App Router)
 - UI Library: Shadcn UI
+- Motion/Interaction: Framer Motion for scroll-reveals, page transitions, and hover/tap micro-interactions
 - Design System: strict whitespace, typography scales, high-contrast primary actions
 - Immersive WebGL: Three.js (React Three Fiber) where it fits the business's actual product/service
 - Fallback for complex internal dashboards (only if the business plausibly needs one): Material UI
@@ -36,6 +37,13 @@ calculator specific to this business's offer.
 
 Design Tokens: reference the brand tokens generated separately for this lead (primary/background colors +
 rationale) and specify typography (sans-serif, heavily weighted headers).
+
+Design Quality Bar: calibrate every proposed section's polish and interaction/motion quality to the caliber
+curated on collectui.com (UI component inspiration), motionsites.ai (motion-driven site craft), mobbin.com
+(mobile/web design patterns), and designrocket.io (landing page inspiration) — this is a premium, portfolio-grade
+redesign, not a template swap. State explicitly which section takes cues from which kind of reference (e.g.
+"hero interaction styled after motionsites.ai-caliber scroll choreography," "pricing/testimonial layout patterned
+on mobbin-style mobile card density") rather than naming features without a quality anchor.
 
 Pricing: this is an aggressive, low-friction entry offer, not a scoped enterprise engagement — a single
 itemized line item priced $150-$250 (default $200) for the core deliverable described above, framed as a
