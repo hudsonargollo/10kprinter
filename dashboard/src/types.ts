@@ -72,6 +72,16 @@ export interface Prd {
   created_at: string;
 }
 
+export interface Proposal {
+  id: string;
+  lead_id: string;
+  vertical: VerticalKey;
+  r2_html_key: string;
+  r2_cover_image_key: string | null;
+  status: string;
+  created_at: string;
+}
+
 export const CONSULT_ADDON_USD = 100;
 
 export const TIER_LABELS: Record<LeadTier, string> = { hot: "Hot", warm: "Warm", cold: "Cold" };
@@ -145,6 +155,7 @@ export interface LeadDetail {
   scrapes: Scrape[];
   audits: Audit[];
   prds: Prd[];
+  proposals: Proposal[];
   events: PipelineEvent[];
 }
 

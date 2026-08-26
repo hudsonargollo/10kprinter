@@ -1,4 +1,5 @@
 import type { Vertical } from "./types";
+import { PRD_NEGATIVE_GUARDRAILS } from "./guardrails";
 
 // Distilled from github.com/xiiiabu/motionsites.ai's 65 real, production-tested
 // prompts (not guessed) — four recurring archetypes that cover most business
@@ -95,6 +96,8 @@ a premium, portfolio-grade redesign built from real production patterns, not a t
 attached after the fact. Also hold every section to the caliber curated on collectui.com (UI component
 inspiration), mobbin.com (mobile/web design patterns), and designrocket.io (landing page inspiration) for
 anything the archetype library above doesn't already cover.
+
+${PRD_NEGATIVE_GUARDRAILS}
 
 Pricing: this is an aggressive, low-friction entry offer, not a scoped enterprise engagement — a single
 itemized line item priced $150-$250 (default $200) for the core deliverable described above, framed as a

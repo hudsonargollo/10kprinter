@@ -1,10 +1,29 @@
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from "cloudflare:workers";
 import type { AuditFinding, BrandTokens, Env, LeadRow, ScrapeSummary, WorkflowPayload } from "../types";
 import { scrapeSite } from "../lib/scrape";
-import { putHtml, putScreenshot, putHeroScreenshot, putPrdMarkdown, getScreenshotBase64 } from "../lib/r2";
-import { getLead, setLeadStatus, setLeadScoring, insertScrape, insertAudit, insertPrd, logEvent } from "../lib/db";
+import {
+  putHtml,
+  putScreenshot,
+  putHeroScreenshot,
+  putPrdMarkdown,
+  putCoverImage,
+  putProposalHtml,
+  getScreenshotBase64,
+} from "../lib/r2";
+import {
+  getLead,
+  setLeadStatus,
+  setLeadScoring,
+  insertScrape,
+  insertAudit,
+  insertPrd,
+  insertProposal,
+  logEvent,
+} from "../lib/db";
 import { computeLeadScoring } from "../lib/scoring";
 import { generateStructured, generateStructuredFromImage } from "../lib/anthropic";
+import { generateCoverImageGemini } from "../lib/imageGen";
+import { buildCoverImagePrompt, buildProposalHtml, buildWaLink } from "../lib/proposal";
 import { syncLeadToCrm } from "../lib/crmSync";
 import { VERTICALS } from "../verticals";
 
@@ -190,7 +209,7 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
 
     for (const vertical of qualifyingVerticals) {
       const finding = audits.find((a) => a.vertical === vertical.key)!;
-      await step.do(`prd-${vertical.key}`, { retries: LLM_STEP_RETRIES }, async () => {
+      const { priceUsd } = await step.do(`prd-${vertical.key}`, { retries: LLM_STEP_RETRIES }, async () => {
         const { markdown, priceUsd } = await generateStructured<{ markdown: string; priceUsd: number }>(
           env.ANTHROPIC_API_KEY,
           {
@@ -205,6 +224,29 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
         );
         const r2Key = await putPrdMarkdown(env.ASSETS_BUCKET, leadId, vertical.key, markdown);
         await insertPrd(env.DB, leadId, vertical.key, r2Key, brandTokens, priceUsd);
+        return { priceUsd };
+      });
+
+      const coverImageKey = await step.do(`cover-image-${vertical.key}`, { retries: LLM_STEP_RETRIES }, async () => {
+        const { bytes, mimeType } = await generateCoverImageGemini(env.GEMINI_API_KEY, {
+          prompt: buildCoverImagePrompt(brandTokens),
+        });
+        return putCoverImage(env.ASSETS_BUCKET, leadId, vertical.key, bytes, mimeType);
+      });
+
+      await step.do(`proposal-draft-${vertical.key}`, async () => {
+        const html = buildProposalHtml({
+          lead,
+          verticalLabel: vertical.label,
+          scrapeSummary: scrapeData.summary,
+          finding,
+          brandTokens,
+          priceUsd,
+          coverImageUrl: `/api/leads/${leadId}/proposals/${vertical.key}/cover`,
+          waLink: buildWaLink(lead.phone, `Hi ${lead.business_name ?? "there"}, `),
+        });
+        const r2Key = await putProposalHtml(env.ASSETS_BUCKET, leadId, vertical.key, html);
+        await insertProposal(env.DB, leadId, vertical.key, r2Key, coverImageKey);
       });
     }
 

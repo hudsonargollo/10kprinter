@@ -27,6 +27,30 @@ export async function putPrdMarkdown(
   return key;
 }
 
+export async function putCoverImage(
+  bucket: R2Bucket,
+  leadId: string,
+  vertical: string,
+  image: Uint8Array,
+  contentType: string,
+): Promise<string> {
+  const ext = contentType === "image/png" ? "png" : "jpg";
+  const key = `proposals/${leadId}/${vertical}/cover.${ext}`;
+  await bucket.put(key, image, { httpMetadata: { contentType } });
+  return key;
+}
+
+export async function putProposalHtml(
+  bucket: R2Bucket,
+  leadId: string,
+  vertical: string,
+  html: string,
+): Promise<string> {
+  const key = `proposals/${leadId}/${vertical}/proposal.html`;
+  await bucket.put(key, html, { httpMetadata: { contentType: "text/html; charset=utf-8" } });
+  return key;
+}
+
 export async function getScreenshotBase64(bucket: R2Bucket, key: string): Promise<string> {
   const obj = await bucket.get(key);
   if (!obj) throw new Error(`R2 object not found: ${key}`);

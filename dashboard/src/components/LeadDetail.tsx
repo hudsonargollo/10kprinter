@@ -9,7 +9,7 @@ import {
   updateLeadStatus,
 } from "../api";
 import { waLink } from "../lib/waLink";
-import type { AuditFinding, BrandTokens, LeadDetail as LeadDetailData, LeadStatus, Prd } from "../types";
+import type { AuditFinding, BrandTokens, LeadDetail as LeadDetailData, LeadStatus, Prd, Proposal } from "../types";
 import { CONSULT_ADDON_USD, STATUS_LABELS, STATUS_ORDER, TIER_LABELS, VERTICAL_LABELS } from "../types";
 
 const IN_PROGRESS: LeadStatus[] = ["discovered", "scraping", "scraped", "audited"];
@@ -45,7 +45,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
   if (error) return <div className="error-banner">{error}</div>;
   if (!data) return <p className="empty-state">Loading…</p>;
 
-  const { lead, scrapes, audits, prds, events } = data;
+  const { lead, scrapes, audits, prds, proposals, events } = data;
   const latestScrape = scrapes[scrapes.length - 1];
 
   async function onStatusChange(status: LeadStatus) {
@@ -104,7 +104,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
         ))}
       </div>
 
-      {tab === "offer" && <OfferTab lead={lead} prds={prds} onRefresh={refresh} />}
+      {tab === "offer" && <OfferTab lead={lead} prds={prds} proposals={proposals} onRefresh={refresh} />}
       {tab === "sales" && <SalesTab lead={lead} audits={audits} prds={prds} onRefresh={refresh} />}
       {tab === "overview" && <OverviewTab leadId={leadId} scrape={latestScrape} />}
       {tab === "audits" && <AuditsTab audits={audits} />}
@@ -249,10 +249,12 @@ function SalesTab({
 function OfferTab({
   lead,
   prds,
+  proposals,
   onRefresh,
 }: {
   lead: LeadDetailData["lead"];
   prds: Prd[];
+  proposals: Proposal[];
   onRefresh: () => void;
 }) {
   const [urlDraft, setUrlDraft] = useState(lead.showcase_url ?? "");
@@ -261,10 +263,10 @@ function OfferTab({
   const itemTotal = prds.reduce((sum, p) => sum + (p.price_usd ?? 0), 0);
   const bundleTotal = itemTotal + CONSULT_ADDON_USD;
 
-  async function saveShowcaseUrl() {
+  async function saveShowcaseUrl(url: string) {
     setSaving(true);
     try {
-      await setShowcaseUrl(lead.id, urlDraft);
+      await setShowcaseUrl(lead.id, url);
       onRefresh();
     } finally {
       setSaving(false);
@@ -275,16 +277,42 @@ function OfferTab({
     <div className="card">
       <h2>Showcase page</h2>
       <p style={{ color: "var(--text-muted)", fontSize: 13, marginTop: -6, marginBottom: 12 }}>
-        Send this first — before walking the prospect through pain points or pricing.
+        Send this first — before walking the prospect through pain points or pricing. Auto-generated
+        drafts below are a starting point — review/polish (or hand-build a Premium one) before sending.
       </p>
+
+      {proposals.length > 0 && (
+        <div style={{ marginBottom: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+          {proposals.map((p) => {
+            const url = `${window.location.origin}/api/leads/${lead.id}/proposals/${p.vertical}`;
+            return (
+              <div
+                key={p.id}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)" }}
+              >
+                <span>{VERTICAL_LABELS[p.vertical]} draft</span>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <a className="btn" href={url} target="_blank" rel="noreferrer">
+                    Preview
+                  </a>
+                  <button className="btn btn-primary" onClick={() => { setUrlDraft(url); saveShowcaseUrl(url); }} disabled={saving}>
+                    Use as showcase
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div style={{ display: "flex", gap: 8, marginBottom: lead.showcase_url ? 12 : 0 }}>
         <input
           style={{ flex: 1, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
-          placeholder="https://... (paste the finished demo page link)"
+          placeholder="https://... (paste a hand-built demo page link, or use a draft above)"
           value={urlDraft}
           onChange={(e) => setUrlDraft(e.target.value)}
         />
-        <button className="btn btn-primary" onClick={saveShowcaseUrl} disabled={saving}>
+        <button className="btn btn-primary" onClick={() => saveShowcaseUrl(urlDraft)} disabled={saving}>
           {saving ? "Saving…" : "Save"}
         </button>
       </div>

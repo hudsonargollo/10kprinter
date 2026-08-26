@@ -120,3 +120,34 @@ export async function insertPrd(
     .run();
   return id;
 }
+
+export async function insertProposal(
+  db: D1Database,
+  leadId: string,
+  vertical: VerticalKey,
+  r2HtmlKey: string,
+  r2CoverImageKey: string | null,
+): Promise<string> {
+  const id = newId();
+  await db
+    .prepare(
+      "INSERT INTO proposals (id, lead_id, vertical, r2_html_key, r2_cover_image_key, status) VALUES (?, ?, ?, ?, ?, 'draft')",
+    )
+    .bind(id, leadId, vertical, r2HtmlKey, r2CoverImageKey)
+    .run();
+  return id;
+}
+
+export async function getProposal(
+  db: D1Database,
+  leadId: string,
+  vertical: VerticalKey,
+): Promise<{ id: string; r2_html_key: string; r2_cover_image_key: string | null; status: string } | null> {
+  const row = await db
+    .prepare(
+      "SELECT id, r2_html_key, r2_cover_image_key, status FROM proposals WHERE lead_id = ? AND vertical = ? ORDER BY created_at DESC LIMIT 1",
+    )
+    .bind(leadId, vertical)
+    .first<{ id: string; r2_html_key: string; r2_cover_image_key: string | null; status: string }>();
+  return row ?? null;
+}

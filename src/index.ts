@@ -45,10 +45,11 @@ app.get("/api/leads/:id", async (c) => {
   const lead = await c.env.DB.prepare("SELECT * FROM leads WHERE id = ?").bind(id).first<LeadRow>();
   if (!lead) return c.json({ error: "not found" }, 404);
 
-  const [scrapes, audits, prds, events] = await Promise.all([
+  const [scrapes, audits, prds, proposals, events] = await Promise.all([
     c.env.DB.prepare("SELECT * FROM scrapes WHERE lead_id = ? ORDER BY scraped_at").bind(id).all(),
     c.env.DB.prepare("SELECT * FROM audits WHERE lead_id = ? ORDER BY created_at").bind(id).all(),
     c.env.DB.prepare("SELECT * FROM prds WHERE lead_id = ? ORDER BY created_at").bind(id).all(),
+    c.env.DB.prepare("SELECT * FROM proposals WHERE lead_id = ? ORDER BY created_at").bind(id).all(),
     c.env.DB.prepare("SELECT * FROM pipeline_events WHERE lead_id = ? ORDER BY created_at").bind(id).all(),
   ]);
 
@@ -57,6 +58,7 @@ app.get("/api/leads/:id", async (c) => {
     scrapes: scrapes.results,
     audits: audits.results,
     prds: prds.results,
+    proposals: proposals.results,
     events: events.results,
   });
 });
@@ -98,6 +100,35 @@ app.get("/api/leads/:id/screenshot", async (c) => {
   const obj = await c.env.ASSETS_BUCKET.get(scrape.r2_screenshot_key);
   if (!obj) return c.json({ error: "screenshot not found in storage" }, 404);
   return new Response(obj.body, { headers: { "content-type": "image/png", "cache-control": "public, max-age=31536000" } });
+});
+
+// Public, shareable — this is the auto-generated proposal draft's actual delivery URL (see
+// theleadmachine-style AGENTS.md note: never require auth on a link meant to be sent to a prospect).
+app.get("/api/leads/:id/proposals/:vertical/cover", async (c) => {
+  const { id, vertical } = c.req.param();
+  const proposal = await c.env.DB.prepare(
+    "SELECT r2_cover_image_key FROM proposals WHERE lead_id = ? AND vertical = ? ORDER BY created_at DESC LIMIT 1",
+  )
+    .bind(id, vertical)
+    .first<{ r2_cover_image_key: string | null }>();
+  if (!proposal?.r2_cover_image_key) return c.json({ error: "not found" }, 404);
+  const obj = await c.env.ASSETS_BUCKET.get(proposal.r2_cover_image_key);
+  if (!obj) return c.json({ error: "cover image not found in storage" }, 404);
+  const contentType = proposal.r2_cover_image_key.endsWith(".png") ? "image/png" : "image/jpeg";
+  return new Response(obj.body, { headers: { "content-type": contentType, "cache-control": "public, max-age=31536000" } });
+});
+
+app.get("/api/leads/:id/proposals/:vertical", async (c) => {
+  const { id, vertical } = c.req.param();
+  const proposal = await c.env.DB.prepare(
+    "SELECT r2_html_key FROM proposals WHERE lead_id = ? AND vertical = ? ORDER BY created_at DESC LIMIT 1",
+  )
+    .bind(id, vertical)
+    .first<{ r2_html_key: string }>();
+  if (!proposal) return c.json({ error: "not found" }, 404);
+  const obj = await c.env.ASSETS_BUCKET.get(proposal.r2_html_key);
+  if (!obj) return c.json({ error: "proposal not found in storage" }, 404);
+  return new Response(obj.body, { headers: { "content-type": "text/html; charset=utf-8" } });
 });
 
 const SALES_STAGES = new Set(["reviewed", "proposal_sent", "won", "lost"]);
