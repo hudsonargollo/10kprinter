@@ -3,8 +3,21 @@ import { createHuntSession, createSource, generateOutreachTimeline, runSourceNow
 import type { NicheDef } from "../types";
 import { NICHE_PACKAGE } from "../types";
 import { PlaceAutocomplete } from "./PlaceAutocomplete";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 type Step = "place" | "niches" | "run" | "interview" | "timeline";
+
+const STEPS: { key: Step; label: string }[] = [
+  { key: "place", label: "Place" },
+  { key: "niches", label: "Niches" },
+  { key: "run", label: "Review & Run" },
+  { key: "interview", label: "Interview" },
+  { key: "timeline", label: "Timeline" },
+];
 
 type NicheProgress = { status: "pending" | "running" | "done"; count: number };
 
@@ -97,80 +110,99 @@ export function HuntWizard() {
   }
 
   return (
-    <div className="card">
-      <h2>Hunt Wizard</h2>
+    <Card className="p-5">
+      <h2 className="mb-1 font-heading text-[15px] font-bold">Hunt Wizard</h2>
+
+      <div className="mb-5 flex flex-wrap items-center gap-1.5">
+        {STEPS.map((s, i) => (
+          <span
+            key={s.key}
+            className={cn(
+              "rounded-full px-2.5 py-1 font-mono text-[10.5px] font-semibold uppercase tracking-wide",
+              s.key === step
+                ? "bg-primary text-primary-foreground"
+                : i < STEPS.findIndex((x) => x.key === step)
+                  ? "bg-muted text-foreground"
+                  : "bg-muted/50 text-muted-foreground"
+            )}
+          >
+            {i + 1}. {s.label}
+          </span>
+        ))}
+      </div>
 
       {step === "place" && (
         <>
-          <div className="form-row">
-            <label htmlFor="region">Place</label>
+          <div className="mb-4 flex flex-col gap-1">
+            <Label htmlFor="region">Place</Label>
             <PlaceAutocomplete id="region" placeholder="Santa Cruz de la Sierra, Bolivia" value={region} onChange={setRegion} />
           </div>
-          <button className="btn btn-primary" disabled={!region} onClick={() => setStep("niches")}>
+          <Button disabled={!region} onClick={() => setStep("niches")}>
             Next: Niches
-          </button>
+          </Button>
         </>
       )}
 
       {step === "niches" && (
         <>
-          <h3>Niches</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
+          <h3 className="mb-2.5 font-heading text-sm font-bold">Niches</h3>
+          <div className="mb-4 grid grid-cols-2 gap-2">
             {NICHE_PACKAGE.map((n) => (
-              <label key={n.key} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <Label key={n.key} className="font-normal normal-case">
                 <input type="checkbox" checked={selectedKeys.has(n.key)} onChange={() => toggleNiche(n.key)} />
                 {n.label}
-              </label>
+              </Label>
             ))}
           </div>
           <CustomNicheForm onAdd={(n) => setCustomNiches((prev) => [...prev, n])} />
           {customNiches.length > 0 && (
-            <ul style={{ marginTop: 8 }}>
+            <ul className="mt-2 list-none p-0">
               {customNiches.map((n) => (
-                <li key={n.key} style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                <li key={n.key} className="text-[13px] text-muted-foreground">
                   {n.label} — {n.queryVariants[0]}
                 </li>
               ))}
             </ul>
           )}
-          <div className="form-row" style={{ marginTop: 16 }}>
-            <label htmlFor="leadsPerNiche">Leads per niche</label>
-            <input
+          <div className="mt-4 mb-4 flex flex-col gap-1">
+            <Label htmlFor="leadsPerNiche">Leads per niche</Label>
+            <Input
               id="leadsPerNiche"
               type="number"
+              className="w-32"
               value={leadsPerNiche}
               onChange={(e) => setLeadsPerNiche(Number(e.target.value))}
             />
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button className="btn" onClick={() => setStep("place")}>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setStep("place")}>
               Back
-            </button>
-            <button className="btn btn-primary" disabled={allNiches.length === 0} onClick={() => setStep("run")}>
+            </Button>
+            <Button disabled={allNiches.length === 0} onClick={() => setStep("run")}>
               Next: Review & Run
-            </button>
+            </Button>
           </div>
         </>
       )}
 
       {step === "run" && (
         <>
-          <h3>Review & Run</h3>
-          <p style={{ color: "var(--text-muted)", fontSize: 13 }}>
+          <h3 className="mb-2.5 font-heading text-sm font-bold">Review & Run</h3>
+          <p className="text-[13px] text-muted-foreground">
             {region} · {allNiches.length} niche(s) · up to {leadsPerNiche} leads each
           </p>
           {!running && !huntSessionId && (
-            <button className="btn btn-primary" onClick={startHunt}>
+            <Button className="mt-3" onClick={startHunt}>
               Start Hunt
-            </button>
+            </Button>
           )}
-          <ul style={{ listStyle: "none", padding: 0, marginTop: 16 }}>
+          <ul className="mt-4 list-none p-0">
             {allNiches.map((n) => {
               const p = progress[n.key];
               return (
-                <li key={n.key} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--border)" }}>
+                <li key={n.key} className="flex justify-between border-b border-border py-1.5">
                   <span>{n.label}</span>
-                  <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
+                  <span className="text-[13px] text-muted-foreground">
                     {!p || p.status === "pending" ? "pending" : p.status === "running" ? `running… ${p.count} found` : `${p.count} found`}
                   </span>
                 </li>
@@ -178,76 +210,77 @@ export function HuntWizard() {
             })}
           </ul>
           {huntSessionId && !running && (
-            <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => setStep("interview")}>
+            <Button className="mt-4" onClick={() => setStep("interview")}>
               Next: Outreach Interview
-            </button>
+            </Button>
           )}
         </>
       )}
 
       {step === "interview" && (
         <>
-          <h3>Outreach Interview</h3>
-          <div className="form-row">
-            <label htmlFor="capacity">Leads you can follow up on per week</label>
-            <input
+          <h3 className="mb-2.5 font-heading text-sm font-bold">Outreach Interview</h3>
+          <div className="mb-4 flex flex-col gap-1">
+            <Label htmlFor="capacity">Leads you can follow up on per week</Label>
+            <Input
               id="capacity"
               type="number"
+              className="w-32"
               value={capacityPerWeek}
               onChange={(e) => setCapacityPerWeek(Number(e.target.value))}
             />
           </div>
-          <div className="form-row">
-            <label>Preferred contact method</label>
-            <div style={{ display: "flex", gap: 12 }}>
+          <div className="mb-4 flex flex-col gap-1.5">
+            <Label>Preferred contact method</Label>
+            <div className="flex gap-3">
               {(["whatsapp", "call", "email"] as const).map((m) => (
-                <label key={m} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <Label key={m} className="font-normal normal-case">
                   <input type="radio" name="contactMethod" checked={contactMethod === m} onChange={() => setContactMethod(m)} />
                   {m}
-                </label>
+                </Label>
               ))}
             </div>
           </div>
-          <div className="form-row">
-            <label>Niche priority (highest first)</label>
-            <ul style={{ listStyle: "none", padding: 0 }}>
+          <div className="mb-4 flex flex-col gap-1.5">
+            <Label>Niche priority (highest first)</Label>
+            <ul className="list-none p-0">
               {priorityOrder.map((key, i) => {
                 const niche = allNiches.find((n) => n.key === key);
                 if (!niche) return null;
                 return (
-                  <li key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0" }}>
+                  <li key={key} className="flex items-center justify-between py-1.5">
                     <span>
                       {i + 1}. {niche.label}
                     </span>
-                    <span style={{ display: "flex", gap: 4 }}>
-                      <button className="btn" onClick={() => movePriority(key, -1)} disabled={i === 0}>
+                    <span className="flex gap-1">
+                      <Button variant="outline" size="icon-sm" onClick={() => movePriority(key, -1)} disabled={i === 0}>
                         ↑
-                      </button>
-                      <button className="btn" onClick={() => movePriority(key, 1)} disabled={i === priorityOrder.length - 1}>
+                      </Button>
+                      <Button variant="outline" size="icon-sm" onClick={() => movePriority(key, 1)} disabled={i === priorityOrder.length - 1}>
                         ↓
-                      </button>
+                      </Button>
                     </span>
                   </li>
                 );
               })}
             </ul>
           </div>
-          <button className="btn btn-primary" disabled={generating} onClick={submitInterview}>
+          <Button disabled={generating} onClick={submitInterview}>
             {generating ? "Building timeline…" : "Generate Outreach Timeline"}
-          </button>
+          </Button>
         </>
       )}
 
       {step === "timeline" && timelineMarkdown && (
         <>
-          <h3>Outreach Timeline</h3>
+          <h3 className="mb-2.5 font-heading text-sm font-bold">Outreach Timeline</h3>
           <div className="prd-markdown">{timelineMarkdown}</div>
-          <a className="btn" style={{ marginTop: 16 }} href="#/">
-            View leads from this hunt
-          </a>
+          <Button asChild variant="outline" className="mt-4">
+            <a href="#/">View leads from this hunt</a>
+          </Button>
         </>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -263,18 +296,18 @@ function CustomNicheForm({ onAdd }: { onAdd: (niche: NicheDef) => void }) {
   }
 
   return (
-    <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-      <div className="form-row" style={{ flex: 1, margin: 0 }}>
-        <label htmlFor="customLabel">Custom niche label</label>
-        <input id="customLabel" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Veterinary Clinics" />
+    <div className="flex items-end gap-2">
+      <div className="flex flex-1 flex-col gap-1">
+        <Label htmlFor="customLabel">Custom niche label</Label>
+        <Input id="customLabel" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Veterinary Clinics" />
       </div>
-      <div className="form-row" style={{ flex: 1, margin: 0 }}>
-        <label htmlFor="customQuery">Search query</label>
-        <input id="customQuery" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="veterinary clinics" />
+      <div className="flex flex-1 flex-col gap-1">
+        <Label htmlFor="customQuery">Search query</Label>
+        <Input id="customQuery" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="veterinary clinics" />
       </div>
-      <button className="btn" onClick={add} disabled={!label || !query}>
+      <Button variant="outline" onClick={add} disabled={!label || !query}>
         Add
-      </button>
+      </Button>
     </div>
   );
 }

@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { createLead } from "../api";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function NewLeadForm({ onCreated }: { onCreated: () => void }) {
   const [url, setUrl] = useState("");
@@ -27,24 +31,30 @@ export function NewLeadForm({ onCreated }: { onCreated: () => void }) {
   }
 
   return (
-    <form className="card" onSubmit={submit}>
-      <h2>Audit a new lead</h2>
-      {error && <div className="error-banner">{error}</div>}
-      <div className="form-row">
-        <label htmlFor="url">Website URL</label>
-        <input id="url" required type="url" placeholder="https://example.com" value={url} onChange={(e) => setUrl(e.target.value)} />
-      </div>
-      <div className="form-row">
-        <label htmlFor="businessName">Business name (optional)</label>
-        <input id="businessName" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
-      </div>
-      <div className="form-row">
-        <label htmlFor="category">Category (optional)</label>
-        <input id="category" value={category} onChange={(e) => setCategory(e.target.value)} />
-      </div>
-      <button className="btn btn-primary" type="submit" disabled={submitting}>
-        {submitting ? "Starting pipeline…" : "Run the pipeline"}
-      </button>
+    <form onSubmit={submit}>
+      <Card className="p-4.5">
+        <h2 className="mb-3 font-heading text-[15px] font-bold">Audit a new lead</h2>
+        {error && (
+          <div className="mb-4 rounded-lg border border-bad bg-bad/15 px-3.5 py-2.5 text-bad">
+            {error}
+          </div>
+        )}
+        <div className="mb-3 flex flex-col gap-1">
+          <Label htmlFor="url">Website URL</Label>
+          <Input id="url" required type="url" placeholder="https://example.com" value={url} onChange={(e) => setUrl(e.target.value)} />
+        </div>
+        <div className="mb-3 flex flex-col gap-1">
+          <Label htmlFor="businessName">Business name (optional)</Label>
+          <Input id="businessName" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
+        </div>
+        <div className="mb-3 flex flex-col gap-1">
+          <Label htmlFor="category">Category (optional)</Label>
+          <Input id="category" value={category} onChange={(e) => setCategory(e.target.value)} />
+        </div>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? "Starting pipeline…" : "Run the pipeline"}
+        </Button>
+      </Card>
     </form>
   );
 }

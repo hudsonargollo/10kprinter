@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft, LogOut, MapPinned, Radar } from "lucide-react";
 import { LeadsBoard } from "./components/LeadsBoard";
 import { LeadDetailView } from "./components/LeadDetail";
 import { SourcesView } from "./components/Sources";
 import { HuntWizard } from "./components/HuntWizard";
 import { Login } from "./components/Login";
+import { Button } from "@/components/ui/button";
 import { logout, me } from "./api";
 import type { AuthUser } from "./types";
 
@@ -44,32 +46,38 @@ export function App() {
 
   return (
     <div>
-      <header className="app-header">
-        <h1>
-          MoneyMachine <span className="subtitle">Ops</span>
+      <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
+        <h1 className="font-heading text-base font-bold tracking-tight">
+          MoneyMachine <span className="font-sans font-normal text-muted-foreground">Ops</span>
         </h1>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div className="flex items-center gap-2">
           {route.name !== "board" && (
-            <a className="btn" href="#/">
-              ← All leads
-            </a>
+            <Button asChild variant="outline" size="sm">
+              <a href="#/">
+                <ArrowLeft /> All leads
+              </a>
+            </Button>
           )}
           {route.name !== "hunt" && (
-            <a className="btn" href="#/hunt">
-              Hunt Wizard
-            </a>
+            <Button asChild variant="outline" size="sm">
+              <a href="#/hunt">
+                <Radar /> Hunt Wizard
+              </a>
+            </Button>
           )}
           {route.name !== "sources" && (
-            <a className="btn" href="#/sources">
-              Lead sources
-            </a>
+            <Button asChild variant="outline" size="sm">
+              <a href="#/sources">
+                <MapPinned /> Lead sources
+              </a>
+            </Button>
           )}
-          <button className="btn" onClick={onLogout}>
-            Sign out
-          </button>
+          <Button variant="outline" size="sm" onClick={onLogout}>
+            <LogOut /> Sign out
+          </Button>
         </div>
       </header>
-      <div className="container">
+      <div className="mx-auto max-w-6xl p-6">
         {route.name === "board" && <LeadsBoard />}
         {route.name === "lead" && <LeadDetailView leadId={route.id} />}
         {route.name === "sources" && <SourcesView />}

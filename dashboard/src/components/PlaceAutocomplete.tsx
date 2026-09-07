@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { autocompletePlaces } from "../api";
+import { Input } from "@/components/ui/input";
 
 export function PlaceAutocomplete({
   id,
@@ -45,8 +46,8 @@ export function PlaceAutocomplete({
   }
 
   return (
-    <div style={{ position: "relative" }}>
-      <input
+    <div className="relative">
+      <Input
         id={id}
         placeholder={placeholder}
         value={value}
@@ -56,31 +57,12 @@ export function PlaceAutocomplete({
         autoComplete="off"
       />
       {open && suggestions.length > 0 && (
-        <ul
-          style={{
-            position: "absolute",
-            top: "calc(100% + 4px)",
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            listStyle: "none",
-            margin: 0,
-            padding: 4,
-            background: "var(--bg-elevated)",
-            border: "1px solid var(--border)",
-            borderRadius: "var(--radius)",
-            boxShadow: "var(--shadow)",
-            maxHeight: 240,
-            overflowY: "auto",
-          }}
-        >
+        <ul className="absolute top-[calc(100%+4px)] right-0 left-0 z-10 max-h-60 overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-md">
           {suggestions.map((s) => (
             <li
               key={s.placeId}
               onMouseDown={() => selectSuggestion(s.description)}
-              style={{ padding: "8px 10px", borderRadius: 6, cursor: "pointer" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              className="cursor-pointer rounded-md px-2.5 py-2 hover:bg-background"
             >
               {s.description}
             </li>
