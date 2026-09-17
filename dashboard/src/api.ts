@@ -20,6 +20,10 @@ export function login(email: string, password: string): Promise<{ user: AuthUser
   return request("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
 }
 
+export function register(email: string, password: string, name?: string): Promise<{ user: AuthUser }> {
+  return request("/api/auth/register", { method: "POST", body: JSON.stringify({ email, password, name }) });
+}
+
 export function logout(): Promise<{ ok: true }> {
   return request("/api/auth/logout", { method: "POST" });
 }
@@ -32,7 +36,7 @@ export function getLead(id: string): Promise<LeadDetail> {
   return request(`/api/leads/${id}`);
 }
 
-export function createLead(input: { url: string; businessName?: string; category?: string }): Promise<{ id: string }> {
+export function createLead(input: { url: string; businessName?: string; category?: string; language?: string }): Promise<{ id: string }> {
   return request("/api/leads", { method: "POST", body: JSON.stringify(input) });
 }
 
@@ -95,7 +99,7 @@ export function autocompletePlaces(input: string): Promise<{ description: string
   return request(`/api/places/autocomplete?input=${encodeURIComponent(input)}`);
 }
 
-export function createHuntSession(input: { region: string; niches: NicheDef[]; leadsPerNiche: number }): Promise<{ id: string }> {
+export function createHuntSession(input: { region: string; niches: NicheDef[]; leadsPerNiche: number; language?: string }): Promise<{ id: string }> {
   return request("/api/hunt-sessions", { method: "POST", body: JSON.stringify(input) });
 }
 

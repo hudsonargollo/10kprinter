@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Globe, Sparkles } from "lucide-react";
 
 export function NewLeadForm({ onCreated }: { onCreated: () => void }) {
   const [url, setUrl] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [category, setCategory] = useState("");
+  const [language, setLanguage] = useState("auto");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +20,12 @@ export function NewLeadForm({ onCreated }: { onCreated: () => void }) {
     setSubmitting(true);
     setError(null);
     try {
-      await createLead({ url, businessName: businessName || undefined, category: category || undefined });
+      await createLead({
+        url,
+        businessName: businessName || undefined,
+        category: category || undefined,
+        language: language === "auto" ? undefined : language,
+      });
       setUrl("");
       setBusinessName("");
       setCategory("");
@@ -31,28 +38,75 @@ export function NewLeadForm({ onCreated }: { onCreated: () => void }) {
   }
 
   return (
-    <form onSubmit={submit}>
-      <Card className="p-4.5">
-        <h2 className="mb-3 font-heading text-[15px] font-bold">Audit a new lead</h2>
+    <form onSubmit={submit} className="mb-6">
+      <Card className="p-5 bg-[#161020] border-white/10 shadow-xl rounded-2xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-heading text-sm font-bold text-white flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#e8ff5c]" />
+            <span>Audit a new prospect</span>
+          </h2>
+          <div className="flex items-center gap-1.5 text-xs text-white/50">
+            <Globe className="w-3.5 h-3.5 text-[#e8ff5c]" />
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none cursor-pointer"
+            >
+              <option value="auto" className="bg-[#161020] text-white">🌐 Auto Language</option>
+              <option value="en" className="bg-[#161020] text-white">🇺🇸 English</option>
+              <option value="pt" className="bg-[#161020] text-white">🇧🇷 Português</option>
+              <option value="es" className="bg-[#161020] text-white">🇪🇸 Español</option>
+            </select>
+          </div>
+        </div>
+
         {error && (
-          <div className="mb-4 rounded-lg border border-bad bg-bad/15 px-3.5 py-2.5 text-bad">
+          <div className="mb-4 rounded-xl border border-bad bg-bad/15 px-3.5 py-2.5 text-bad text-xs font-mono">
             {error}
           </div>
         )}
-        <div className="mb-3 flex flex-col gap-1">
-          <Label htmlFor="url">Website URL</Label>
-          <Input id="url" required type="url" placeholder="https://example.com" value={url} onChange={(e) => setUrl(e.target.value)} />
+
+        <div className="grid md:grid-cols-3 gap-3 mb-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="url" className="text-xs text-white/70">Website URL *</Label>
+            <Input
+              id="url"
+              required
+              type="url"
+              placeholder="https://client-website.com"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="businessName" className="text-xs text-white/70">Business Name (optional)</Label>
+            <Input
+              id="businessName"
+              placeholder="e.g. Apex Dental Care"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              className="bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="category" className="text-xs text-white/70">Category (optional)</Label>
+            <Input
+              id="category"
+              placeholder="e.g. Dental Clinics"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
+            />
+          </div>
         </div>
-        <div className="mb-3 flex flex-col gap-1">
-          <Label htmlFor="businessName">Business name (optional)</Label>
-          <Input id="businessName" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
-        </div>
-        <div className="mb-3 flex flex-col gap-1">
-          <Label htmlFor="category">Category (optional)</Label>
-          <Input id="category" value={category} onChange={(e) => setCategory(e.target.value)} />
-        </div>
-        <Button type="submit" disabled={submitting}>
-          {submitting ? "Starting pipeline…" : "Run the pipeline"}
+
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] rounded-xl text-xs h-9 px-5 shadow-md shadow-[#e8ff5c]/20 cursor-pointer"
+        >
+          {submitting ? "Starting Automated Pipeline…" : "Run Full Pipeline Audit"}
         </Button>
       </Card>
     </form>

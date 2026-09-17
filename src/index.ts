@@ -6,7 +6,8 @@ import { runHunterCycle, runHunterForSource } from "./hunter";
 import { generateText } from "./lib/anthropic";
 import { autocompleteCities } from "./lib/places";
 import { verifyCrmWebhookSignature } from "./lib/crmSync";
-import { getSessionUserId, getUserByEmail, getUserById, verifyPassword, createSessionCookie, clearSessionCookie } from "./lib/auth";
+import { getSessionUserId, getUserByEmail, getUserById, verifyPassword, hashPassword, createSessionCookie, clearSessionCookie } from "./lib/auth";
+import { resolveTargetLanguage, getLanguagePromptInstruction } from "./lib/language";
 
 export { LeadPipeline } from "./workflows/leadPipeline";
 
@@ -34,6 +35,31 @@ app.post("/api/auth/login", async (c) => {
   }
   c.header("Set-Cookie", await createSessionCookie(c.env, user.id));
   return c.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+});
+
+app.post("/api/auth/register", async (c) => {
+  const { email, password, name } = await c.req.json<{ email: string; password: string; name?: string }>();
+  if (!email || !email.includes("@")) {
+    return c.json({ error: "A valid email address is required." }, 400);
+  }
+  if (!password || password.length < 6) {
+    return c.json({ error: "Password must be at least 6 characters." }, 400);
+  }
+  const normalizedEmail = email.toLowerCase().trim();
+  const existing = await getUserByEmail(c.env.DB, normalizedEmail);
+  if (existing) {
+    return c.json({ error: "An account with this email already exists." }, 409);
+  }
+  const id = newId();
+  const password_hash = await hashPassword(password);
+  await c.env.DB.prepare(
+    "INSERT INTO users (id, email, name, password_hash, role) VALUES (?, ?, ?, ?, 'super_admin')",
+  )
+    .bind(id, normalizedEmail, name?.trim() ?? null, password_hash)
+    .run();
+
+  c.header("Set-Cookie", await createSessionCookie(c.env, id));
+  return c.json({ user: { id, email: normalizedEmail, name: name?.trim() ?? null, role: "super_admin" } }, 201);
 });
 
 app.post("/api/auth/logout", async (c) => {
@@ -73,14 +99,15 @@ for (const path of [
 
 // Create a lead and immediately kick off its pipeline run (the "manual single-URL" path).
 app.post("/api/leads", async (c) => {
-  const body = await c.req.json<{ url: string; businessName?: string; category?: string }>();
+  const body = await c.req.json<{ url: string; businessName?: string; category?: string; language?: string }>();
   if (!body.url) return c.json({ error: "url is required" }, 400);
 
   const id = newId();
+  const lang = resolveTargetLanguage(body.language, null, body.url);
   await c.env.DB.prepare(
-    "INSERT INTO leads (id, business_name, url, category, status) VALUES (?, ?, ?, ?, 'discovered')",
+    "INSERT INTO leads (id, business_name, url, category, status, language) VALUES (?, ?, ?, ?, 'discovered', ?)",
   )
-    .bind(id, body.businessName ?? null, body.url, body.category ?? null)
+    .bind(id, body.businessName ?? null, body.url, body.category ?? null, lang)
     .run();
 
   const instance = await c.env.LEAD_PIPELINE.create({ id, params: { leadId: id } });
@@ -88,7 +115,7 @@ app.post("/api/leads", async (c) => {
     .bind(instance.id, id)
     .run();
 
-  return c.json({ id, workflowInstanceId: instance.id }, 201);
+  return c.json({ id, workflowInstanceId: instance.id, language: lang }, 201);
 });
 
 app.get("/api/leads", async (c) => {
@@ -322,15 +349,17 @@ app.post("/api/hunt-sessions", async (c) => {
     region: string;
     niches: { key: string; label: string; queryVariants: string[] }[];
     leadsPerNiche: number;
+    language?: string;
   }>();
   if (!body.region || !body.niches?.length) return c.json({ error: "region and niches are required" }, 400);
   const id = newId();
+  const lang = resolveTargetLanguage(body.language, body.region);
   await c.env.DB.prepare(
-    "INSERT INTO hunt_sessions (id, region, niches_json, leads_per_niche) VALUES (?, ?, ?, ?)",
+    "INSERT INTO hunt_sessions (id, region, niches_json, leads_per_niche, language) VALUES (?, ?, ?, ?, ?)",
   )
-    .bind(id, body.region, JSON.stringify(body.niches), body.leadsPerNiche)
+    .bind(id, body.region, JSON.stringify(body.niches), body.leadsPerNiche, lang)
     .run();
-  return c.json({ id }, 201);
+  return c.json({ id, language: lang }, 201);
 });
 
 app.get("/api/hunt-sessions/:id", async (c) => {
@@ -385,9 +414,12 @@ app.post("/api/hunt-sessions/:id/timeline", async (c) => {
     .filter(Boolean)
     .join("\n");
 
+  const sessionLang = resolveTargetLanguage((session as unknown as { language?: string }).language, session.region);
+  const langInstruction = getLanguagePromptInstruction(sessionLang);
+
   const timelineMarkdown = await generateText(c.env.ANTHROPIC_API_KEY, {
     system:
-      "You are a sales operations consultant writing a week-by-week outreach plan for a solo operator working through a freshly-hunted batch of local-business leads. Be concrete: name actual businesses from the list provided, group them into weekly batches sized to the stated capacity, and respect the given niche priority order (earlier niches get contacted first). Output clean markdown with a heading per week.",
+      `You are a sales operations consultant writing a week-by-week outreach plan for a solo operator working through a freshly-hunted batch of local-business leads. Be concrete: name actual businesses from the list provided, group them into weekly batches sized to the stated capacity, and respect the given niche priority order (earlier niches get contacted first). Output clean markdown with a heading per week.${langInstruction}`,
     user: `Region: ${session.region}\nWeekly capacity: ${body.capacityPerWeek} leads/week\nPreferred contact method: ${body.contactMethod}\nNiche priority order (highest first): ${body.priorityOrder.map(nicheLabel).join(" > ")}\n\nLeads found, grouped by niche:\n${leadListText}\n\nWrite the week-by-week outreach plan.`,
     maxTokens: 2048,
     geminiApiKey: c.env.GEMINI_API_KEY,

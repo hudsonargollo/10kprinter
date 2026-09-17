@@ -27,6 +27,7 @@ export function HuntWizard() {
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(NICHE_PACKAGE.map((n) => n.key)));
   const [customNiches, setCustomNiches] = useState<NicheDef[]>([]);
   const [leadsPerNiche, setLeadsPerNiche] = useState(20);
+  const [language, setLanguage] = useState("auto");
 
   const [huntSessionId, setHuntSessionId] = useState<string | null>(null);
   const [progress, setProgress] = useState<Record<string, NicheProgress>>({});
@@ -55,7 +56,12 @@ export function HuntWizard() {
     for (const n of allNiches) initial[n.key] = { status: "pending", count: 0 };
     setProgress(initial);
 
-    const { id: sessionId } = await createHuntSession({ region, niches: allNiches, leadsPerNiche });
+    const { id: sessionId } = await createHuntSession({
+      region,
+      niches: allNiches,
+      leadsPerNiche,
+      language: language === "auto" ? undefined : language,
+    });
     setHuntSessionId(sessionId);
 
     const finalCounts: Record<string, number> = {};
@@ -136,6 +142,20 @@ export function HuntWizard() {
           <div className="mb-4 flex flex-col gap-1">
             <Label htmlFor="region">Place</Label>
             <PlaceAutocomplete id="region" placeholder="Santa Cruz de la Sierra, Bolivia" value={region} onChange={setRegion} />
+          </div>
+          <div className="mb-4 flex flex-col gap-1">
+            <Label htmlFor="hunt-language">Generation & Output Language</Label>
+            <select
+              id="hunt-language"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-card border border-input rounded-md px-3 py-2 text-xs text-foreground focus:outline-none"
+            >
+              <option value="auto">Auto-detect from Region / Country</option>
+              <option value="en">English (US/UK/Global)</option>
+              <option value="pt">Português (Brasil / Portugal)</option>
+              <option value="es">Español (LatAm / España)</option>
+            </select>
           </div>
           <Button disabled={!region} onClick={() => setStep("niches")}>
             Next: Niches

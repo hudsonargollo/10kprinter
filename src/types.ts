@@ -53,6 +53,7 @@ export interface LeadRow {
   lost_reason: string | null;
   closed_amount_usd: number | null;
   closed_at: string | null;
+  language?: string | null;
 }
 
 export interface ScrapeSummary {

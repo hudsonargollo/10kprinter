@@ -1,12 +1,9 @@
 import type { AuditFinding, BrandTokens, LeadRow, ScrapeSummary } from "../types";
+import type { AppLanguage } from "./language";
 
 // Mirrors dashboard/src/types.ts's CONSULT_ADDON_USD — keep both in sync if this ever changes.
 const CONSULT_ADDON_USD = 100;
 
-/**
- * Fills in design/VISUAL_PROMPT_LIBRARY.md's recipe with this lead's real brand tokens. Abstract/
- * brand-driven only — never a literal depiction of the business (see the doc's hard constraint).
- */
 export function buildCoverImagePrompt(brandTokens: BrandTokens): string {
   return (
     `Abstract crystalline geometric gradient composition, premium minimal tech aesthetic, soft ` +
@@ -16,8 +13,6 @@ export function buildCoverImagePrompt(brandTokens: BrandTokens): string {
   );
 }
 
-/** Mirrors dashboard/src/lib/waLink.ts — kept as a small backend-side copy since the dashboard's
- * Vite build and this Worker's build don't share modules. */
 export function buildWaLink(phone: string | null, text = ""): string | null {
   const digits = String(phone ?? "").replace(/\D/g, "");
   if (!digits) return null;
@@ -38,27 +33,59 @@ interface ProposalInput {
   priceUsd: number;
   coverImageUrl: string;
   waLink: string | null;
+  lang?: AppLanguage;
 }
 
-/**
- * Deterministic HTML template — not an LLM call. Everything it renders already came from a step
- * that ran earlier (audit findings, brand tokens, scraped copy), so there is nothing left to
- * fabricate. Follows design/DESIGN_SYSTEM.md's 5-section structure (Hero / Proof strip / What
- * changed / Offer block / CTA), self-contained single-file HTML themed via CSS custom properties.
- */
+const PROPOSAL_I18N = {
+  en: {
+    titleSuffix: "Proposal",
+    proofHeading: "What's already working",
+    fixesHeading: "What we'd fix",
+    offerHeading: "The offer",
+    consultAddon: "Strategy consult add-on",
+    total: "Total",
+    ctaHeading: "Ready to see it built?",
+    ctaSub: "Book the $100 strategy hour — it's applied toward the project above.",
+    ctaButton: "Book on WhatsApp",
+  },
+  pt: {
+    titleSuffix: "Proposta",
+    proofHeading: "O que já está funcionando",
+    fixesHeading: "O que vamos corrigir",
+    offerHeading: "A Proposta",
+    consultAddon: "Consultoria estratégica adicional",
+    total: "Total",
+    ctaHeading: "Pronto para ver pronto?",
+    ctaSub: "Agende a consultoria estratégica de US$ 100 — valor abatido no projeto acima.",
+    ctaButton: "Conversar no WhatsApp",
+  },
+  es: {
+    titleSuffix: "Propuesta",
+    proofHeading: "Lo que ya funciona",
+    fixesHeading: "Lo que corregiremos",
+    offerHeading: "La Oferta",
+    consultAddon: "Consultoría estratégica adicional",
+    total: "Total",
+    ctaHeading: "¿Listo para verlo construido?",
+    ctaSub: "Agenda la consultoría estratégica de US$ 100 — se aplica al proyecto de arriba.",
+    ctaButton: "Escribir por WhatsApp",
+  },
+};
+
 export function buildProposalHtml(input: ProposalInput): string {
-  const { lead, verticalLabel, scrapeSummary, finding, brandTokens, priceUsd, coverImageUrl, waLink } = input;
+  const { lead, verticalLabel, scrapeSummary, finding, brandTokens, priceUsd, coverImageUrl, waLink, lang = "en" } = input;
+  const t = PROPOSAL_I18N[lang] || PROPOSAL_I18N.en;
   const businessName = lead.business_name ?? lead.url;
   const valueProp = scrapeSummary.metaDescription || scrapeSummary.title || "";
   const proof = finding.good.slice(0, 3);
   const fixes = finding.bad.slice(0, 3).map((bad, i) => ({ bad, fix: finding.fix[i] ?? finding.fix[0] ?? "" }));
 
   return `<!doctype html>
-<html lang="en">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${esc(businessName)} — ${esc(verticalLabel)} Proposal</title>
+<title>${esc(businessName)} — ${esc(verticalLabel)} ${t.titleSuffix}</title>
 <style>
   :root {
     --primary: ${brandTokens.primary};
@@ -110,14 +137,14 @@ export function buildProposalHtml(input: ProposalInput): string {
   ${
     proof.length
       ? `<section class="proof">
-    <h2>What's already working</h2>
+    <h2>${t.proofHeading}</h2>
     <ul>${proof.map((g) => `<li>${esc(g)}</li>`).join("")}</ul>
   </section>`
       : ""
   }
 
   <section class="fixes">
-    <h2>What we'd fix</h2>
+    <h2>${t.fixesHeading}</h2>
     ${fixes
       .map(
         (f) =>
@@ -127,16 +154,16 @@ export function buildProposalHtml(input: ProposalInput): string {
   </section>
 
   <section class="offer">
-    <h2>The offer</h2>
+    <h2>${t.offerHeading}</h2>
     <div class="line-item"><span>${esc(verticalLabel)}</span><span>$${priceUsd}</span></div>
-    <div class="line-item"><span>Strategy consult add-on</span><span>$${CONSULT_ADDON_USD}</span></div>
-    <div class="total"><span>Total</span><span>$${priceUsd + CONSULT_ADDON_USD}</span></div>
+    <div class="line-item"><span>${t.consultAddon}</span><span>$${CONSULT_ADDON_USD}</span></div>
+    <div class="total"><span>${t.total}</span><span>$${priceUsd + CONSULT_ADDON_USD}</span></div>
   </section>
 
   <section class="cta">
-    <h2>Ready to see it built?</h2>
-    <p>Book the $${CONSULT_ADDON_USD} strategy hour — it's applied toward the project above.</p>
-    ${waLink ? `<a href="${esc(waLink)}" target="_blank" rel="noopener">Book on WhatsApp</a>` : ""}
+    <h2>${t.ctaHeading}</h2>
+    <p>${t.ctaSub}</p>
+    ${waLink ? `<a href="${esc(waLink)}" target="_blank" rel="noopener">${t.ctaButton}</a>` : ""}
   </section>
 </body>
 </html>`;
