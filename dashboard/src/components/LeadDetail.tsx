@@ -18,6 +18,15 @@ const IN_PROGRESS: LeadStatus[] = ["discovered", "scraping", "scraped", "audited
 
 type Tab = "offer" | "sales" | "overview" | "audits" | "prds" | "timeline";
 
+const TAB_KEYS: Record<string, Tab> = {
+  "1": "offer",
+  "2": "sales",
+  "3": "overview",
+  "4": "audits",
+  "5": "prds",
+  "6": "timeline",
+};
+
 export function LeadDetailView({ leadId }: { leadId: string }) {
   const [data, setData] = useState<LeadDetailData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +53,22 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
     }
   }, [data, refresh]);
 
+  // Keyboard shortcut listener for tabs 1-6
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
+        return;
+      }
+      if (TAB_KEYS[e.key]) {
+        e.preventDefault();
+        setTab(TAB_KEYS[e.key]);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   if (error)
     return <div className="mb-4 rounded-lg border border-bad bg-bad/15 px-3.5 py-2.5 text-bad">{error}</div>;
   if (!data) return <p className="py-10 text-center text-muted-foreground">Loading…</p>;
@@ -58,11 +83,11 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
 
   return (
     <>
-      <div className="mb-4 rounded-xl bg-card p-4.5 ring-1 ring-foreground/10">
+      <div className="mb-4 rounded-xl bg-card p-4.5 ring-1 ring-foreground/10 border border-white/5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="mb-1 font-heading text-[15px] font-bold">{lead.business_name || lead.url}</h2>
-            <a href={lead.url} target="_blank" rel="noreferrer" className="text-[13px] text-muted-foreground">
+            <h2 className="mb-1 font-heading text-[15px] font-bold text-white">{lead.business_name || lead.url}</h2>
+            <a href={lead.url} target="_blank" rel="noreferrer" className="text-[13px] text-muted-foreground hover:text-white transition-colors">
               {lead.url}
             </a>
           </div>
@@ -95,13 +120,31 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
-        <TabsList>
-          <TabsTrigger value="offer">Offer</TabsTrigger>
-          <TabsTrigger value="sales">Sales</TabsTrigger>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="audits">Audits ({audits.length})</TabsTrigger>
-          <TabsTrigger value="prds">PRDs ({prds.length})</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
+        <TabsList className="bg-card/80 border border-white/10 p-1 rounded-xl">
+          <TabsTrigger value="offer" className="flex items-center gap-1.5 text-xs">
+            <span>Offer</span>
+            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">1</kbd>
+          </TabsTrigger>
+          <TabsTrigger value="sales" className="flex items-center gap-1.5 text-xs">
+            <span>Sales</span>
+            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">2</kbd>
+          </TabsTrigger>
+          <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs">
+            <span>Overview</span>
+            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">3</kbd>
+          </TabsTrigger>
+          <TabsTrigger value="audits" className="flex items-center gap-1.5 text-xs">
+            <span>Audits ({audits.length})</span>
+            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">4</kbd>
+          </TabsTrigger>
+          <TabsTrigger value="prds" className="flex items-center gap-1.5 text-xs">
+            <span>PRDs ({prds.length})</span>
+            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">5</kbd>
+          </TabsTrigger>
+          <TabsTrigger value="timeline" className="flex items-center gap-1.5 text-xs">
+            <span>Timeline</span>
+            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">6</kbd>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="offer">

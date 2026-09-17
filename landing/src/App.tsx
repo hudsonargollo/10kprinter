@@ -1,6 +1,7 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
+import { RoiCalculator } from "@/components/RoiCalculator";
 import { SetupSection } from "@/components/SetupSection";
 import { StatementSection } from "@/components/StatementSection";
 import { FeatureSection } from "@/components/FeatureSection";
@@ -18,9 +19,10 @@ import huntWizard from "@/assets/screenshots/hunt-wizard.jpg";
 function App() {
   const { t } = useLanguage();
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground selection:bg-[#e8ff5c] selection:text-black">
       <Nav />
       <Hero />
+      <RoiCalculator />
       <HowItWorks />
       <SetupSection />
       <StatementSection />
