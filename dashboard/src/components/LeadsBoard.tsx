@@ -193,7 +193,12 @@ export function LeadsBoard() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="font-semibold text-xs text-white truncate">{lead.business_name || lead.url}</div>
                   </div>
-                  <PipelineProgressBar status={lead.status} compact />
+                  <PipelineProgressBar
+                    status={lead.status}
+                    auditCount={lead.audit_count}
+                    prdCount={lead.prd_count}
+                    compact
+                  />
                 </a>
               ))}
             </Card>

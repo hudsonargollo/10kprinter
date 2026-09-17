@@ -119,7 +119,15 @@ app.post("/api/leads", async (c) => {
 });
 
 app.get("/api/leads", async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT * FROM leads ORDER BY discovered_at DESC").all<LeadRow>();
+  const { results } = await c.env.DB.prepare(`
+    SELECT leads.*,
+      (SELECT count(*) FROM audits WHERE audits.lead_id = leads.id) AS audit_count,
+      (SELECT count(*) FROM prds WHERE prds.lead_id = leads.id) AS prd_count,
+      (SELECT count(*) FROM scrapes WHERE scrapes.lead_id = leads.id) AS scrape_count,
+      (SELECT count(*) FROM proposals WHERE proposals.lead_id = leads.id) AS proposal_count
+    FROM leads
+    ORDER BY discovered_at DESC
+  `).all<LeadRow & { audit_count: number; prd_count: number; scrape_count: number; proposal_count: number }>();
   return c.json(results);
 });
 

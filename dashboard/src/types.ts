@@ -40,6 +40,11 @@ export interface Lead {
   lost_reason: string | null;
   closed_amount_usd: number | null;
   closed_at: string | null;
+  language?: string | null;
+  audit_count?: number;
+  prd_count?: number;
+  scrape_count?: number;
+  proposal_count?: number;
 }
 
 export interface Scrape {

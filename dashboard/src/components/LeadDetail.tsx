@@ -120,7 +120,11 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
         </div>
 
         {/* Live Progression Tracker */}
-        <PipelineProgressBar status={lead.status} />
+        <PipelineProgressBar
+          status={lead.status}
+          auditCount={audits.length}
+          prdCount={prds.length}
+        />
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>

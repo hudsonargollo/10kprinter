@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 
 interface PipelineProgressBarProps {
   status: LeadStatus;
-  score?: number | null;
+  auditCount?: number;
+  prdCount?: number;
   className?: string;
   compact?: boolean;
 }
@@ -12,30 +13,56 @@ interface PipelineProgressBarProps {
 const STAGES: { key: string; label: string }[] = [
   { key: "discovered", label: "Discovered" },
   { key: "scraping", label: "Scraping Site" },
-  { key: "audited", label: "Multi-Audit" },
-  { key: "prd_ready", label: "Proposal & Pricing" },
+  { key: "audited", label: "4-Vertical Audit" },
+  { key: "prd_ready", label: "Proposal & PRD" },
 ];
 
-function getStageProgress(status: LeadStatus): { percent: number; stageIndex: number; activeLabel: string } {
-  switch (status) {
-    case "discovered":
-      return { percent: 15, stageIndex: 0, activeLabel: "Queued in Pipeline" };
-    case "scraping":
-      return { percent: 40, stageIndex: 1, activeLabel: "Scraping DOM & Screenshot..." };
-    case "scraped":
-      return { percent: 65, stageIndex: 2, activeLabel: "Auditing Conversion Friction..." };
-    case "audited":
-      return { percent: 85, stageIndex: 3, activeLabel: "Generating PRDs & Pricing..." };
-    case "failed":
-      return { percent: 100, stageIndex: -1, activeLabel: "Pipeline Failed" };
-    default:
-      // prd_ready, reviewed, proposal_sent, won, lost
-      return { percent: 100, stageIndex: 4, activeLabel: "Audit & Proposal Ready" };
+function getStageProgress(
+  status: LeadStatus,
+  auditCount?: number,
+  prdCount?: number
+): { percent: number; stageIndex: number; activeLabel: string } {
+  if (status === "failed") {
+    return { percent: 100, stageIndex: -1, activeLabel: "Pipeline Failed" };
   }
+
+  if (["prd_ready", "reviewed", "proposal_sent", "won", "lost"].includes(status)) {
+    return { percent: 100, stageIndex: 4, activeLabel: "Audits & Proposal Ready" };
+  }
+
+  if (status === "discovered") {
+    return { percent: 10, stageIndex: 0, activeLabel: "Discovered • Queued" };
+  }
+
+  if (status === "scraping") {
+    return { percent: 25, stageIndex: 1, activeLabel: "Scraping DOM & Screenshot..." };
+  }
+
+  const count = auditCount ?? 0;
+  if (status === "scraped" || (count > 0 && count < 4)) {
+    const percent = 30 + Math.min(count, 4) * 12;
+    const activeLabel = count > 0 ? `Auditing (${count}/4 verticals finished)...` : "Starting 4-Vertical Audits...";
+    return { percent, stageIndex: 2, activeLabel };
+  }
+
+  if (status === "audited" || count >= 4) {
+    const prds = prdCount ?? 0;
+    const percent = 80 + (prds > 0 ? 10 : 0);
+    const activeLabel = prds > 0 ? `Generating Proposals (${prds} ready)...` : "Audits 4/4 Complete • Writing PRDs...";
+    return { percent, stageIndex: 3, activeLabel };
+  }
+
+  return { percent: 50, stageIndex: 2, activeLabel: "Processing Lead..." };
 }
 
-export function PipelineProgressBar({ status, className, compact = false }: PipelineProgressBarProps) {
-  const { percent, stageIndex, activeLabel } = getStageProgress(status);
+export function PipelineProgressBar({
+  status,
+  auditCount,
+  prdCount,
+  className,
+  compact = false,
+}: PipelineProgressBarProps) {
+  const { percent, stageIndex, activeLabel } = getStageProgress(status, auditCount, prdCount);
   const isFailed = status === "failed";
   const isComplete = percent === 100 && !isFailed;
   const inProgress = ["discovered", "scraping", "scraped", "audited"].includes(status);
@@ -44,19 +71,19 @@ export function PipelineProgressBar({ status, className, compact = false }: Pipe
     return (
       <div className={cn("space-y-1.5", className)}>
         <div className="flex items-center justify-between text-[11px] font-mono">
-          <span className="text-white/60 flex items-center gap-1.5 truncate">
+          <span className="text-white/70 flex items-center gap-1.5 truncate">
             {inProgress && <Loader2 className="w-3 h-3 text-[#e8ff5c] animate-spin shrink-0" />}
             {isComplete && <Sparkles className="w-3 h-3 text-emerald-400 shrink-0" />}
             {isFailed && <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" />}
             <span className="truncate">{activeLabel}</span>
           </span>
-          <span className="text-white/40 shrink-0 ml-1">{percent}%</span>
+          <span className="text-[#e8ff5c] font-bold shrink-0 ml-1">{percent}%</span>
         </div>
         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
           <div
             className={cn(
-              "h-full transition-all duration-500 rounded-full",
-              isFailed ? "bg-rose-500" : isComplete ? "bg-emerald-400" : "bg-gradient-to-r from-[#e8ff5c] to-emerald-400"
+              "h-full transition-all duration-700 ease-out rounded-full",
+              isFailed ? "bg-rose-500" : isComplete ? "bg-emerald-400" : "bg-gradient-to-r from-[#e8ff5c] via-emerald-400 to-[#e8ff5c]"
             )}
             style={{ width: `${percent}%` }}
           />
@@ -87,7 +114,7 @@ export function PipelineProgressBar({ status, className, compact = false }: Pipe
       <div className="relative h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
         <div
           className={cn(
-            "h-full transition-all duration-700 rounded-full",
+            "h-full transition-all duration-700 ease-out rounded-full",
             isFailed
               ? "bg-rose-500"
               : isComplete
