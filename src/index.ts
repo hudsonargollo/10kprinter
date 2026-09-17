@@ -423,7 +423,8 @@ app.post("/api/hunt-sessions/:id/timeline", async (c) => {
     user: `Region: ${session.region}\nWeekly capacity: ${body.capacityPerWeek} leads/week\nPreferred contact method: ${body.contactMethod}\nNiche priority order (highest first): ${body.priorityOrder.map(nicheLabel).join(" > ")}\n\nLeads found, grouped by niche:\n${leadListText}\n\nWrite the week-by-week outreach plan.`,
     maxTokens: 2048,
     geminiApiKey: c.env.GEMINI_API_KEY,
-    groqProxyToken: c.env.FALAI_TOKEN,
+    groqProxyToken: c.env.TEKTONE_AI_TOKEN || c.env.FALAI_TOKEN,
+    tektoneAiEndpoint: c.env.TEKTONE_AI_ENDPOINT || "https://ai.tektone.com.br/v1",
   });
 
   const timelineId = newId();

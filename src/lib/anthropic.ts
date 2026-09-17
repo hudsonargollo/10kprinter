@@ -6,22 +6,8 @@ function errMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
-/**
- * Combines every provider's error into one message instead of silently swallowing fallback
- * failures — otherwise a fallback that's ALSO failing looks identical to Anthropic failing
- * alone, which made this exact bug invisible once before. Preserves NonRetryableError-ness
- * from the primary error so an unrecoverable Anthropic failure (bad key, no credits) still
- * fails the Workflow step fast when every fallback is also unrecoverably broken — UNLESS the
- * last fallback we tried (Groq) failed with what looks like a transient condition (429 rate
- * limit, or a 5xx), in which case Workflow's built-in step retry/backoff genuinely might
- * succeed on the next attempt, so the combined error must stay retryable.
- */
 function isTransientGroqError(groqErr: unknown): boolean {
   if (!(groqErr instanceof Error)) return false;
-  // 429 (rate limit) / 5xx (server-side) are textbook transient. "tool_use_failed" — the model
-  // ignored the forced tool_choice and wrote prose instead — is observed to be non-deterministic
-  // sampling noise (same prompt succeeds on a plain retry), not a malformed request, so it's
-  // worth treating as retryable too rather than permanently failing the lead.
   return /API error (429|5\d\d)\b/.test(groqErr.message) || /tool_use_failed/.test(groqErr.message);
 }
 
@@ -29,7 +15,7 @@ function combinedError(primary: unknown, geminiErr: unknown, groqErr: unknown): 
   const message =
     `Anthropic failed (${errMessage(primary)}); ` +
     `Gemini fallback also failed (${errMessage(geminiErr)}); ` +
-    `Groq fallback also failed (${errMessage(groqErr)})`;
+    `Tektone AI fallback also failed (${errMessage(groqErr)})`;
   if (isTransientGroqError(groqErr)) return new Error(message);
   return primary instanceof NonRetryableError ? new NonRetryableError(message) : new Error(message);
 }
@@ -69,9 +55,6 @@ async function callAnthropic(apiKey: string, body: Record<string, unknown>): Pro
   if (!res.ok) {
     const errText = await res.text();
     const message = `Anthropic API error ${res.status}: ${errText}`;
-    // 400/401 (bad request, auth, insufficient credits) will never self-resolve on retry —
-    // fail the step immediately instead of burning through Workflows' default 5 retries with
-    // exponential backoff. 429/5xx (rate limit, overload) are transient and should retry.
     if (res.status === 400 || res.status === 401) {
       throw new NonRetryableError(message);
     }
@@ -84,7 +67,14 @@ async function callAnthropic(apiKey: string, body: Record<string, unknown>): Pro
 /** Plain text/markdown generation (used for PRD authoring). */
 export async function generateText(
   apiKey: string,
-  opts: { system: string; user: string; maxTokens?: number; geminiApiKey?: string; groqProxyToken?: string },
+  opts: {
+    system: string;
+    user: string;
+    maxTokens?: number;
+    geminiApiKey?: string;
+    groqProxyToken?: string;
+    tektoneAiEndpoint?: string;
+  },
 ): Promise<string> {
   try {
     const response = await callAnthropic(apiKey, {
@@ -110,12 +100,13 @@ export async function generateText(
         geminiErr = e;
       }
     }
-    if (!opts.groqProxyToken) throw combinedError(err, geminiErr, "no Groq proxy token configured");
+    if (!opts.groqProxyToken) throw combinedError(err, geminiErr, "no Tektone AI proxy token configured");
     try {
       return await generateTextGroq(opts.groqProxyToken, {
         system: opts.system,
         user: opts.user,
         maxTokens: opts.maxTokens,
+        baseUrl: opts.tektoneAiEndpoint,
       });
     } catch (groqErr) {
       throw combinedError(err, geminiErr, groqErr);
@@ -134,6 +125,7 @@ export async function generateStructured<T>(
     maxTokens?: number;
     geminiApiKey?: string;
     groqProxyToken?: string;
+    tektoneAiEndpoint?: string;
   },
 ): Promise<T> {
   try {
@@ -164,7 +156,7 @@ export async function generateStructured<T>(
         geminiErr = e;
       }
     }
-    if (!opts.groqProxyToken) throw combinedError(err, geminiErr, "no Groq proxy token configured");
+    if (!opts.groqProxyToken) throw combinedError(err, geminiErr, "no Tektone AI proxy token configured");
     try {
       return await generateStructuredGroq<T>(opts.groqProxyToken, {
         system: opts.system,
@@ -172,6 +164,7 @@ export async function generateStructured<T>(
         toolName: opts.toolName,
         schema: opts.schema,
         maxTokens: opts.maxTokens,
+        baseUrl: opts.tektoneAiEndpoint,
       });
     } catch (groqErr) {
       throw combinedError(err, geminiErr, groqErr);
@@ -192,6 +185,7 @@ export async function generateStructuredFromImage<T>(
     maxTokens?: number;
     geminiApiKey?: string;
     groqProxyToken?: string;
+    tektoneAiEndpoint?: string;
   },
 ): Promise<T> {
   try {
@@ -202,7 +196,10 @@ export async function generateStructuredFromImage<T>(
         {
           role: "user",
           content: [
-            { type: "image", source: { type: "base64", media_type: opts.mediaType, data: opts.imageBase64 } },
+            {
+              type: "image",
+              source: { type: "base64", media_type: opts.mediaType, data: opts.imageBase64 },
+            },
             { type: "text", text: opts.user },
           ],
         },
@@ -232,7 +229,7 @@ export async function generateStructuredFromImage<T>(
         geminiErr = e;
       }
     }
-    if (!opts.groqProxyToken) throw combinedError(err, geminiErr, "no Groq proxy token configured");
+    if (!opts.groqProxyToken) throw combinedError(err, geminiErr, "no Tektone AI proxy token configured");
     try {
       return await generateStructuredFromImageGroq<T>(opts.groqProxyToken, {
         system: opts.system,
@@ -242,6 +239,7 @@ export async function generateStructuredFromImage<T>(
         toolName: opts.toolName,
         schema: opts.schema,
         maxTokens: opts.maxTokens,
+        baseUrl: opts.tektoneAiEndpoint,
       });
     } catch (groqErr) {
       throw combinedError(err, geminiErr, groqErr);

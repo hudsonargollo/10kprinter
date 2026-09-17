@@ -7,6 +7,8 @@ export interface Env {
   GOOGLE_PLACES_API_KEY: string;
   GEMINI_API_KEY: string;
   FALAI_TOKEN: string;
+  TEKTONE_AI_ENDPOINT?: string;
+  TEKTONE_AI_TOKEN?: string;
   SESSION_SECRET: string;
   // TheLeadMachine CRM integration (this project's provisioned instance —
   // see theleadmachine/docs/PRD.md §2). Sync is best-effort/non-fatal;

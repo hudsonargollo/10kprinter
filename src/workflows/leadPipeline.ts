@@ -22,7 +22,7 @@ import {
 } from "../lib/db";
 import { computeLeadScoring } from "../lib/scoring";
 import { generateStructured, generateStructuredFromImage } from "../lib/anthropic";
-import { generateCoverImageGemini } from "../lib/imageGen";
+import { generateCoverImage } from "../lib/imageGen";
 import { buildCoverImagePrompt, buildProposalHtml, buildWaLink } from "../lib/proposal";
 import { syncLeadToCrm } from "../lib/crmSync";
 import { resolveTargetLanguage, getLanguagePromptInstruction } from "../lib/language";
@@ -109,6 +109,9 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
       return h;
     }
 
+    const tektoneAiEndpoint = env.TEKTONE_AI_ENDPOINT || "https://ai.tektone.com.br/v1";
+    const groqProxyToken = env.TEKTONE_AI_TOKEN || env.FALAI_TOKEN;
+
     const LLM_STEP_RETRIES = {
       limit: 300,
       delay: 180_000 + (hashString(leadId) % 180) * 1000,
@@ -124,7 +127,8 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
           toolName: "submit_audit",
           schema: AUDIT_SCHEMA,
           geminiApiKey: env.GEMINI_API_KEY,
-          groqProxyToken: env.FALAI_TOKEN,
+          groqProxyToken,
+          tektoneAiEndpoint,
         });
         return {
           vertical: vertical.key,
@@ -182,7 +186,8 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
         toolName: "submit_brand_tokens",
         schema: BRAND_TOKENS_SCHEMA,
         geminiApiKey: env.GEMINI_API_KEY,
-        groqProxyToken: env.FALAI_TOKEN,
+        groqProxyToken,
+        tektoneAiEndpoint,
       });
     });
 
@@ -198,7 +203,8 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
             schema: PRD_SCHEMA,
             maxTokens: 4096,
             geminiApiKey: env.GEMINI_API_KEY,
-            groqProxyToken: env.FALAI_TOKEN,
+            groqProxyToken,
+            tektoneAiEndpoint,
           },
         );
         const r2Key = await putPrdMarkdown(env.ASSETS_BUCKET, leadId, vertical.key, markdown);
@@ -207,8 +213,11 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
       });
 
       const coverImageKey = await step.do(`cover-image-${vertical.key}`, { retries: LLM_STEP_RETRIES }, async () => {
-        const { bytes, mimeType } = await generateCoverImageGemini(env.GEMINI_API_KEY, {
+        const { bytes, mimeType } = await generateCoverImage({
           prompt: buildCoverImagePrompt(brandTokens),
+          tektoneToken: groqProxyToken,
+          tektoneEndpoint: tektoneAiEndpoint,
+          geminiApiKey: env.GEMINI_API_KEY,
         });
         return putCoverImage(env.ASSETS_BUCKET, leadId, vertical.key, bytes, mimeType);
       });
