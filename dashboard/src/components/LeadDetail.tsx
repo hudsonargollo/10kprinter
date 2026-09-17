@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PipelineProgressBar } from "./PipelineProgressBar";
 import { OfferTab } from "./lead-detail/OfferTab";
 import { SalesTab } from "./lead-detail/SalesTab";
 import { OverviewTab } from "./lead-detail/OverviewTab";
@@ -46,7 +47,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
 
   useEffect(() => {
     if (data && IN_PROGRESS.includes(data.lead.status)) {
-      pollRef.current = window.setInterval(refresh, 4000);
+      pollRef.current = window.setInterval(refresh, 3500);
       return () => {
         if (pollRef.current) window.clearInterval(pollRef.current);
       };
@@ -71,7 +72,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
 
   if (error)
     return <div className="mb-4 rounded-lg border border-bad bg-bad/15 px-3.5 py-2.5 text-bad">{error}</div>;
-  if (!data) return <p className="py-10 text-center text-muted-foreground">Loading…</p>;
+  if (!data) return <p className="py-10 text-center text-muted-foreground font-mono text-xs">Loading lead data…</p>;
 
   const { lead, scrapes, audits, prds, proposals, events } = data;
   const latestScrape = scrapes[scrapes.length - 1];
@@ -83,7 +84,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
 
   return (
     <>
-      <div className="mb-4 rounded-xl bg-card p-4.5 ring-1 ring-foreground/10 border border-white/5">
+      <div className="mb-4 rounded-xl bg-card p-4.5 ring-1 ring-foreground/10 border border-white/5 space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="mb-1 font-heading text-[15px] font-bold text-white">{lead.business_name || lead.url}</h2>
@@ -93,7 +94,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
           </div>
           <div className="flex items-center gap-2">
             {lead.tier && (
-              <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-bold", TIER_CLASS[lead.tier])}>
+              <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-bold border", TIER_CLASS[lead.tier])}>
                 {TIER_LABELS[lead.tier]} · {lead.score}
               </span>
             )}
@@ -117,6 +118,9 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
             </Select>
           </div>
         </div>
+
+        {/* Live Progression Tracker */}
+        <PipelineProgressBar status={lead.status} />
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
