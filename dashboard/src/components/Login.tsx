@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Lock, Mail, User, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -13,6 +14,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,7 +44,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
             M
           </div>
           <h1 className="font-heading text-xl font-bold tracking-tight text-white">MoneyMachine Ops</h1>
-          <p className="text-xs text-white/50 font-mono">Sign in or create your operator account</p>
+          <p className="text-xs text-white/50 font-mono">{t.login.subtitle}</p>
         </div>
 
         {/* Card */}
@@ -61,7 +63,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
                   : "text-white/60 hover:text-white"
               }`}
             >
-              Sign In
+              {t.login.signInTab}
             </button>
             <button
               type="button"
@@ -75,20 +77,20 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
                   : "text-white/60 hover:text-white"
               }`}
             >
-              Create Account
+              {t.login.registerTab}
             </button>
           </div>
 
           <form onSubmit={submit} className="space-y-3.5">
             {mode === "register" && (
               <div className="space-y-1">
-                <label className="text-[11px] font-mono text-white/60">Full Name</label>
+                <label className="text-[11px] font-mono text-white/60">{t.login.nameLabel}</label>
                 <div className="relative">
                   <User className="w-4 h-4 text-white/40 absolute left-3 top-2.5" />
                   <Input
                     type="text"
                     required
-                    placeholder="Hudson Argollo"
+                    placeholder={t.login.namePlaceholder}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="pl-9 bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
@@ -98,14 +100,14 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
             )}
 
             <div className="space-y-1">
-              <label className="text-[11px] font-mono text-white/60">Email Address</label>
+              <label className="text-[11px] font-mono text-white/60">{t.login.emailLabel}</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-white/40 absolute left-3 top-2.5" />
                 <Input
                   type="email"
                   autoFocus
                   required
-                  placeholder="operator@clubemkt.digital"
+                  placeholder={t.login.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-9 bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
@@ -114,14 +116,14 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-mono text-white/60">Password</label>
+              <label className="text-[11px] font-mono text-white/60">{t.login.passwordLabel}</label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-white/40 absolute left-3 top-2.5" />
                 <Input
                   type="password"
                   required
                   minLength={6}
-                  placeholder={mode === "register" ? "At least 6 characters" : "••••••••"}
+                  placeholder={mode === "register" ? t.login.passwordPlaceholderRegister : t.login.passwordPlaceholderLogin}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-9 bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
@@ -141,16 +143,16 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
               className="w-full h-10 mt-2 bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#e8ff5c]/20"
             >
               {busy ? (
-                <span>Authenticating…</span>
+                <span>{t.login.submitBusy}</span>
               ) : mode === "login" ? (
                 <>
-                  <span>Sign In</span>
+                  <span>{t.login.submitSignIn}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               ) : (
                 <>
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Create Account & Enter</span>
+                  <span>{t.login.submitRegister}</span>
                 </>
               )}
             </Button>
@@ -160,7 +162,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
         {/* Security badge */}
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-white/40 font-mono">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span>PBKDF2-SHA256 Encrypted Session</span>
+          <span>{t.login.securityNote}</span>
         </div>
       </div>
     </div>

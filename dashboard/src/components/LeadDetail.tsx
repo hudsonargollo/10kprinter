@@ -15,6 +15,8 @@ import { AuditsTab } from "./lead-detail/AuditsTab";
 import { PrdsTab } from "./lead-detail/PrdsTab";
 import { TimelineTab } from "./lead-detail/TimelineTab";
 
+import { useLanguage } from "../i18n/LanguageContext";
+
 const IN_PROGRESS: LeadStatus[] = ["discovered", "scraping", "scraped", "audited"];
 
 type Tab = "offer" | "sales" | "overview" | "audits" | "prds" | "timeline";
@@ -33,6 +35,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("offer");
   const pollRef = useRef<number | null>(null);
+  const { t } = useLanguage();
 
   const refresh = useCallback(() => {
     getLead(leadId)
@@ -130,27 +133,27 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
         <TabsList className="bg-card/80 border border-white/10 p-1 rounded-xl">
           <TabsTrigger value="offer" className="flex items-center gap-1.5 text-xs">
-            <span>Offer</span>
+            <span>{t.leadDetail.tabs.offer}</span>
             <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">1</kbd>
           </TabsTrigger>
           <TabsTrigger value="sales" className="flex items-center gap-1.5 text-xs">
-            <span>Sales</span>
+            <span>{t.leadDetail.tabs.sales}</span>
             <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">2</kbd>
           </TabsTrigger>
           <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs">
-            <span>Overview</span>
+            <span>{t.leadDetail.tabs.overview}</span>
             <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">3</kbd>
           </TabsTrigger>
           <TabsTrigger value="audits" className="flex items-center gap-1.5 text-xs">
-            <span>Audits ({audits.length})</span>
+            <span>{t.leadDetail.tabs.audits} ({audits.length})</span>
             <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">4</kbd>
           </TabsTrigger>
           <TabsTrigger value="prds" className="flex items-center gap-1.5 text-xs">
-            <span>PRDs ({prds.length})</span>
+            <span>{t.leadDetail.tabs.prds} ({prds.length})</span>
             <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">5</kbd>
           </TabsTrigger>
           <TabsTrigger value="timeline" className="flex items-center gap-1.5 text-xs">
-            <span>Timeline</span>
+            <span>{t.leadDetail.tabs.timeline}</span>
             <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">6</kbd>
           </TabsTrigger>
         </TabsList>

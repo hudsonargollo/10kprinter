@@ -9,20 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Radar, Globe, CheckCircle2, Loader2, Sparkles, ArrowRight, ArrowLeft, RefreshCw } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 type Step = "place" | "niches" | "run" | "interview" | "timeline";
-
-const STEPS: { key: Step; label: string }[] = [
-  { key: "place", label: "Place & Language" },
-  { key: "niches", label: "Niches" },
-  { key: "run", label: "Review & Run" },
-  { key: "interview", label: "Interview" },
-  { key: "timeline", label: "Timeline" },
-];
 
 type NicheProgress = { status: "pending" | "running" | "done"; count: number };
 
 export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void }) {
+  const { t } = useLanguage();
   const [step, setStep] = useState<Step>("place");
   const [region, setRegion] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(NICHE_PACKAGE.map((n) => n.key)));
@@ -40,6 +34,14 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
   const [contactMethod, setContactMethod] = useState<"whatsapp" | "call" | "email">("whatsapp");
   const [timelineMarkdown, setTimelineMarkdown] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+
+  const STEPS: { key: Step; label: string }[] = [
+    { key: "place", label: t.huntWizard.steps.place },
+    { key: "niches", label: t.huntWizard.steps.niches },
+    { key: "run", label: t.huntWizard.steps.run },
+    { key: "interview", label: t.huntWizard.steps.interview },
+    { key: "timeline", label: t.huntWizard.steps.timeline },
+  ];
 
   const allNiches: NicheDef[] = [...NICHE_PACKAGE.filter((n) => selectedKeys.has(n.key)), ...customNiches];
 
@@ -134,11 +136,11 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-heading text-base font-bold text-white flex items-center gap-2">
           <Radar className="w-5 h-5 text-[#e8ff5c]" />
-          <span>Hunt Wizard (City & Niche Discovery)</span>
+          <span>{t.huntWizard.title}</span>
         </h2>
         {huntSessionId && (
           <span className="text-[11px] font-mono text-[#e8ff5c] px-2 py-0.5 rounded-full bg-[#e8ff5c]/10 border border-[#e8ff5c]/20">
-            Session active
+            {t.huntWizard.sessionActive}
           </span>
         )}
       </div>
@@ -178,13 +180,13 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
         <div className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="region" className="text-xs text-white/80">Target City / Region</Label>
-              <PlaceAutocomplete id="region" placeholder="e.g. Santa Cruz de la Sierra, Bolivia" value={region} onChange={setRegion} />
+              <Label htmlFor="region" className="text-xs text-white/80">{t.huntWizard.placeLabel}</Label>
+              <PlaceAutocomplete id="region" placeholder={t.huntWizard.placePlaceholder} value={region} onChange={setRegion} />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="hunt-language" className="text-xs text-white/80 flex items-center gap-1">
                 <Globe className="w-3.5 h-3.5 text-[#e8ff5c]" />
-                <span>Audits & PRD Language</span>
+                <span>{t.huntWizard.langLabel}</span>
               </Label>
               <select
                 id="hunt-language"
@@ -192,10 +194,10 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                 onChange={(e) => setLanguage(e.target.value)}
                 className="bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none h-9"
               >
-                <option value="auto" className="bg-[#161020] text-white">🌐 Auto-detect from Region</option>
+                <option value="auto" className="bg-[#161020] text-white">🌐 Auto (Español)</option>
+                <option value="es" className="bg-[#161020] text-white">🇪🇸 Español (LatAm / ES)</option>
                 <option value="en" className="bg-[#161020] text-white">🇺🇸 English (US/Global)</option>
                 <option value="pt" className="bg-[#161020] text-white">🇧🇷 Português (Brasil / PT)</option>
-                <option value="es" className="bg-[#161020] text-white">🇪🇸 Español (LatAm / ES)</option>
               </select>
             </div>
           </div>
@@ -204,7 +206,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
             onClick={() => setStep("niches")}
             className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] rounded-xl text-xs h-9 px-5 shadow-md shadow-[#e8ff5c]/20 flex items-center gap-1.5 cursor-pointer"
           >
-            <span>Next: Select Niches</span>
+            <span>{t.huntWizard.nextNiches}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </div>
@@ -212,7 +214,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
 
       {step === "niches" && (
         <div className="space-y-4">
-          <h3 className="font-heading text-xs uppercase font-mono tracking-wider text-white/50">Select Niches to Hunt</h3>
+          <h3 className="font-heading text-xs uppercase font-mono tracking-wider text-white/50">{t.huntWizard.selectNiches}</h3>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2.5">
             {NICHE_PACKAGE.map((n) => {
               const checked = selectedKeys.has(n.key);
@@ -238,7 +240,12 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
             })}
           </div>
 
-          <CustomNicheForm onAdd={(n) => setCustomNiches((prev) => [...prev, n])} />
+          <CustomNicheForm
+            onAdd={(n) => setCustomNiches((prev) => [...prev, n])}
+            nameLabel={t.huntWizard.customNicheName}
+            queryLabel={t.huntWizard.customSearchQuery}
+            addLabel={t.huntWizard.customAdd}
+          />
           {customNiches.length > 0 && (
             <div className="space-y-1">
               {customNiches.map((n) => (
@@ -251,7 +258,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
 
           <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-white/10">
             <div className="flex items-center gap-2">
-              <Label htmlFor="leadsPerNiche" className="text-xs text-white/70">Leads per niche:</Label>
+              <Label htmlFor="leadsPerNiche" className="text-xs text-white/70">{t.huntWizard.leadsPerNiche}</Label>
               <Input
                 id="leadsPerNiche"
                 type="number"
@@ -264,7 +271,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => setStep("place")} className="border-white/10 text-white">
-                <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back
+                <ArrowLeft className="w-3.5 h-3.5 mr-1" /> {t.huntWizard.back}
               </Button>
               <Button
                 disabled={allNiches.length === 0}
@@ -272,7 +279,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                 onClick={() => setStep("run")}
                 className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]"
               >
-                <span>Review & Run</span>
+                <span>{t.huntWizard.reviewRun}</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </div>
@@ -286,19 +293,19 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
             <div>
               <h3 className="font-heading text-sm font-bold text-white">{region}</h3>
               <p className="text-xs text-white/50 font-mono mt-0.5">
-                {allNiches.length} niches selected • Target: {allNiches.length * leadsPerNiche} leads max
+                {allNiches.length} {t.huntWizard.selectedNichesSummary} {allNiches.length * leadsPerNiche} max
               </p>
             </div>
             {!running && !huntSessionId && (
               <Button onClick={startHunt} className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] shadow-lg shadow-[#e8ff5c]/20">
                 <Sparkles className="w-4 h-4 mr-1.5" />
-                <span>Launch Automated Hunt</span>
+                <span>{t.huntWizard.launchHunt}</span>
               </Button>
             )}
             {running && (
               <div className="flex items-center gap-2 text-xs font-mono text-[#e8ff5c]">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Hunting Google Places live…</span>
+                <span>{t.huntWizard.huntingLive}</span>
               </div>
             )}
           </div>
@@ -318,7 +325,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                     {isRunning && <Loader2 className="w-3.5 h-3.5 text-[#e8ff5c] animate-spin" />}
                     {isDone && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
                     <span className={isDone ? "text-emerald-400 font-bold" : isRunning ? "text-[#e8ff5c]" : "text-white/40"}>
-                      {!p || p.status === "pending" ? "Queued" : `${p.count} found`}
+                      {!p || p.status === "pending" ? t.huntWizard.queued : `${p.count} ${t.huntWizard.found}`}
                     </span>
                   </div>
                 </div>
@@ -329,10 +336,10 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
           {huntSessionId && !running && (
             <div className="pt-2 flex justify-between items-center border-t border-white/10">
               <span className="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4" /> Discovery cycle complete! Pipelines initiated.
+                <CheckCircle2 className="w-4 h-4" /> {t.huntWizard.discoveryComplete}
               </span>
               <Button onClick={() => setStep("interview")} className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]">
-                <span>Generate Outreach Plan</span>
+                <span>{t.huntWizard.generateOutreachPlan}</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </div>
@@ -342,10 +349,10 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
 
       {step === "interview" && (
         <div className="space-y-4">
-          <h3 className="font-heading text-sm font-bold text-white">Outreach Cadence Setup</h3>
+          <h3 className="font-heading text-sm font-bold text-white">{t.huntWizard.outreachSetup}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="capacity" className="text-xs text-white/80">Leads you can contact per week:</Label>
+              <Label htmlFor="capacity" className="text-xs text-white/80">{t.huntWizard.capacityLabel}</Label>
               <Input
                 id="capacity"
                 type="number"
@@ -357,7 +364,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="text-xs text-white/80">Primary Outreach Channel</Label>
+              <Label className="text-xs text-white/80">{t.huntWizard.channelLabel}</Label>
               <div className="flex gap-3">
                 {(["whatsapp", "call", "email"] as const).map((m) => (
                   <label key={m} className="flex items-center gap-2 text-xs text-white/80 cursor-pointer">
@@ -368,7 +375,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                       onChange={() => setContactMethod(m)}
                       className="accent-[#e8ff5c]"
                     />
-                    <span className="capitalize">{m}</span>
+                    <span>{t.huntWizard.channels[m]}</span>
                   </label>
                 ))}
               </div>
@@ -376,7 +383,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs text-white/80">Niche Priority Ordering (drag or reorder)</Label>
+            <Label className="text-xs text-white/80">{t.huntWizard.priorityLabel}</Label>
             <div className="space-y-1.5">
               {priorityOrder.map((key, i) => {
                 const niche = allNiches.find((n) => n.key === key);
@@ -388,10 +395,10 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                     </span>
                     <div className="flex gap-1">
                       <Button variant="outline" size="sm" onClick={() => movePriority(key, -1)} disabled={i === 0} className="h-6 px-2 text-[10px] border-white/10">
-                        ↑ Up
+                        {t.huntWizard.up}
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => movePriority(key, 1)} disabled={i === priorityOrder.length - 1} className="h-6 px-2 text-[10px] border-white/10">
-                        ↓ Down
+                        {t.huntWizard.down}
                       </Button>
                     </div>
                   </div>
@@ -402,9 +409,9 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
 
           <Button disabled={generating} onClick={submitInterview} className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]">
             {generating ? (
-              <span className="flex items-center gap-1.5"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating AI Gameplan…</span>
+              <span className="flex items-center gap-1.5"><Loader2 className="w-3.5 h-3.5 animate-spin" /> {t.huntWizard.generatingPlan}</span>
             ) : (
-              <span>Generate Strategic Outreach Plan</span>
+              <span>{t.huntWizard.generatePlanBtn}</span>
             )}
           </Button>
         </div>
@@ -413,16 +420,16 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
       {step === "timeline" && timelineMarkdown && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-heading text-sm font-bold text-white">Localized Outreach Gameplan</h3>
+            <h3 className="font-heading text-sm font-bold text-white">{t.huntWizard.timelineHeading}</h3>
             <Button variant="outline" size="sm" onClick={() => setStep("place")} className="border-white/15 text-white">
-              <RefreshCw className="w-3 h-3 mr-1" /> New Hunt
+              <RefreshCw className="w-3 h-3 mr-1" /> {t.huntWizard.newHunt}
             </Button>
           </div>
           <div className="p-4 rounded-xl bg-black/30 border border-white/10 text-xs text-white/80 font-mono whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto">
             {timelineMarkdown}
           </div>
           <Button asChild className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]">
-            <a href="#/">View All Discovered Leads</a>
+            <a href="#/">{t.huntWizard.viewAllLeads}</a>
           </Button>
         </div>
       )}
@@ -430,7 +437,17 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
   );
 }
 
-function CustomNicheForm({ onAdd }: { onAdd: (niche: NicheDef) => void }) {
+function CustomNicheForm({
+  onAdd,
+  nameLabel,
+  queryLabel,
+  addLabel,
+}: {
+  onAdd: (niche: NicheDef) => void;
+  nameLabel: string;
+  queryLabel: string;
+  addLabel: string;
+}) {
   const [label, setLabel] = useState("");
   const [query, setQuery] = useState("");
 
@@ -444,7 +461,7 @@ function CustomNicheForm({ onAdd }: { onAdd: (niche: NicheDef) => void }) {
   return (
     <div className="flex flex-col sm:flex-row items-end gap-2 pt-2">
       <div className="flex flex-1 flex-col gap-1 w-full">
-        <Label htmlFor="customLabel" className="text-[11px] text-white/60">Custom Niche Name</Label>
+        <Label htmlFor="customLabel" className="text-[11px] text-white/60">{nameLabel}</Label>
         <Input
           id="customLabel"
           value={label}
@@ -454,7 +471,7 @@ function CustomNicheForm({ onAdd }: { onAdd: (niche: NicheDef) => void }) {
         />
       </div>
       <div className="flex flex-1 flex-col gap-1 w-full">
-        <Label htmlFor="customQuery" className="text-[11px] text-white/60">Search Query</Label>
+        <Label htmlFor="customQuery" className="text-[11px] text-white/60">{queryLabel}</Label>
         <Input
           id="customQuery"
           value={query}
@@ -464,7 +481,7 @@ function CustomNicheForm({ onAdd }: { onAdd: (niche: NicheDef) => void }) {
         />
       </div>
       <Button variant="outline" size="sm" onClick={add} disabled={!label || !query} className="h-8 border-white/10 text-white">
-        Add
+        {addLabel}
       </Button>
     </div>
   );

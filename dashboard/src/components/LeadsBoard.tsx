@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { listLeads } from "../api";
 import type { Lead, LeadStatus } from "../types";
-import { STATUS_LABELS, STATUS_ORDER } from "../types";
+import { STATUS_ORDER } from "../types";
 import { NewLeadForm } from "./NewLeadForm";
 import { HuntWizard } from "./HuntWizard";
 import { PipelineProgressBar } from "./PipelineProgressBar";
@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { TIER_CLASS } from "@/lib/tier";
 import { Radar, Plus, Filter } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const IN_PROGRESS: LeadStatus[] = ["discovered", "scraping", "scraped", "audited"];
 const SALES_COLUMNS = STATUS_ORDER.filter((s) => !IN_PROGRESS.includes(s));
@@ -19,6 +20,7 @@ export function LeadsBoard() {
   const [activeActionTab, setActiveActionTab] = useState<"hunt" | "single" | "none">("hunt");
   const [filterTier, setFilterTier] = useState<"all" | "hot" | "warm" | "cold">("all");
   const pollRef = useRef<number | null>(null);
+  const { t } = useLanguage();
 
   const refresh = useCallback(() => {
     listLeads()
@@ -95,7 +97,7 @@ export function LeadsBoard() {
               }`}
             >
               <Radar className="w-3.5 h-3.5" />
-              <span>Hunt Wizard</span>
+              <span>{t.board.actionHunt}</span>
             </button>
 
             <button
@@ -107,18 +109,18 @@ export function LeadsBoard() {
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Direct URL Audit</span>
+              <span>{t.board.actionSingle}</span>
             </button>
           </div>
 
           {/* Metrics summary */}
           <div className="flex items-center gap-3 text-xs font-mono text-white/50">
-            <span>Total: <strong className="text-white">{totalCount}</strong></span>
-            <span>🔥 Hot: <strong className="text-rose-400">{hotCount}</strong></span>
+            <span>{t.board.total}: <strong className="text-white">{totalCount}</strong></span>
+            <span>🔥 {t.board.hot}: <strong className="text-rose-400">{hotCount}</strong></span>
             {inProgressCount > 0 && (
               <span className="flex items-center gap-1 text-[#e8ff5c]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#e8ff5c] animate-ping" />
-                Active: <strong>{inProgressCount}</strong>
+                {t.board.active}: <strong>{inProgressCount}</strong>
               </span>
             )}
           </div>
@@ -144,37 +146,54 @@ export function LeadsBoard() {
       {/* Filter Bar */}
       <div className="flex items-center justify-between gap-4 pt-2">
         <h2 className="font-heading text-sm font-bold text-white flex items-center gap-2">
-          <span>Pipeline Deals</span>
+          <span>{t.board.title}</span>
           <span className="text-xs font-mono text-white/40">({filteredLeads.length})</span>
         </h2>
 
         <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5 text-xs font-mono">
           <Filter className="w-3 h-3 text-white/40 ml-1 mr-0.5" />
-          {(["all", "hot", "warm", "cold"] as const).map((tier) => (
-            <button
-              key={tier}
-              onClick={() => setFilterTier(tier)}
-              className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
-                filterTier === tier
-                  ? "bg-[#e8ff5c] text-black"
-                  : "text-white/50 hover:text-white"
-              }`}
-            >
-              {tier}
-            </button>
-          ))}
+          <button
+            onClick={() => setFilterTier("all")}
+            className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
+              filterTier === "all" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
+            }`}
+          >
+            {t.board.filterAll}
+          </button>
+          <button
+            onClick={() => setFilterTier("hot")}
+            className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
+              filterTier === "hot" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
+            }`}
+          >
+            {t.board.filterHot}
+          </button>
+          <button
+            onClick={() => setFilterTier("warm")}
+            className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
+              filterTier === "warm" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
+            }`}
+          >
+            {t.board.filterWarm}
+          </button>
+          <button
+            onClick={() => setFilterTier("cold")}
+            className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
+              filterTier === "cold" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
+            }`}
+          >
+            {t.board.filterCold}
+          </button>
         </div>
       </div>
 
       {/* Leads Columns */}
       {leads === null ? (
-        <p className="py-10 text-center text-muted-foreground font-mono text-xs">Loading leads…</p>
+        <p className="py-10 text-center text-muted-foreground font-mono text-xs">{t.board.loading}</p>
       ) : filteredLeads.length === 0 ? (
         <div className="py-16 text-center border border-dashed border-white/10 rounded-2xl p-8 bg-white/[0.01]">
-          <p className="text-sm text-white/70 font-medium">No leads in the database yet</p>
-          <p className="text-xs text-white/40 mt-1">
-            Use the Hunt Wizard above to hunt real local prospects or enter a single URL.
-          </p>
+          <p className="text-sm text-white/70 font-medium">{t.board.emptyTitle}</p>
+          <p className="text-xs text-white/40 mt-1">{t.board.emptyDesc}</p>
         </div>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] items-start gap-4">
@@ -182,7 +201,7 @@ export function LeadsBoard() {
             <Card className="min-h-20 gap-0 p-3 bg-card border-white/10">
               <h3 className="mb-2.5 ml-1 text-xs font-semibold tracking-wide text-[#e8ff5c] uppercase flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-[#e8ff5c] animate-pulse" />
-                <span>In Progress ({inProgressLeads.length})</span>
+                <span>{t.board.inProgress} ({inProgressLeads.length})</span>
               </h3>
               {inProgressLeads.map((lead) => (
                 <a
@@ -206,7 +225,7 @@ export function LeadsBoard() {
           {salesColumns.map((status) => (
             <Card className="min-h-20 gap-0 p-3 bg-card border-white/10" key={status}>
               <h3 className="mb-2.5 ml-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                {STATUS_LABELS[status]} ({filteredLeads.filter((l) => l.status === status).length})
+                {t.status[status] || status} ({filteredLeads.filter((l) => l.status === status).length})
               </h3>
               {sortedByScore(filteredLeads.filter((l) => l.status === status)).map((lead) => (
                 <LeadCard key={lead.id} lead={lead} />

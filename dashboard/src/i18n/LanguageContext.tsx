@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { translations, type Lang, type Translation } from "./translations";
+import { translations, type Lang, type DashboardTranslations } from "./translations";
 
-const STORAGE_KEY = "mm-lang";
+const STORAGE_KEY = "mm-dash-lang";
 
 function detectInitialLang(): Lang {
   try {
@@ -19,7 +19,7 @@ function detectInitialLang(): Lang {
 interface LanguageContextValue {
   lang: Lang;
   setLang: (lang: Lang) => void;
-  t: Translation;
+  t: DashboardTranslations;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -36,7 +36,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
-      // ignore — per-viewer convenience only
+      // ignore
     }
   }
 

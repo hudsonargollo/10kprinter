@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, LogOut, MapPinned, Radar, Search } from "lucide-react";
+import { ArrowLeft, LogOut, MapPinned, Radar, Search, Globe } from "lucide-react";
 import { LeadsBoard } from "./components/LeadsBoard";
 import { LeadDetailView } from "./components/LeadDetail";
 import { SourcesView } from "./components/Sources";
@@ -9,8 +9,12 @@ import { CommandPalette } from "./components/CommandPalette";
 import { Button } from "@/components/ui/button";
 import { logout, me } from "./api";
 import type { AuthUser } from "./types";
+import { useLanguage } from "./i18n/LanguageContext";
+import { LANG_LABELS, type Lang } from "./i18n/translations";
 
 type Route = { name: "board" } | { name: "lead"; id: string } | { name: "sources" } | { name: "hunt" };
+
+const LANGS: Lang[] = ["es", "en", "pt"];
 
 function parseHash(): Route {
   const hash = window.location.hash.replace(/^#\/?/, "");
@@ -25,6 +29,7 @@ export function App() {
   const [route, setRoute] = useState<Route>(parseHash());
   const [user, setUser] = useState<AuthUser | null | undefined>(undefined); // undefined = checking
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const { t, lang, setLang } = useLanguage();
 
   useEffect(() => {
     const onHashChange = () => setRoute(parseHash());
@@ -95,7 +100,7 @@ export function App() {
               M
             </div>
             <h1 className="font-heading text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-              MoneyMachine <span className="font-mono text-[11px] font-normal text-[#e8ff5c] px-1.5 py-0.2 rounded bg-[#e8ff5c]/10 border border-[#e8ff5c]/20">PRO</span>
+              {t.nav.title} <span className="font-mono text-[11px] font-normal text-[#e8ff5c] px-1.5 py-0.2 rounded bg-[#e8ff5c]/10 border border-[#e8ff5c]/20">{t.nav.proBadge}</span>
             </h1>
           </a>
 
@@ -105,7 +110,7 @@ export function App() {
             className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-white/20 text-xs text-white/50 hover:text-white transition-colors cursor-pointer"
           >
             <Search className="w-3.5 h-3.5" />
-            <span>Search or command...</span>
+            <span>{t.nav.searchPlaceholder}</span>
             <kbd className="px-1.5 py-0.2 text-[10px] font-mono text-white/40 bg-white/5 rounded border border-white/10">
               ⌘K
             </kbd>
@@ -113,29 +118,47 @@ export function App() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Global Language Selector */}
+          <div className="flex items-center gap-0.5 rounded-full bg-white/5 p-0.5 border border-white/10 mr-1" role="group" aria-label="Language">
+            <Globe className="w-3 h-3 text-white/40 ml-1.5 mr-0.5" />
+            {LANGS.map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => setLang(l)}
+                aria-pressed={lang === l}
+                className={`rounded-full px-2 py-0.5 text-[11px] font-mono font-semibold transition-colors cursor-pointer ${
+                  lang === l ? "bg-[#e8ff5c] text-black shadow-sm" : "text-white/50 hover:text-white"
+                }`}
+              >
+                {LANG_LABELS[l]}
+              </button>
+            ))}
+          </div>
+
           {route.name !== "board" && (
             <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-white/10">
               <a href="#/" className="flex items-center gap-1.5">
-                <ArrowLeft className="w-3.5 h-3.5" /> All leads
+                <ArrowLeft className="w-3.5 h-3.5" /> {t.nav.allLeads}
               </a>
             </Button>
           )}
           {route.name !== "hunt" && (
             <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-[#e8ff5c] hover:text-black transition-colors">
               <a href="#/hunt" className="flex items-center gap-1.5">
-                <Radar className="w-3.5 h-3.5" /> Hunt Wizard
+                <Radar className="w-3.5 h-3.5" /> {t.nav.huntWizard}
               </a>
             </Button>
           )}
           {route.name !== "sources" && (
             <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-white/10">
               <a href="#/sources" className="flex items-center gap-1.5">
-                <MapPinned className="w-3.5 h-3.5" /> Sources
+                <MapPinned className="w-3.5 h-3.5" /> {t.nav.sources}
               </a>
             </Button>
           )}
           <Button variant="ghost" size="sm" onClick={onLogout} className="h-8 text-xs text-white/60 hover:text-rose-400">
-            <LogOut className="w-3.5 h-3.5 mr-1" /> Sign out
+            <LogOut className="w-3.5 h-3.5 mr-1" /> {t.nav.signOut}
           </Button>
         </div>
       </header>
