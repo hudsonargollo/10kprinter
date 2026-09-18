@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import type { Context, Next } from "hono";
 import type { Env, HuntSessionRow, LeadRow, LeadSourceRow, OutreachTimelineRow } from "./types";
-import { newId, setLeadNotes, transitionLeadStage } from "./lib/db";
+import { newId, setLeadNotes, transitionLeadStage, saveQualification, saveSalesArtifact, saveNextAction, updateOnboarding } from "./lib/db";
 import { runHunterCycle, runHunterForSource } from "./hunter";
 import { generateText } from "./lib/anthropic";
 import { autocompleteCities } from "./lib/places";
@@ -84,6 +84,10 @@ for (const path of [
   "/api/leads/:id/screenshot",
   "/api/leads/:id/stage",
   "/api/leads/:id/notes",
+  "/api/leads/:id/qualification",
+  "/api/leads/:id/artifacts",
+  "/api/leads/:id/next-action",
+  "/api/leads/:id/onboarding",
   "/api/leads/:id/showcase",
   "/api/leads/:id/status",
   "/api/sources",
@@ -242,6 +246,58 @@ app.patch("/api/leads/:id/notes", async (c) => {
   const id = c.req.param("id");
   const { notes } = await c.req.json<{ notes: string }>();
   await setLeadNotes(c.env.DB, id, notes);
+  return c.json({ ok: true });
+});
+
+// Sales enablement: qualification is intentionally explicit and human-reviewable.
+app.post("/api/leads/:id/qualification", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{
+    contactName?: string; email?: string; companySize?: string; marketingSpend?: string;
+    painPoints?: string; goals?: string;
+    status: "qualified" | "disqualified" | "needs_review";
+    score?: number; answers?: Record<string, string | number | boolean>;
+  }>();
+  if (!["qualified", "disqualified", "needs_review"].includes(body.status)) {
+    return c.json({ error: "status must be qualified, disqualified, or needs_review" }, 400);
+  }
+  if (body.score != null && (body.score < 0 || body.score > 100)) {
+    return c.json({ error: "score must be between 0 and 100" }, 400);
+  }
+  await saveQualification(c.env.DB, id, body);
+  return c.json({ ok: true, qualificationStatus: body.status, score: body.score ?? null });
+});
+
+// Store transcripts, objection reviews, proposal briefs, and call summaries in one auditable timeline.
+app.post("/api/leads/:id/artifacts", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{ type: "call_transcript" | "objection_review" | "proposal_brief" | "roleplay_review"; title?: string; content: string; source?: string }>();
+  if (!body.type || !body.content?.trim()) return c.json({ error: "type and content are required" }, 400);
+  const artifactId = await saveSalesArtifact(c.env.DB, id, body);
+  if (body.type === "call_transcript") {
+    await c.env.DB.prepare("UPDATE leads SET call_transcript = ? WHERE id = ?").bind(body.content, id).run();
+  }
+  if (body.type === "objection_review") {
+    await c.env.DB.prepare("UPDATE leads SET objection_notes = ? WHERE id = ?").bind(body.content, id).run();
+  }
+  return c.json({ ok: true, artifactId }, 201);
+});
+
+app.patch("/api/leads/:id/next-action", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{ type: string; at?: string | null }>();
+  if (!body.type?.trim()) return c.json({ error: "type is required" }, 400);
+  await saveNextAction(c.env.DB, id, body);
+  return c.json({ ok: true });
+});
+
+app.patch("/api/leads/:id/onboarding", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{ status: "not_started" | "invited" | "in_progress" | "activated" | "first_win"; firstWin?: string; shareConsent?: boolean }>();
+  if (!["not_started", "invited", "in_progress", "activated", "first_win"].includes(body.status)) {
+    return c.json({ error: "invalid onboarding status" }, 400);
+  }
+  await updateOnboarding(c.env.DB, id, body);
   return c.json({ ok: true });
 });
 

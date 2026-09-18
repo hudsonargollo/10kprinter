@@ -193,6 +193,18 @@ export interface DashboardTranslations {
     markLost: string;
     closedFor: string;
     lost: string;
+    qualification: string;
+    qualificationPending: string;
+    qualificationQualified: string;
+    qualificationNeedsReview: string;
+    qualificationDisqualified: string;
+    onboarding: string;
+    onboardingNotStarted: string;
+    onboardingInProgress: string;
+    onboardingActivated: string;
+    onboardingFirstWin: string;
+    nextAction: string;
+    noNextAction: string;
   };
   offerTab: {
     showcaseTitle: string;
@@ -479,6 +491,18 @@ export const translations: Record<Lang, DashboardTranslations> = {
       markLost: "Marcar como Perdido",
       closedFor: "Cerrado por",
       lost: "Perdido",
+      qualification: "Calificación",
+      qualificationPending: "Pendiente",
+      qualificationQualified: "Calificado",
+      qualificationNeedsReview: "Requiere revisión",
+      qualificationDisqualified: "No calificado",
+      onboarding: "Onboarding",
+      onboardingNotStarted: "No iniciado",
+      onboardingInProgress: "En progreso",
+      onboardingActivated: "Activado",
+      onboardingFirstWin: "Primera victoria",
+      nextAction: "Próxima acción",
+      noNextAction: "Sin próxima acción",
     },
     offerTab: {
       showcaseTitle: "Página de Demostración (Showcase)",
@@ -764,6 +788,18 @@ export const translations: Record<Lang, DashboardTranslations> = {
       markLost: "Mark as Lost",
       closedFor: "Closed for",
       lost: "Lost",
+      qualification: "Qualification",
+      qualificationPending: "Pending",
+      qualificationQualified: "Qualified",
+      qualificationNeedsReview: "Needs review",
+      qualificationDisqualified: "Disqualified",
+      onboarding: "Onboarding",
+      onboardingNotStarted: "Not started",
+      onboardingInProgress: "In progress",
+      onboardingActivated: "Activated",
+      onboardingFirstWin: "First win",
+      nextAction: "Next action",
+      noNextAction: "No next action",
     },
     offerTab: {
       showcaseTitle: "Showcase Page",
@@ -1049,6 +1085,18 @@ export const translations: Record<Lang, DashboardTranslations> = {
       markLost: "Marcar como Perdido",
       closedFor: "Fechado por",
       lost: "Perdido",
+      qualification: "Qualificação",
+      qualificationPending: "Pendente",
+      qualificationQualified: "Qualificado",
+      qualificationNeedsReview: "Requer revisão",
+      qualificationDisqualified: "Desqualificado",
+      onboarding: "Onboarding",
+      onboardingNotStarted: "Não iniciado",
+      onboardingInProgress: "Em andamento",
+      onboardingActivated: "Ativado",
+      onboardingFirstWin: "Primeira vitória",
+      nextAction: "Próxima ação",
+      noNextAction: "Sem próxima ação",
     },
     offerTab: {
       showcaseTitle: "Página de Demonstração (Showcase)",

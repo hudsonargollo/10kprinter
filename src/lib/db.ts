@@ -28,6 +28,71 @@ export async function setLeadNotes(db: D1Database, leadId: string, notes: string
   await db.prepare("UPDATE leads SET notes = ? WHERE id = ?").bind(notes, leadId).run();
 }
 
+export type QualificationInput = {
+  contactName?: string;
+  email?: string;
+  companySize?: string;
+  marketingSpend?: string;
+  painPoints?: string;
+  goals?: string;
+  status: "qualified" | "disqualified" | "needs_review";
+  score?: number;
+  answers?: Record<string, string | number | boolean>;
+};
+
+export async function saveQualification(db: D1Database, leadId: string, input: QualificationInput): Promise<void> {
+  await db.prepare(`
+    UPDATE leads SET contact_name = ?, email = ?, company_size = ?, marketing_spend = ?,
+      pain_points = ?, goals = ?, qualification_status = ?, qualification_score = ?, qualification_json = ?
+    WHERE id = ?
+  `).bind(
+    input.contactName ?? null,
+    input.email ?? null,
+    input.companySize ?? null,
+    input.marketingSpend ?? null,
+    input.painPoints ?? null,
+    input.goals ?? null,
+    input.status,
+    input.score ?? null,
+    JSON.stringify(input.answers ?? {}),
+    leadId,
+  ).run();
+  await logEvent(db, leadId, "qualification", input.status, input.score == null ? undefined : `score=${input.score}`);
+}
+
+export async function saveSalesArtifact(
+  db: D1Database,
+  leadId: string,
+  artifact: { type: string; title?: string; content: string; source?: string },
+): Promise<string> {
+  const id = newId();
+  await db.prepare(
+    "INSERT INTO sales_artifacts (id, lead_id, artifact_type, title, content, source) VALUES (?, ?, ?, ?, ?, ?)",
+  ).bind(id, leadId, artifact.type, artifact.title ?? null, artifact.content, artifact.source ?? null).run();
+  await logEvent(db, leadId, "sales-enablement", artifact.type, artifact.title);
+  return id;
+}
+
+export async function saveNextAction(
+  db: D1Database,
+  leadId: string,
+  action: { type: string; at?: string | null },
+): Promise<void> {
+  await db.prepare("UPDATE leads SET next_action_type = ?, next_action_at = ? WHERE id = ?")
+    .bind(action.type, action.at ?? null, leadId).run();
+  await logEvent(db, leadId, "sales", "next_action", `${action.type}${action.at ? ` @ ${action.at}` : ""}`);
+}
+
+export async function updateOnboarding(
+  db: D1Database,
+  leadId: string,
+  onboarding: { status: string; firstWin?: string; shareConsent?: boolean },
+): Promise<void> {
+  await db.prepare("UPDATE leads SET onboarding_status = ?, first_win = COALESCE(?, first_win), win_share_consent = COALESCE(?, win_share_consent) WHERE id = ?")
+    .bind(onboarding.status, onboarding.firstWin ?? null, onboarding.shareConsent == null ? null : onboarding.shareConsent ? 1 : 0, leadId).run();
+  await logEvent(db, leadId, "delivery", onboarding.status, onboarding.firstWin);
+}
+
 /**
  * The CRM-owned counterpart to setLeadStatus, for the manually-driven sales
  * stages only — captures the side-effect fields those stages need and logs

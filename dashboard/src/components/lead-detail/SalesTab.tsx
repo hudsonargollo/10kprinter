@@ -218,6 +218,36 @@ export function SalesTab({
         </div>
       </Card>
 
+      {/* Human-in-the-loop sales cockpit: qualification, next action, and onboarding */}
+      <Card className="p-4 border-white/10 bg-card">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.salesTab.qualification}</div>
+            <div className="mt-1 text-sm font-semibold text-white">
+              {lead.qualification_status === "qualified" ? t.salesTab.qualificationQualified
+                : lead.qualification_status === "needs_review" ? t.salesTab.qualificationNeedsReview
+                : lead.qualification_status === "disqualified" ? t.salesTab.qualificationDisqualified
+                : t.salesTab.qualificationPending}
+              {lead.qualification_score != null ? ` · ${lead.qualification_score}/100` : ""}
+            </div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.salesTab.nextAction}</div>
+            <div className="mt-1 text-sm font-semibold text-white">{lead.next_action_type || t.salesTab.noNextAction}</div>
+            {lead.next_action_at && <div className="text-[11px] text-muted-foreground">{lead.next_action_at}</div>}
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.salesTab.onboarding}</div>
+            <div className="mt-1 text-sm font-semibold text-white">
+              {lead.onboarding_status === "first_win" ? t.salesTab.onboardingFirstWin
+                : lead.onboarding_status === "activated" ? t.salesTab.onboardingActivated
+                : lead.onboarding_status === "in_progress" ? t.salesTab.onboardingInProgress
+                : t.salesTab.onboardingNotStarted}
+            </div>
+          </div>
+        </div>
+      </Card>
+
       {/* Multi-Channel Pitch Scripts Section */}
       <Card className="p-5 border-white/10 bg-card space-y-4">
         <div className="flex items-center justify-between">
