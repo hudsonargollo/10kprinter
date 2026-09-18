@@ -4,6 +4,7 @@ import { listLeads } from "../api";
 import type { Lead } from "../types";
 import { TIER_CLASS } from "@/lib/tier";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -11,6 +12,7 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -47,7 +49,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       {
         id: "nav-board",
         category: "Navigation",
-        title: "All Leads Board",
+        title: t.commandPalette.navBoard,
         icon: LayoutGrid,
         shortcut: "G B",
         action: () => {
@@ -58,7 +60,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       {
         id: "nav-hunt",
         category: "Navigation",
-        title: "Launch Hunt Wizard",
+        title: t.commandPalette.navHunt,
         icon: Radar,
         shortcut: "G H",
         action: () => {
@@ -69,7 +71,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       {
         id: "nav-sources",
         category: "Navigation",
-        title: "Lead Sources & Places",
+        title: t.commandPalette.navSources,
         icon: MapPinned,
         shortcut: "G S",
         action: () => {
@@ -81,7 +83,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
     if (!query) return defaultActions;
     return defaultActions.filter((a) => a.title.toLowerCase().includes(query.toLowerCase()));
-  }, [query, onOpenChange]);
+  }, [query, onOpenChange, t]);
 
   const filteredLeads = useMemo(() => {
     if (!query) return leads.slice(0, 5);
@@ -135,7 +137,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           <input
             autoFocus
             type="text"
-            placeholder="Type a command or search leads..."
+            placeholder={t.commandPalette.searchPlaceholder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
@@ -150,7 +152,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           {/* Actions */}
           {filteredActions.length > 0 && (
             <div>
-              <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-white/40">Commands</div>
+              <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-white/40">{t.commandPalette.commandsGroup}</div>
               <div className="space-y-0.5">
                 {filteredActions.map((item, idx) => {
                   const Icon = item.icon;
@@ -186,7 +188,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           {/* Leads */}
           {filteredLeads.length > 0 && (
             <div>
-              <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-white/40">Leads</div>
+              <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-white/40">{t.commandPalette.leadsGroup}</div>
               <div className="space-y-0.5">
                 {filteredLeads.map((lead, idx) => {
                   const itemIndex = filteredActions.length + idx;
@@ -233,19 +235,19 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           )}
 
           {allItemsCount === 0 && (
-            <div className="py-8 text-center text-xs text-white/40 font-mono">No matching commands or leads found</div>
+            <div className="py-8 text-center text-xs text-white/40 font-mono">{t.commandPalette.noResults}</div>
           )}
         </div>
 
         {/* Footer info */}
         <div className="px-4 py-2 border-t border-white/10 bg-white/[0.02] flex items-center justify-between text-[11px] text-white/40 font-mono">
           <div className="flex items-center gap-3">
-            <span>↑↓ Navigate</span>
+            <span>{t.commandPalette.navigateHint}</span>
             <span className="flex items-center gap-1">
-              <CornerDownLeft className="w-3 h-3" /> Select
+              <CornerDownLeft className="w-3 h-3" /> {t.commandPalette.selectHint}
             </span>
           </div>
-          <span>MoneyMachine Command</span>
+          <span>{t.commandPalette.footerTitle}</span>
         </div>
       </div>
     </div>

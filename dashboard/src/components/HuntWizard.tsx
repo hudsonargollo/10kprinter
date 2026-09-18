@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Radar, Globe, CheckCircle2, Loader2, Sparkles, ArrowRight, ArrowLeft, RefreshCw } from "lucide-react";
+import { Radar, Globe, CheckCircle2, Loader2, Sparkles, ArrowRight, ArrowLeft, RefreshCw, CheckCheck, X } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 
 type Step = "place" | "niches" | "run" | "interview" | "timeline";
@@ -19,7 +19,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
   const { t } = useLanguage();
   const [step, setStep] = useState<Step>("place");
   const [region, setRegion] = useState("");
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(NICHE_PACKAGE.map((n) => n.key)));
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [customNiches, setCustomNiches] = useState<NicheDef[]>([]);
   const [leadsPerNiche, setLeadsPerNiche] = useState(20);
   const [language, setLanguage] = useState("auto");
@@ -52,6 +52,14 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
       else next.add(key);
       return next;
     });
+  }
+
+  function selectAllNiches() {
+    setSelectedKeys(new Set(NICHE_PACKAGE.map((n) => n.key)));
+  }
+
+  function deselectAllNiches() {
+    setSelectedKeys(new Set());
   }
 
   async function startHunt() {
@@ -214,8 +222,40 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
 
       {step === "niches" && (
         <div className="space-y-4">
-          <h3 className="font-heading text-xs uppercase font-mono tracking-wider text-white/50">{t.huntWizard.selectNiches}</h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-1">
+            <div className="flex items-center gap-2">
+              <h3 className="font-heading text-xs uppercase font-mono tracking-wider text-white/50">
+                {t.huntWizard.selectNiches}
+              </h3>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[#e8ff5c]">
+                {selectedKeys.size} / {NICHE_PACKAGE.length} {t.huntWizard.selectedCount}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={selectAllNiches}
+                className="h-7 px-2.5 text-[11px] font-mono border-white/10 text-white/80 hover:text-white hover:bg-white/5 rounded-lg"
+              >
+                <CheckCheck className="w-3 h-3 mr-1 text-[#e8ff5c]" />
+                {t.huntWizard.selectAll}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={deselectAllNiches}
+                className="h-7 px-2.5 text-[11px] font-mono border-white/10 text-white/80 hover:text-white hover:bg-white/5 rounded-lg"
+              >
+                <X className="w-3 h-3 mr-1 text-white/40" />
+                {t.huntWizard.deselectAll}
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
             {NICHE_PACKAGE.map((n) => {
               const checked = selectedKeys.has(n.key);
               return (
@@ -224,7 +264,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                   className={cn(
                     "flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all",
                     checked
-                      ? "bg-[#e8ff5c]/10 border-[#e8ff5c]/30 text-white font-medium"
+                      ? "bg-[#e8ff5c]/10 border-[#e8ff5c]/30 text-white font-medium shadow-sm shadow-[#e8ff5c]/5"
                       : "bg-white/[0.02] border-white/5 text-white/60 hover:bg-white/5"
                   )}
                 >
@@ -234,7 +274,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                     onChange={() => toggleNiche(n.key)}
                     className="accent-[#e8ff5c] rounded"
                   />
-                  <span>{n.label}</span>
+                  <span className="truncate">{t.niches[n.key] || n.label}</span>
                 </label>
               );
             })}
@@ -244,6 +284,8 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
             onAdd={(n) => setCustomNiches((prev) => [...prev, n])}
             nameLabel={t.huntWizard.customNicheName}
             queryLabel={t.huntWizard.customSearchQuery}
+            namePlaceholder={t.huntWizard.customNichePlaceholder}
+            queryPlaceholder={t.huntWizard.customQueryPlaceholder}
             addLabel={t.huntWizard.customAdd}
           />
           {customNiches.length > 0 && (
@@ -441,11 +483,15 @@ function CustomNicheForm({
   onAdd,
   nameLabel,
   queryLabel,
+  namePlaceholder,
+  queryPlaceholder,
   addLabel,
 }: {
   onAdd: (niche: NicheDef) => void;
   nameLabel: string;
   queryLabel: string;
+  namePlaceholder?: string;
+  queryPlaceholder?: string;
   addLabel: string;
 }) {
   const [label, setLabel] = useState("");
@@ -466,7 +512,7 @@ function CustomNicheForm({
           id="customLabel"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          placeholder="e.g. Solar Energy Installers"
+          placeholder={namePlaceholder || "e.g. Solar Energy Installers"}
           className="bg-white/[0.03] border-white/10 text-white text-xs h-8 rounded-lg"
         />
       </div>
@@ -476,7 +522,7 @@ function CustomNicheForm({
           id="customQuery"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="e.g. solar energy installers"
+          placeholder={queryPlaceholder || "e.g. solar panel contractors"}
           className="bg-white/[0.03] border-white/10 text-white text-xs h-8 rounded-lg"
         />
       </div>

@@ -10,6 +10,9 @@ export interface Env {
   TEKTONE_AI_ENDPOINT?: string;
   TEKTONE_AI_TOKEN?: string;
   SESSION_SECRET: string;
+  // Twenty CRM integration
+  TWENTY_API_KEY?: string;
+  TWENTY_API_URL?: string;
   // TheLeadMachine CRM integration (this project's provisioned instance —
   // see theleadmachine/docs/PRD.md §2). Sync is best-effort/non-fatal;
   // these being unset just means sync/webhook silently no-op.

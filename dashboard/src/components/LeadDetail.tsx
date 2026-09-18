@@ -75,7 +75,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
 
   if (error)
     return <div className="mb-4 rounded-lg border border-bad bg-bad/15 px-3.5 py-2.5 text-bad">{error}</div>;
-  if (!data) return <p className="py-10 text-center text-muted-foreground font-mono text-xs">Loading lead data…</p>;
+  if (!data) return <p className="py-10 text-center text-muted-foreground font-mono text-xs">{t.leadDetail.loading}</p>;
 
   const { lead, scrapes, audits, prds, proposals, events } = data;
   const latestScrape = scrapes[scrapes.length - 1];

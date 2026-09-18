@@ -6,7 +6,37 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { ArrowRight, Sparkles, ShieldCheck, Zap } from "lucide-react";
 
 export function Hero() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+
+  const heroLabels = {
+    es: {
+      badge: "MOTOR DE AUDITORÍA Y PROPUESTAS CON IA",
+      trial: "Comenzar Prueba Gratis",
+      calc: "Calcular ROI",
+      badge1: "Cero listas genéricas",
+      badge2: "Basado en auditorías DOM en vivo",
+    },
+    pt: {
+      badge: "MOTOR DE AUDITORIA E PROPOSTAS COM IA",
+      trial: "Começar Teste Grátis",
+      calc: "Calcular ROI",
+      badge1: "Zero checklists genéricos",
+      badge2: "Baseado em auditorias DOM ao vivo",
+    },
+    en: {
+      badge: "AI AUDIT & PROPOSAL ENGINE",
+      trial: "Start Free Trial",
+      calc: "Calculate ROI",
+      badge1: "Zero boilerplate checklists",
+      badge2: "Grounded in live DOM audits",
+    },
+  }[lang] || {
+    badge: "AI AUDIT & PROPOSAL ENGINE",
+    trial: "Start Free Trial",
+    calc: "Calculate ROI",
+    badge1: "Zero boilerplate checklists",
+    badge2: "Grounded in live DOM audits",
+  };
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-28 pb-16">
@@ -21,7 +51,7 @@ export function Hero() {
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#e8ff5c]/10 border border-[#e8ff5c]/25 text-[#e8ff5c] text-xs font-mono font-semibold shadow-inner"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>AI AUDIT & PROPOSAL ENGINE</span>
+            <span>{heroLabels.badge}</span>
           </motion.div>
 
           <motion.h1
@@ -60,7 +90,7 @@ export function Hero() {
               className="h-12 px-7 text-base rounded-full bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] shadow-lg shadow-[#e8ff5c]/20 hover:scale-[1.02] transition-all"
             >
               <a href="/app" className="flex items-center gap-2">
-                <span>Start Free Trial</span>
+                <span>{heroLabels.trial}</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </Button>
@@ -72,7 +102,7 @@ export function Hero() {
             >
               <a href="#roi-calculator" className="flex items-center gap-2">
                 <Zap className="w-4 h-4 text-[#e8ff5c]" />
-                <span>Calculate ROI</span>
+                <span>{heroLabels.calc}</span>
               </a>
             </Button>
           </motion.div>
@@ -86,11 +116,11 @@ export function Hero() {
           >
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Zero boilerplate checklists</span>
+              <span>{heroLabels.badge1}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#e8ff5c]" />
-              <span>Grounded in live DOM audits</span>
+              <span>{heroLabels.badge2}</span>
             </div>
           </motion.div>
         </div>

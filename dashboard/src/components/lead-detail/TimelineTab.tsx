@@ -3,11 +3,13 @@ import type { LeadDetail as LeadDetailData } from "../../types";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, AlertTriangle, Clock, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export function TimelineTab({ events }: { events: LeadDetailData["events"] }) {
+  const { t } = useLanguage();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  if (events.length === 0) return <p className="py-10 text-center text-muted-foreground font-mono text-xs">No events logged yet.</p>;
+  if (events.length === 0) return <p className="py-10 text-center text-muted-foreground font-mono text-xs">{t.timelineTab.noEvents}</p>;
 
   function handleCopy(id: string, text: string) {
     navigator.clipboard.writeText(text);
@@ -19,10 +21,10 @@ export function TimelineTab({ events }: { events: LeadDetailData["events"] }) {
     <Card className="p-4 bg-card/60 border border-white/10">
       <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
         <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white/80">
-          Execution & Error Log ({events.length})
+          {t.timelineTab.executionLog} ({events.length})
         </h4>
         <span className="text-[11px] font-mono text-muted-foreground">
-          Auto-recorded per pipeline step
+          {t.timelineTab.autoRecorded}
         </span>
       </div>
 
@@ -86,7 +88,7 @@ export function TimelineTab({ events }: { events: LeadDetailData["events"] }) {
                   {e.message && (
                     <button
                       onClick={() => handleCopy(e.id, `[${e.stage}][${e.status}] ${e.message}`)}
-                      title="Copy log entry"
+                      title={t.timelineTab.copyLog}
                       className="p-1 rounded hover:bg-white/10 text-white/40 hover:text-white transition-colors cursor-pointer"
                     >
                       {copiedId === e.id ? (

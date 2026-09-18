@@ -56,6 +56,7 @@ export interface DashboardTranslations {
     "email-marketing": string;
     "social-media": string;
   };
+  niches: Record<string, string>;
   newLead: {
     title: string;
     urlLabel: string;
@@ -83,9 +84,14 @@ export interface DashboardTranslations {
     langLabel: string;
     nextNiches: string;
     selectNiches: string;
+    selectedCount: string;
+    selectAll: string;
+    deselectAll: string;
     leadsPerNiche: string;
     customNicheName: string;
     customSearchQuery: string;
+    customNichePlaceholder: string;
+    customQueryPlaceholder: string;
     customAdd: string;
     back: string;
     reviewRun: string;
@@ -112,6 +118,42 @@ export interface DashboardTranslations {
     timelineHeading: string;
     newHunt: string;
     viewAllLeads: string;
+  };
+  sources: {
+    title: string;
+    subtitle: string;
+    addSource: string;
+    queryLabel: string;
+    queryPlaceholder: string;
+    regionLabel: string;
+    regionPlaceholder: string;
+    categoryLabel: string;
+    categoryPlaceholder: string;
+    submitAdd: string;
+    submitting: string;
+    runningBtn: string;
+    runNowBtn: string;
+    cronEnabled: string;
+    deleteBtn: string;
+    lastRun: string;
+    never: string;
+    noRegionCategory: string;
+    emptyTitle: string;
+    emptyDesc: string;
+    loading: string;
+    queuedSuccess: string;
+  };
+  commandPalette: {
+    searchPlaceholder: string;
+    commandsGroup: string;
+    leadsGroup: string;
+    noResults: string;
+    navBoard: string;
+    navHunt: string;
+    navSources: string;
+    navigateHint: string;
+    selectHint: string;
+    footerTitle: string;
   };
   leadDetail: {
     loading: string;
@@ -183,6 +225,10 @@ export interface DashboardTranslations {
   };
   timelineTab: {
     noEvents: string;
+    executionLog: string;
+    autoRecorded: string;
+    copyLog: string;
+    copied: string;
   };
   pipelineProgress: {
     title: string;
@@ -225,7 +271,7 @@ export const translations: Record<Lang, DashboardTranslations> = {
     nav: {
       title: "MoneyMachine",
       proBadge: "PRO",
-      searchPlaceholder: "Buscar o comando...",
+      searchPlaceholder: "Buscar o comando (⌘K)...",
       allLeads: "Todos los leads",
       huntWizard: "Cazador",
       sources: "Fuentes",
@@ -271,6 +317,32 @@ export const translations: Record<Lang, DashboardTranslations> = {
       "email-marketing": "Email Marketing",
       "social-media": "Gestión de Redes Sociales",
     },
+    niches: {
+      dental: "Clínicas Dentales",
+      "real-estate": "Agencias Inmobiliarias",
+      law: "Bufetes de Abogados",
+      restaurants: "Restaurantes y Gastronomía",
+      gyms: "Gimnasios y Centros Fitness",
+      "auto-repair": "Talleres Mecánicos",
+      beauty: "Salones de Belleza y Spas",
+      contractors: "Constructoras y Contratistas",
+      medical: "Clínicas Médicas y Doctores",
+      accounting: "Estudios Contables y Tributarios",
+      veterinary: "Clínicas Veterinarias",
+      hvac: "Aire Acondicionado y Climatización",
+      plumbing: "Plomería y Fontanería",
+      roofing: "Techos y Cubiertas",
+      solar: "Energía Solar y Paneles",
+      landscaping: "Jardinería y Paisajismo",
+      architecture: "Arquitectura y Diseño Interior",
+      cleaning: "Empresas de Limpieza",
+      "event-planning": "Planificadores de Eventos y Salones",
+      "it-services": "Soporte TI y Servicios Gestionados",
+      photography: "Estudios de Fotografía y Video",
+      "pet-grooming": "Peluquería y Guardería Canina",
+      "auto-dealers": "Concesionarias y Detailing",
+      security: "Seguridad y Hogar Inteligente",
+    },
     newLead: {
       title: "Auditar un nuevo prospecto",
       urlLabel: "URL del sitio web *",
@@ -298,10 +370,15 @@ export const translations: Record<Lang, DashboardTranslations> = {
       langLabel: "Idioma de Auditorías y PRDs",
       nextNiches: "Siguiente: Elegir Nichos",
       selectNiches: "Seleccionar Nichos para Cazar",
+      selectedCount: "seleccionados",
+      selectAll: "Seleccionar todos",
+      deselectAll: "Deseleccionar todos",
       leadsPerNiche: "Leads por nicho:",
       customNicheName: "Nombre de Nicho Personalizado",
       customSearchQuery: "Consulta de Búsqueda",
-      customAdd: "Agregar",
+      customNichePlaceholder: "ej. Instaladores de Energía Solar",
+      customQueryPlaceholder: "ej. instaladores de paneles solares",
+      customAdd: "Agregar Nicho",
       back: "Atrás",
       reviewRun: "Revisar y Ejecutar",
       selectedNichesSummary: "nichos seleccionados • Objetivo:",
@@ -316,8 +393,8 @@ export const translations: Record<Lang, DashboardTranslations> = {
       channelLabel: "Canal Principal de Contacto",
       channels: {
         whatsapp: "WhatsApp",
-        call: "Llamada",
-        email: "Correo",
+        call: "Llamada Telefónica",
+        email: "Correo Electrónico",
       },
       priorityLabel: "Prioridad de Nichos (orden de contacto)",
       up: "↑ Subir",
@@ -328,9 +405,45 @@ export const translations: Record<Lang, DashboardTranslations> = {
       newHunt: "Nueva Caza",
       viewAllLeads: "Ver Todos los Leads Descubiertos",
     },
+    sources: {
+      title: "Fuentes de Descubrimiento",
+      subtitle: "Configura búsquedas recurrentes y rastreo por zona geográfica",
+      addSource: "Agregar Fuente de Leads",
+      queryLabel: "Consulta de Búsqueda *",
+      queryPlaceholder: "ej. abogados corporativos en Santa Cruz",
+      regionLabel: "Región / Ciudad",
+      regionPlaceholder: "ej. Santa Cruz, Bolivia",
+      categoryLabel: "Categoría",
+      categoryPlaceholder: "ej. Abogados",
+      submitAdd: "Crear Fuente",
+      submitting: "Creando…",
+      runningBtn: "Rastreando…",
+      runNowBtn: "Rastrear ahora",
+      cronEnabled: "Cron automático activo",
+      deleteBtn: "Eliminar",
+      lastRun: "Último rastreo:",
+      never: "nunca",
+      noRegionCategory: "sin región/categoría",
+      emptyTitle: "Sin fuentes de leads configuradas",
+      emptyDesc: "Agrega una consulta de búsqueda arriba para iniciar el descubrimiento autónomo recurrente.",
+      loading: "Cargando fuentes…",
+      queuedSuccess: "nuevos leads en cola",
+    },
+    commandPalette: {
+      searchPlaceholder: "Escribe un comando o busca leads...",
+      commandsGroup: "Comandos",
+      leadsGroup: "Leads y Prospectos",
+      noResults: "No se encontraron comandos ni leads coincidentes",
+      navBoard: "Tablero Principal de Leads",
+      navHunt: "Abrir Cazador de Leads",
+      navSources: "Fuentes de Descubrimiento y Zonas",
+      navigateHint: "↑↓ Navegar",
+      selectHint: "Seleccionar",
+      footerTitle: "Comandos MoneyMachine",
+    },
     leadDetail: {
       loading: "Cargando datos del lead…",
-      retry: "Reintentar",
+      retry: "Reintentar Pipeline",
       tabs: {
         offer: "Oferta",
         sales: "Ventas",
@@ -398,6 +511,10 @@ export const translations: Record<Lang, DashboardTranslations> = {
     },
     timelineTab: {
       noEvents: "Aún no hay eventos registrados.",
+      executionLog: "Registro de Ejecución y Diagnósticos",
+      autoRecorded: "Registrado paso a paso automáticamente",
+      copyLog: "Copiar registro",
+      copied: "¡Copiado!",
     },
     pipelineProgress: {
       title: "Progreso del Pipeline",
@@ -439,7 +556,7 @@ export const translations: Record<Lang, DashboardTranslations> = {
     nav: {
       title: "MoneyMachine",
       proBadge: "PRO",
-      searchPlaceholder: "Search or command...",
+      searchPlaceholder: "Search or command (⌘K)...",
       allLeads: "All leads",
       huntWizard: "Hunt Wizard",
       sources: "Sources",
@@ -485,21 +602,47 @@ export const translations: Record<Lang, DashboardTranslations> = {
       "email-marketing": "Email Marketing",
       "social-media": "Social Media Management",
     },
+    niches: {
+      dental: "Dental Clinics",
+      "real-estate": "Real Estate Agencies",
+      law: "Law Firms",
+      restaurants: "Restaurants & Gastronomy",
+      gyms: "Gyms & Fitness Centers",
+      "auto-repair": "Auto Repair Shops",
+      beauty: "Beauty Salons & Spas",
+      contractors: "General Contractors & Builders",
+      medical: "Medical Clinics & Doctors",
+      accounting: "Accounting & Tax Firms",
+      veterinary: "Veterinary Clinics & Hospitals",
+      hvac: "HVAC & Air Conditioning",
+      plumbing: "Plumbing & Drain Services",
+      roofing: "Roofing & Siding",
+      solar: "Solar & Clean Energy",
+      landscaping: "Landscaping & Lawn Care",
+      architecture: "Architecture & Interior Design",
+      cleaning: "Cleaning & Janitorial Services",
+      "event-planning": "Event Planning & Venues",
+      "it-services": "IT Support & Managed Services",
+      photography: "Photography & Video Studios",
+      "pet-grooming": "Pet Grooming & Boarding",
+      "auto-dealers": "Car Dealerships & Detailing",
+      security: "Security & Smart Home Systems",
+    },
     newLead: {
-      title: "Audit a new prospect",
+      title: "Audit a New Prospect",
       urlLabel: "Website URL *",
-      urlPlaceholder: "https://client-website.com",
-      businessNameLabel: "Business Name (optional)",
-      businessNamePlaceholder: "e.g. BrightSmile Dental",
+      urlPlaceholder: "https://prospect-website.com",
+      businessNameLabel: "Business name (optional)",
+      businessNamePlaceholder: "e.g. Apex Dental Studio",
       categoryLabel: "Category (optional)",
       categoryPlaceholder: "e.g. Dental Clinics",
       langLabel: "Audit Language",
-      submitBusy: "Starting Automated Pipeline…",
-      submitDefault: "Run Full Pipeline Audit",
+      submitBusy: "Starting Autonomous Pipeline…",
+      submitDefault: "Run Full Audit & PRD",
     },
     huntWizard: {
-      title: "Hunt Wizard (City & Niche Discovery)",
-      sessionActive: "Session active",
+      title: "Hunt Wizard (Mass Discovery)",
+      sessionActive: "Active session",
       steps: {
         place: "Place & Language",
         niches: "Niches",
@@ -508,43 +651,84 @@ export const translations: Record<Lang, DashboardTranslations> = {
         timeline: "Timeline",
       },
       placeLabel: "Target City / Region",
-      placePlaceholder: "e.g. Santa Cruz de la Sierra, Bolivia",
-      langLabel: "Audits & PRD Language",
+      placePlaceholder: "e.g. Miami, FL or London, UK",
+      langLabel: "Audit & PRD Language",
       nextNiches: "Next: Select Niches",
       selectNiches: "Select Niches to Hunt",
+      selectedCount: "selected",
+      selectAll: "Select All",
+      deselectAll: "Deselect All",
       leadsPerNiche: "Leads per niche:",
       customNicheName: "Custom Niche Name",
       customSearchQuery: "Search Query",
-      customAdd: "Add",
+      customNichePlaceholder: "e.g. Solar Energy Installers",
+      customQueryPlaceholder: "e.g. solar panel contractors",
+      customAdd: "Add Niche",
       back: "Back",
       reviewRun: "Review & Run",
       selectedNichesSummary: "niches selected • Target:",
-      launchHunt: "Launch Automated Hunt",
+      launchHunt: "Start Autonomous Hunt",
       huntingLive: "Hunting Google Places live…",
       queued: "Queued",
       found: "found",
-      discoveryComplete: "Discovery cycle complete! Pipelines initiated.",
+      discoveryComplete: "Discovery run complete! Pipelines started.",
       generateOutreachPlan: "Generate Outreach Plan",
       outreachSetup: "Outreach Cadence Setup",
       capacityLabel: "Leads you can contact per week:",
       channelLabel: "Primary Outreach Channel",
       channels: {
         whatsapp: "WhatsApp",
-        call: "Call",
-        email: "Email",
+        call: "Cold Phone Call",
+        email: "Direct Email",
       },
-      priorityLabel: "Niche Priority Ordering",
-      up: "↑ Up",
-      down: "↓ Down",
-      generatingPlan: "Generating Strategic AI Gameplan…",
+      priorityLabel: "Niche Priority Order",
+      up: "↑ Move Up",
+      down: "↓ Move Down",
+      generatingPlan: "Generating AI Strategic Plan…",
       generatePlanBtn: "Generate Strategic Outreach Plan",
-      timelineHeading: "Localized Outreach Gameplan",
+      timelineHeading: "Localized Outreach Plan",
       newHunt: "New Hunt",
       viewAllLeads: "View All Discovered Leads",
     },
+    sources: {
+      title: "Discovery Sources",
+      subtitle: "Configure recurring searches and geographic scraping",
+      addSource: "Add Lead Source",
+      queryLabel: "Search Query *",
+      queryPlaceholder: "e.g. corporate attorneys in Miami",
+      regionLabel: "Region / City",
+      regionPlaceholder: "e.g. Miami, FL",
+      categoryLabel: "Category",
+      categoryPlaceholder: "e.g. Attorneys",
+      submitAdd: "Create Source",
+      submitting: "Creating…",
+      runningBtn: "Scraping…",
+      runNowBtn: "Run now",
+      cronEnabled: "Automatic cron enabled",
+      deleteBtn: "Delete",
+      lastRun: "Last run:",
+      never: "never",
+      noRegionCategory: "no region/category",
+      emptyTitle: "No lead sources configured yet",
+      emptyDesc: "Add a search query above to start autonomous recurring discovery.",
+      loading: "Loading sources…",
+      queuedSuccess: "new leads queued",
+    },
+    commandPalette: {
+      searchPlaceholder: "Type a command or search leads...",
+      commandsGroup: "Commands",
+      leadsGroup: "Leads & Prospects",
+      noResults: "No matching commands or leads found",
+      navBoard: "All Leads Board",
+      navHunt: "Launch Hunt Wizard",
+      navSources: "Discovery Sources & Places",
+      navigateHint: "↑↓ Navigate",
+      selectHint: "Select",
+      footerTitle: "MoneyMachine Command",
+    },
     leadDetail: {
       loading: "Loading lead data…",
-      retry: "Retry",
+      retry: "Retry Pipeline",
       tabs: {
         offer: "Offer",
         sales: "Sales",
@@ -560,13 +744,13 @@ export const translations: Record<Lang, DashboardTranslations> = {
       doesNotQualify: "Does not qualify",
       score: "Score",
       good: "Good",
-      bad: "Friction / Leaks",
+      bad: "Friction & Revenue Leaks",
       fix: "Proposed Fix",
       verticalsQualify: "verticals qualify",
     },
     salesTab: {
       thermometer: "Lead Thermometer",
-      notScored: "Not scored yet — waiting on audits.",
+      notScored: "Not scored yet — waiting for audits.",
       contact: "Direct Contact",
       messageWa: "Message on WhatsApp",
       noPhone: "No phone number found.",
@@ -575,26 +759,26 @@ export const translations: Record<Lang, DashboardTranslations> = {
       saveNotes: "Save notes",
       stage: "Sales Stage",
       sendProposal: "Send Proposal",
-      markWon: "Mark Won",
-      reasonPlaceholder: "Reason (optional)",
-      markLost: "Mark Lost",
+      markWon: "Mark as Won",
+      reasonPlaceholder: "Lost reason (optional)",
+      markLost: "Mark as Lost",
       closedFor: "Closed for",
       lost: "Lost",
     },
     offerTab: {
       showcaseTitle: "Showcase Page",
-      showcaseDesc: "Send this first — before walking the prospect through pain points or pricing. Auto-generated drafts below are ready to review and send.",
+      showcaseDesc: "Send this first — before explaining pain points or pricing. The auto-drafts below are the starting point ready to dispatch.",
       draftSuffix: "draft",
       preview: "Preview",
       useAsShowcase: "Use as showcase",
       saving: "Saving…",
       save: "Save",
       openShowcase: "Open showcase page →",
-      offerTitle: "Offer Breakdown",
-      noPrds: "No priced line items yet — waiting on audits/PRDs.",
-      consultAddon: "+ Add-on: 1-hour strategy consultation with Hudson",
-      bundleTotal: "Full bundle total",
-      stackNote: "Each line item is also sellable standalone at its own price — lead with the cheapest, highest-impact one, then stack.",
+      offerTitle: "Offer Stack",
+      noPrds: "No priced items yet — waiting for audits/PRDs.",
+      consultAddon: "+ Add-on: 1hr strategic consult with Hudson",
+      bundleTotal: "Full Bundle Total",
+      stackNote: "Every item can be sold separately — start with lowest friction & highest impact, then stack.",
     },
     prdsTab: {
       noPrds: "No PRDs generated yet — this lead may not have qualified for any vertical.",
@@ -612,6 +796,10 @@ export const translations: Record<Lang, DashboardTranslations> = {
     },
     timelineTab: {
       noEvents: "No events recorded yet.",
+      executionLog: "Execution & Error Log",
+      autoRecorded: "Auto-recorded per pipeline step",
+      copyLog: "Copy log entry",
+      copied: "Copied!",
     },
     pipelineProgress: {
       title: "Pipeline Progression",
@@ -653,7 +841,7 @@ export const translations: Record<Lang, DashboardTranslations> = {
     nav: {
       title: "MoneyMachine",
       proBadge: "PRO",
-      searchPlaceholder: "Buscar ou comando...",
+      searchPlaceholder: "Buscar ou comando (⌘K)...",
       allLeads: "Todos os leads",
       huntWizard: "Caçador",
       sources: "Fontes",
@@ -699,6 +887,32 @@ export const translations: Record<Lang, DashboardTranslations> = {
       "email-marketing": "Email Marketing",
       "social-media": "Gestão de Redes Sociais",
     },
+    niches: {
+      dental: "Clínicas Odontológicas",
+      "real-estate": "Imobiliárias e Corretores",
+      law: "Escritórios de Advocacia",
+      restaurants: "Restaurantes e Gastronomia",
+      gyms: "Academias e Crossfit",
+      "auto-repair": "Oficinas Mecânicas",
+      beauty: "Salões de Beleza e Spas",
+      contractors: "Construtoras e Empreiteiras",
+      medical: "Clínicas Médicas e Consultórios",
+      accounting: "Escritórios de Contabilidade",
+      veterinary: "Clínicas Veterinárias",
+      hvac: "Climatização e Ar Condicionado",
+      plumbing: "Encanadores e Desentupidoras",
+      roofing: "Telhados e Reformas",
+      solar: "Energia Solar e Instaladores",
+      landscaping: "Paisagismo e Jardinagem",
+      architecture: "Arquitetura e Design de Interiores",
+      cleaning: "Empresas de Limpeza",
+      "event-planning": "Espaços para Eventos e Festas",
+      "it-services": "Suporte de TI e Informática",
+      photography: "Estúdios de Fotografia e Vídeo",
+      "pet-grooming": "Pet Shop e Banho & Tosa",
+      "auto-dealers": "Concessionárias e Estética Automotiva",
+      security: "Segurança Eletrônica e Automação",
+    },
     newLead: {
       title: "Auditar um novo prospecto",
       urlLabel: "URL do site *",
@@ -726,10 +940,15 @@ export const translations: Record<Lang, DashboardTranslations> = {
       langLabel: "Idioma das Auditorias e PRDs",
       nextNiches: "Próximo: Escolher Nichos",
       selectNiches: "Selecionar Nichos para Caçar",
+      selectedCount: "selecionados",
+      selectAll: "Selecionar todos",
+      deselectAll: "Desmarcar todos",
       leadsPerNiche: "Leads por nicho:",
       customNicheName: "Nome do Nicho Personalizado",
       customSearchQuery: "Consulta de Busca",
-      customAdd: "Adicionar",
+      customNichePlaceholder: "ex. Instaladores de Energia Solar",
+      customQueryPlaceholder: "ex. empresas de energia solar",
+      customAdd: "Adicionar Nicho",
       back: "Voltar",
       reviewRun: "Revisar e Executar",
       selectedNichesSummary: "nichos selecionados • Alvo:",
@@ -744,8 +963,8 @@ export const translations: Record<Lang, DashboardTranslations> = {
       channelLabel: "Canal Principal de Contato",
       channels: {
         whatsapp: "WhatsApp",
-        call: "Ligação",
-        email: "E-mail",
+        call: "Ligação Telefônica",
+        email: "E-mail Direto",
       },
       priorityLabel: "Prioridade dos Nichos",
       up: "↑ Subir",
@@ -756,9 +975,45 @@ export const translations: Record<Lang, DashboardTranslations> = {
       newHunt: "Nova Caça",
       viewAllLeads: "Ver Todos os Leads Descobertos",
     },
+    sources: {
+      title: "Fontes de Descoberta",
+      subtitle: "Configure buscas recorrentes e prospecção geográfica",
+      addSource: "Adicionar Fonte de Leads",
+      queryLabel: "Consulta de Busca *",
+      queryPlaceholder: "ex. advogados empresariais em São Paulo",
+      regionLabel: "Região / Cidade",
+      regionPlaceholder: "ex. São Paulo, SP",
+      categoryLabel: "Categoria",
+      categoryPlaceholder: "ex. Advocacia",
+      submitAdd: "Criar Fonte",
+      submitting: "Criando…",
+      runningBtn: "Buscando…",
+      runNowBtn: "Buscar agora",
+      cronEnabled: "Cron automático ativo",
+      deleteBtn: "Excluir",
+      lastRun: "Última execução:",
+      never: "nunca",
+      noRegionCategory: "sem região/categoria",
+      emptyTitle: "Nenhuma fonte de leads configurada",
+      emptyDesc: "Adicione uma consulta de busca acima para iniciar a prospecção autônoma recorrente.",
+      loading: "Carregando fontes…",
+      queuedSuccess: "novos leads na fila",
+    },
+    commandPalette: {
+      searchPlaceholder: "Digite um comando ou busque leads...",
+      commandsGroup: "Comandos",
+      leadsGroup: "Leads e Prospectos",
+      noResults: "Nenhum comando ou lead encontrado",
+      navBoard: "Painel Principal de Leads",
+      navHunt: "Abrir Caçador de Leads",
+      navSources: "Fontes de Prospecção e Cidades",
+      navigateHint: "↑↓ Navegar",
+      selectHint: "Selecionar",
+      footerTitle: "Comandos MoneyMachine",
+    },
     leadDetail: {
       loading: "Carregando dados do lead…",
-      retry: "Tentar novamente",
+      retry: "Tentar novamente o Pipeline",
       tabs: {
         offer: "Oferta",
         sales: "Vendas",
@@ -826,6 +1081,10 @@ export const translations: Record<Lang, DashboardTranslations> = {
     },
     timelineTab: {
       noEvents: "Nenhum evento registrado ainda.",
+      executionLog: "Registro de Execução e Diagnósticos",
+      autoRecorded: "Gravado passo a passo automaticamente",
+      copyLog: "Copiar registro",
+      copied: "Copiado!",
     },
     pipelineProgress: {
       title: "Progresso do Pipeline",
