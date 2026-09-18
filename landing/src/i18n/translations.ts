@@ -30,6 +30,30 @@ export interface Translation {
     nicheStatus: [string, string, string];
   };
   statement: { heading: string; auditsAlt: string };
+  pipelineDemo: {
+    badge: string;
+    heading: string;
+    sub: string;
+    play: string;
+    pause: string;
+    restart: string;
+    steps: { label: string; step: number }[];
+    caption: string;
+    attribution: string;
+  };
+  roiCalculator: {
+    badge: string;
+    heading: string;
+    sub: string;
+    leadsLabel: string;
+    closeRateLabel: string;
+    dealSizeLabel: string;
+    monthlyProjected: string;
+    annualProjected: string;
+    closedPerMonth: string;
+    hoursSaved: string;
+    ctaButton: string;
+  };
   features: {
     audits: { title: string; body: string; alt: string };
     pricing: { title: string; body: string; alt: string };
@@ -90,6 +114,35 @@ export const translations: Record<Lang, Translation> = {
     statement: {
       heading: "Everything a conversion consultant does, now automatic.",
       auditsAlt: "A real audit for a dental clinic, showing good, bad, and fix findings",
+    },
+    pipelineDemo: {
+      badge: "REMOTION REAL-TIME ENGINE SIMULATION",
+      heading: "The Full Lead-to-Close Pipeline in Motion",
+      sub: "Watch how a raw URL turns into an audited, priced proposal ready for WhatsApp dispatch — rendered frame-by-frame.",
+      play: "Play",
+      pause: "Pause",
+      restart: "Restart",
+      steps: [
+        { label: "1. Hunt", step: 0 },
+        { label: "2. Audit", step: 1 },
+        { label: "3. PRD", step: 2 },
+        { label: "4. Close", step: 3 },
+      ],
+      caption: "Programmatic Remotion Animation Engine",
+      attribution: "Built by Hudson Argollo · ClubeMkt Worldwide Architecture",
+    },
+    roiCalculator: {
+      badge: "ROI ESTIMATOR",
+      heading: "How much revenue is leaking in your city?",
+      sub: "Calculate your projected agency pipeline when you replace manual prospecting with automated audits and instant pricing.",
+      leadsLabel: "Businesses Audited per Month",
+      closeRateLabel: "Estimated Outreach Close Rate",
+      dealSizeLabel: "Average Proposal / Fix Bundle Size",
+      monthlyProjected: "Projected Monthly Revenue",
+      annualProjected: "Annual Revenue Run Rate",
+      closedPerMonth: "Deals Closed / Month",
+      hoursSaved: "Hours of Manual Work Saved / Month",
+      ctaButton: "Launch Live Machine",
     },
     features: {
       audits: {
@@ -192,6 +245,35 @@ export const translations: Record<Lang, Translation> = {
       heading: "Tudo que um consultor de conversão faz, agora automático.",
       auditsAlt: "Uma auditoria real de uma clínica odontológica, mostrando pontos bons, ruins e correções",
     },
+    pipelineDemo: {
+      badge: "SIMULAÇÃO EM TEMPO REAL DO MOTOR REMOTION",
+      heading: "O Pipeline Completo de Lead a Fechamento em Movimento",
+      sub: "Veja como uma URL crua se transforma em uma proposta auditada e precificada pronta para envio no WhatsApp — renderizada quadro a quadro.",
+      play: "Reproduzir",
+      pause: "Pausar",
+      restart: "Reiniciar",
+      steps: [
+        { label: "1. Caçar", step: 0 },
+        { label: "2. Auditar", step: 1 },
+        { label: "3. PRD", step: 2 },
+        { label: "4. Fechar", step: 3 },
+      ],
+      caption: "Motor de Animação Programática com Remotion",
+      attribution: "Construído por Hudson Argollo · Arquitetura Global ClubeMkt",
+    },
+    roiCalculator: {
+      badge: "ESTIMADOR DE ROI",
+      heading: "Quanto de receita está vazando na sua cidade?",
+      sub: "Calcule a projeção do seu pipeline de agência ao substituir a prospecção manual por auditorias automatizadas e precificação instantânea.",
+      leadsLabel: "Empresas Auditadas por Mês",
+      closeRateLabel: "Taxa Estimada de Fechamento",
+      dealSizeLabel: "Ticket Médio por Proposta / Pacote",
+      monthlyProjected: "Receita Mensal Projetada",
+      annualProjected: "Taxa de Execução Anual",
+      closedPerMonth: "Contratos Fechados / Mês",
+      hoursSaved: "Horas de Trabalho Manual Economizadas / Mês",
+      ctaButton: "Iniciar Máquina ao Vivo",
+    },
     features: {
       audits: {
         title: "Auditorias reais, não conselhos genéricos",
@@ -292,6 +374,35 @@ export const translations: Record<Lang, Translation> = {
     statement: {
       heading: "Todo lo que hace un consultor de conversión, ahora automático.",
       auditsAlt: "Una auditoría real de una clínica dental, mostrando hallazgos buenos, malos y correcciones",
+    },
+    pipelineDemo: {
+      badge: "SIMULACIÓN EN TIEMPO REAL DEL MOTOR REMOTION",
+      heading: "El Pipeline Completo de Lead a Cierre en Movimiento",
+      sub: "Mira cómo una URL cruda se transforma en una propuesta auditada y cotizada lista para enviar por WhatsApp — renderizada cuadro por cuadro.",
+      play: "Reproducir",
+      pause: "Pausar",
+      restart: "Reiniciar",
+      steps: [
+        { label: "1. Rastrear", step: 0 },
+        { label: "2. Auditar", step: 1 },
+        { label: "3. PRD", step: 2 },
+        { label: "4. Cerrar", step: 3 },
+      ],
+      caption: "Motor de Animación Programática con Remotion",
+      attribution: "Construido por Hudson Argollo · Arquitectura Global ClubeMkt",
+    },
+    roiCalculator: {
+      badge: "CALCULADORA DE RETORNO (ROI)",
+      heading: "¿Cuántos ingresos se están perdiendo en tu ciudad?",
+      sub: "Calcula tu pipeline proyectado al reemplazar la prospección manual por auditorías automatizadas y cotizaciones instantáneas.",
+      leadsLabel: "Negocios Auditados por Mes",
+      closeRateLabel: "Tasa Estimada de Cierre",
+      dealSizeLabel: "Tamaño Promedio de Propuesta / Paquete",
+      monthlyProjected: "Ingreso Mensual Proyectado",
+      annualProjected: "Ritmo de Ingresos Anual",
+      closedPerMonth: "Tratos Cerrados / Mes",
+      hoursSaved: "Horas de Trabajo Manual Ahorradas / Mes",
+      ctaButton: "Iniciar Máquina en Vivo",
     },
     features: {
       audits: {

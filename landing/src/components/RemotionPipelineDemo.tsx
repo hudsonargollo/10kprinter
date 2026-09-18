@@ -4,8 +4,10 @@ import { PipelineComposition, PIPELINE_DURATION_FRAMES, PIPELINE_FPS } from "./r
 import { motion } from "framer-motion";
 import { Play, Pause, RotateCcw, MonitorPlay, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export function RemotionPipelineDemo() {
+  const { t, lang } = useLanguage();
   const playerRef = useRef<PlayerRef>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -44,7 +46,7 @@ export function RemotionPipelineDemo() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e8ff5c]/10 border border-[#e8ff5c]/30 text-[#e8ff5c] text-xs font-mono font-semibold"
           >
             <MonitorPlay className="w-3.5 h-3.5" />
-            <span>REMOTION REAL-TIME ENGINE SIMULATION</span>
+            <span>{t.pipelineDemo.badge}</span>
           </motion.div>
 
           <motion.h2
@@ -54,7 +56,7 @@ export function RemotionPipelineDemo() {
             transition={{ delay: 0.1 }}
             className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading tracking-tight text-white"
           >
-            The Full Lead-to-Close Pipeline in Motion
+            {t.pipelineDemo.heading}
           </motion.h2>
 
           <motion.p
@@ -64,7 +66,7 @@ export function RemotionPipelineDemo() {
             transition={{ delay: 0.2 }}
             className="text-white/60 max-w-2xl mx-auto text-base"
           >
-            Watch how a raw URL turns into an audited, priced proposal ready for WhatsApp dispatch — rendered frame-by-frame.
+            {t.pipelineDemo.sub}
           </motion.p>
         </div>
 
@@ -86,7 +88,7 @@ export function RemotionPipelineDemo() {
                 className="h-9 px-3 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white font-mono text-xs flex items-center gap-1.5 cursor-pointer"
               >
                 {isPlaying ? <Pause className="w-3.5 h-3.5 text-[#e8ff5c]" /> : <Play className="w-3.5 h-3.5 text-[#e8ff5c]" />}
-                <span>{isPlaying ? "Pause" : "Play"}</span>
+                <span>{isPlaying ? t.pipelineDemo.pause : t.pipelineDemo.play}</span>
               </Button>
 
               <Button
@@ -96,18 +98,13 @@ export function RemotionPipelineDemo() {
                 className="h-9 px-3 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white font-mono text-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Restart</span>
+                <span>{t.pipelineDemo.restart}</span>
               </Button>
             </div>
 
             {/* Quick Step Jump Tabs */}
             <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-xl border border-white/5">
-              {[
-                { label: "1. Hunt", step: 0 },
-                { label: "2. Audit", step: 1 },
-                { label: "3. PRD", step: 2 },
-                { label: "4. Close", step: 3 },
-              ].map((item) => (
+              {t.pipelineDemo.steps.map((item) => (
                 <button
                   key={item.step}
                   onClick={() => jumpToStep(item.step)}
@@ -124,6 +121,7 @@ export function RemotionPipelineDemo() {
             <Player
               ref={playerRef}
               component={PipelineComposition}
+              inputProps={{ lang }}
               durationInFrames={PIPELINE_DURATION_FRAMES}
               compositionWidth={1280}
               compositionHeight={720}
@@ -142,9 +140,9 @@ export function RemotionPipelineDemo() {
           <div className="flex flex-wrap items-center justify-between text-xs font-mono text-white/40 px-2 pt-1">
             <div className="flex items-center gap-2">
               <Zap className="w-3.5 h-3.5 text-[#e8ff5c]" />
-              <span>Programmatic Remotion Animation Engine</span>
+              <span>{t.pipelineDemo.caption}</span>
             </div>
-            <span>Built by Hudson Argollo · ClubeMkt Worldwide Architecture</span>
+            <span>{t.pipelineDemo.attribution}</span>
           </div>
         </motion.div>
       </div>

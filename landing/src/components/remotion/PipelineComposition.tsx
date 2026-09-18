@@ -1,58 +1,215 @@
 import { AbsoluteFill, useCurrentFrame, interpolate, spring } from "remotion";
 import { Globe, CheckCircle2, Send, Sparkles } from "lucide-react";
+import type { Lang } from "../../i18n/translations";
 
 export const PIPELINE_DURATION_FRAMES = 240; // 8 seconds at 30 fps
 export const PIPELINE_FPS = 30;
 
-export function PipelineComposition() {
-  const frame = useCurrentFrame();
+interface PipelineCompositionProps {
+  lang?: Lang;
+}
 
-  // 4 sequential steps across 240 frames (60 frames each)
-  // Step 0 (0-60): Discover & Scrape
-  // Step 1 (60-120): Multi-Vertical DOM Audit
-  // Step 2 (120-180): Brand Extraction & PRD Generation
-  // Step 3 (180-240): Priced Proposal & 1-Click WhatsApp Delivery
+export function PipelineComposition({ lang = "es" }: PipelineCompositionProps) {
+  const frame = useCurrentFrame();
 
   const currentStep = Math.min(3, Math.floor(frame / 60));
 
-  const steps = [
-    {
-      badge: "STEP 01: GLOBAL DISCOVERY",
-      title: "Target Scanned: Santa Cruz / Miami / São Paulo",
-      subtitle: "Locating high-ticket local businesses with live websites...",
-      leadName: "Centro Odontológico San Martín",
-      url: "https://odontosanmarin-scz.com",
-      phone: "+591 784 92011",
-      city: "Santa Cruz de la Sierra",
-    },
-    {
-      badge: "STEP 02: DEEP DOM AUDIT",
-      title: "Real DOM Inspection & Performance Analysis",
-      subtitle: "Evaluating conversion friction, mobile responsiveness & CTA leaks...",
-      score: 38,
-      status: "3 Critical Revenue Leaks Identified",
-      bad: ["No mobile WhatsApp CTA above fold", "Page load 4.2s on 4G (heavy uncompressed assets)", "No lead capture mechanism"],
-      good: ["Clear service list", "Active operating hours"],
-    },
-    {
-      badge: "STEP 03: PRD & BRAND TOKENS",
-      title: "Tailwind Palette & Itemized Scope Generated",
-      subtitle: "Building the exact technical upgrade plan with transparent pricing...",
-      primaryColor: "#0284c7",
-      bgAltColor: "#f0f9ff",
-      price: "$300 USD",
-      deliverable: "High-Speed Next.js Landing + WhatsApp Instant Booking Form",
-    },
-    {
-      badge: "STEP 04: MONETIZATION & CLOSING",
-      title: "Bilingual Proposal Ready to Send",
-      subtitle: "1-Click WhatsApp outreach personalized for the business owner...",
-      waMessage: "Hola Dr. San Martín, auditamos la web de su clínica y encontramos 3 fugas de reservas móviles. Le armamos la propuesta y demo aquí: 1kprint.clubemkt.digital/p/scz-dental",
-      dealTier: "HOT LEAD · Deal Value: $300 + $100/mo",
-    },
-  ];
+  const stepsData = {
+    es: [
+      {
+        badge: "PASO 01: CAZA GEOGRÁFICA GLOBAL",
+        title: "Objetivo Escaneado: Santa Cruz / Miami / São Paulo",
+        subtitle: "Localizando negocios locales de alto valor con sitios web activos...",
+        leadName: "Centro Odontológico San Martín",
+        url: "https://odontosanmarin-scz.com",
+        phone: "+591 784 92011",
+        city: "Santa Cruz de la Sierra",
+        targetLabel: "Entidad Objetivo:",
+        scrapedLabel: "Sitio Web Extraído:",
+        locationLabel: "Ubicación y WhatsApp:",
+        browserNotice: "Navegador headless capturando árbol DOM, captura de pantalla y tokens de marca...",
+      },
+      {
+        badge: "PASO 02: AUDITORÍA DOM PROFUNDA",
+        title: "Inspección de DOM Real y Análisis de Rendimiento",
+        subtitle: "Evaluando fricción de conversión, adaptabilidad móvil y fugas de llamadas a la acción...",
+        score: 38,
+        leaksTitle: "FUGAS DE CONVERSIÓN (Puntaje: 38/100)",
+        qualifiedBadge: "CALIFICADO",
+        bad: [
+          "Sin botón de WhatsApp visible arriba del pliegue en móvil",
+          "Carga lenta en 4.2s en 4G (imágenes pesadas sin optimizar)",
+          "Sin formulario rápido de captura de pacientes",
+        ],
+        assetsTitle: "ACTIVOS ACTUALES DETECTADOS",
+        good: ["Lista clara de tratamientos dentales", "Horarios de atención actualizados"],
+        readyNotice: "Listo para propuesta instantánea de rediseño de alto valor.",
+      },
+      {
+        badge: "PASO 03: PRD Y PALETA DE MARCA",
+        title: "Paleta Tailwind y Alcance Detallado Generados",
+        subtitle: "Construyendo el plan técnico exacto con precios y propuesta desglosada...",
+        primaryColor: "#0284c7",
+        bgAltColor: "#f0f9ff",
+        price: "$300 USD",
+        deliverable: "Landing Page Rápida en Next.js + Formulario Instantáneo de WhatsApp",
+        scopeLabel: "Paquete de Alcance:",
+        priceLabel: "Precio Gancho Desglosado:",
+        brandPaletteLabel: "Paleta de Marca Extraída:",
+        extractedLabel: "Extraída del logo original",
+      },
+      {
+        badge: "PASO 04: MONETIZACIÓN Y CIERRE",
+        title: "Propuesta Interactiva Lista para Enviar",
+        subtitle: "Contacto por WhatsApp en 1 clic personalizado para el dueño del negocio...",
+        scriptLabel: "SCRIPT DE CONTACTO EN 1 CLIC",
+        waMessage:
+          "Hola Dr. San Martín, auditamos la web de su clínica y encontramos 3 fugas de reservas móviles. Le armamos la propuesta interactiva y demo aquí: 1kprint.clubemkt.digital/p/scz-dental",
+        dealTier: "LEAD CALIENTE · Valor del Trato: $300 + $100/mes",
+        deepLinkNotice: "Enlace Directo de WhatsApp Generado",
+        readyCloseNotice: "Listo para Cerrar · Escala Global",
+      },
+    ],
+    pt: [
+      {
+        badge: "ETAPA 01: CAÇA GEOGRÁFICA GLOBAL",
+        title: "Alvo Escaneado: Santa Cruz / Miami / São Paulo",
+        subtitle: "Localizando negócios locais de alto valor com sites ativos...",
+        leadName: "Centro Odontológico San Martín",
+        url: "https://odontosanmarin-scz.com",
+        phone: "+591 784 92011",
+        city: "Santa Cruz de la Sierra",
+        targetLabel: "Entidade Alvo:",
+        scrapedLabel: "Site Extraído:",
+        locationLabel: "Localização e WhatsApp:",
+        browserNotice: "Navegador headless capturando árvore DOM, captura de tela e tokens de marca...",
+      },
+      {
+        badge: "ETAPA 02: AUDITORIA DOM PROFUNDA",
+        title: "Inspeção de DOM Real e Análise de Performance",
+        subtitle: "Avaliando fricção de conversão, responsividade mobile e vazamentos de CTA...",
+        score: 38,
+        leaksTitle: "VAZAMENTOS DE CONVERSÃO (Pontuação: 38/100)",
+        qualifiedBadge: "QUALIFICADO",
+        bad: [
+          "Sem botão de WhatsApp visível acima da dobra no celular",
+          "Carregamento lento em 4.2s no 4G (imagens pesadas sem otimização)",
+          "Sem formulário de captura rápida de pacientes",
+        ],
+        assetsTitle: "ATIVOS ATUAIS DETECTADOS",
+        good: ["Lista clara de tratamentos dentários", "Horários de funcionamento atualizados"],
+        readyNotice: "Pronto para proposta instantânea de redesenho de alto valor.",
+      },
+      {
+        badge: "ETAPA 03: PRD E PALETA DE MARCA",
+        title: "Paleta Tailwind e Escopo Detalhado Gerados",
+        subtitle: "Construindo o plano técnico exato com preços transparentes e proposta...",
+        primaryColor: "#0284c7",
+        bgAltColor: "#f0f9ff",
+        price: "$300 USD",
+        deliverable: "Landing Page Rápida em Next.js + Formulário Instantâneo de WhatsApp",
+        scopeLabel: "Pacote de Escopo:",
+        priceLabel: "Preço Gancho Detalhado:",
+        brandPaletteLabel: "Paleta de Marca Extraída:",
+        extractedLabel: "Extraída do logo original",
+      },
+      {
+        badge: "ETAPA 04: MONETIZAÇÃO E FECHAMENTO",
+        title: "Proposta Interativa Pronta para Envio",
+        subtitle: "Contato no WhatsApp em 1 clique personalizado para o dono do negócio...",
+        scriptLabel: "SCRIPT DE CONTATO EM 1 CLIQUE",
+        waMessage:
+          "Olá Dr. San Martín, auditamos o site da sua clínica e encontramos 3 vazamentos de agendamentos no celular. Preparamos a proposta interativa e demo aqui: 1kprint.clubemkt.digital/p/scz-dental",
+        dealTier: "LEAD QUENTE · Valor do Negócio: $300 + $100/mês",
+        deepLinkNotice: "Link Direto do WhatsApp Gerado",
+        readyCloseNotice: "Pronto para Fechar · Escala Global",
+      },
+    ],
+    en: [
+      {
+        badge: "STEP 01: GLOBAL DISCOVERY",
+        title: "Target Scanned: Santa Cruz / Miami / São Paulo",
+        subtitle: "Locating high-ticket local businesses with live websites...",
+        leadName: "Centro Odontológico San Martín",
+        url: "https://odontosanmarin-scz.com",
+        phone: "+591 784 92011",
+        city: "Santa Cruz de la Sierra",
+        targetLabel: "Target Entity:",
+        scrapedLabel: "Scraped Website:",
+        locationLabel: "Location & WhatsApp:",
+        browserNotice: "Headless browser capturing DOM tree, hero screenshot & copy tokens...",
+      },
+      {
+        badge: "STEP 02: DEEP DOM AUDIT",
+        title: "Real DOM Inspection & Performance Analysis",
+        subtitle: "Evaluating conversion friction, mobile responsiveness & CTA leaks...",
+        score: 38,
+        leaksTitle: "CONVERSION LEAKS (Score: 38/100)",
+        qualifiedBadge: "QUALIFIED",
+        bad: [
+          "No mobile WhatsApp CTA above fold",
+          "Page load 4.2s on 4G (heavy uncompressed assets)",
+          "No lead capture mechanism",
+        ],
+        assetsTitle: "CURRENT ASSETS DETECTED",
+        good: ["Clear service list", "Active operating hours"],
+        readyNotice: "Ready for instant high-ticket redesign proposal.",
+      },
+      {
+        badge: "STEP 03: PRD & BRAND TOKENS",
+        title: "Tailwind Palette & Itemized Scope Generated",
+        subtitle: "Building the exact technical upgrade plan with transparent pricing...",
+        primaryColor: "#0284c7",
+        bgAltColor: "#f0f9ff",
+        price: "$300 USD",
+        deliverable: "High-Speed Next.js Landing + WhatsApp Instant Booking Form",
+        scopeLabel: "Scope Package:",
+        priceLabel: "Itemized Price Hook:",
+        brandPaletteLabel: "Auto Brand Palette:",
+        extractedLabel: "Extracted from original logo",
+      },
+      {
+        badge: "STEP 04: MONETIZATION & CLOSING",
+        title: "Bilingual Proposal Ready to Send",
+        subtitle: "1-Click WhatsApp outreach personalized for the business owner...",
+        scriptLabel: "1-CLICK OUTREACH SCRIPT",
+        waMessage:
+          "Hello Dr. San Martín, we audited your clinic's website and found 3 mobile booking leaks. We prepared a full interactive proposal and demo for you here: 1kprint.clubemkt.digital/p/scz-dental",
+        dealTier: "HOT LEAD · Deal Value: $300 + $100/mo",
+        deepLinkNotice: "Direct WhatsApp Deep-Link Generated",
+        readyCloseNotice: "Ready to Close · Global Scale",
+      },
+    ],
+  };
 
+  const steps = stepsData[lang] || stepsData.es;
   const s = steps[currentStep];
+
+  const headerTitles = {
+    es: {
+      brandTitle: "MONEYMACHINE: PIPELINE AUTOMATIZADO",
+      authorTag: "Creado por Hudson Argollo · Motor Global de Lead a Cierre",
+      stepPills: ["01 Rastrear", "02 Auditar", "03 PRD", "04 Cerrar"],
+      velocityLabel: "VELOCIDAD DEL PIPELINE: 100% AUTOMATIZADO",
+      completeLabel: "COMPLETO",
+    },
+    pt: {
+      brandTitle: "MONEYMACHINE: PIPELINE AUTOMATIZADO",
+      authorTag: "Criado por Hudson Argollo · Motor Global de Lead a Fechamento",
+      stepPills: ["01 Caçar", "02 Auditar", "03 PRD", "04 Fechar"],
+      velocityLabel: "VELOCIDADE DO PIPELINE: 100% AUTOMATIZADO",
+      completeLabel: "CONCLUÍDO",
+    },
+    en: {
+      brandTitle: "MONEYMACHINE AUTOMATED PIPELINE",
+      authorTag: "Created by Hudson Argollo · Worldwide Lead-to-Close Engine",
+      stepPills: ["01 Hunt", "02 Audit", "03 PRD", "04 Close"],
+      velocityLabel: "PIPELINE VELOCITY: 100% AUTOMATED",
+      completeLabel: "COMPLETE",
+    },
+  };
+
+  const h = headerTitles[lang] || headerTitles.es;
 
   // Smooth entrance spring for current active card
   const cardScale = spring({
@@ -73,17 +230,17 @@ export function PipelineComposition() {
           </div>
           <div>
             <div className="text-xs font-mono font-bold tracking-wider text-white/90">
-              MONEYMACHINE AUTOMATED PIPELINE
+              {h.brandTitle}
             </div>
             <div className="text-[11px] font-mono text-[#e8ff5c]">
-              Created by Hudson Argollo · Worldwide Lead-to-Close Engine
+              {h.authorTag}
             </div>
           </div>
         </div>
 
         {/* Live Step Pills */}
         <div className="flex items-center gap-1.5">
-          {["01 Hunt", "02 Audit", "03 PRD", "04 Close"].map((label, idx) => (
+          {h.stepPills.map((label, idx) => (
             <div
               key={label}
               className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold transition-all ${
@@ -129,20 +286,20 @@ export function PipelineComposition() {
           {currentStep === 0 && (
             <div className="space-y-3 bg-black/40 p-4 rounded-lg border border-white/10 font-mono text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-white/40">Target Entity:</span>
+                <span className="text-white/40">{s.targetLabel}</span>
                 <span className="text-[#e8ff5c] font-bold">{s.leadName}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-white/40">Scraped Website:</span>
+                <span className="text-white/40">{s.scrapedLabel}</span>
                 <span className="text-white/90 underline">{s.url}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-white/40">Location & WhatsApp:</span>
+                <span className="text-white/40">{s.locationLabel}</span>
                 <span className="text-emerald-400 font-semibold">{s.city} · {s.phone}</span>
               </div>
               <div className="flex items-center gap-2 text-white/50 text-[11px] pt-2 border-t border-white/10">
                 <Globe className="w-3.5 h-3.5 text-[#e8ff5c] animate-spin" />
-                <span>Headless browser capturing DOM tree, hero screenshot & copy tokens...</span>
+                <span>{s.browserNotice}</span>
               </div>
             </div>
           )}
@@ -151,8 +308,8 @@ export function PipelineComposition() {
             <div className="grid sm:grid-cols-2 gap-3 font-mono text-xs">
               <div className="bg-rose-500/10 border border-rose-500/30 p-3 rounded-lg space-y-2">
                 <div className="flex items-center justify-between text-rose-300 font-bold">
-                  <span>CONVERSION LEAKS (Score: 38/100)</span>
-                  <span className="text-[10px] bg-rose-500/20 px-1.5 py-0.5 rounded">QUALIFIED</span>
+                  <span>{s.leaksTitle}</span>
+                  <span className="text-[10px] bg-rose-500/20 px-1.5 py-0.5 rounded">{s.qualifiedBadge}</span>
                 </div>
                 {s.bad?.map((item, i) => (
                   <div key={i} className="text-rose-200/80 text-[11px] flex items-start gap-1.5">
@@ -163,7 +320,7 @@ export function PipelineComposition() {
               </div>
 
               <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-lg space-y-2">
-                <div className="text-emerald-300 font-bold">CURRENT ASSETS DETECTED</div>
+                <div className="text-emerald-300 font-bold">{s.assetsTitle}</div>
                 {s.good?.map((item, i) => (
                   <div key={i} className="text-emerald-200/80 text-[11px] flex items-start gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
@@ -171,7 +328,7 @@ export function PipelineComposition() {
                   </div>
                 ))}
                 <div className="pt-2 text-[10px] text-white/50 border-t border-emerald-500/20">
-                  Ready for instant high-ticket redesign proposal.
+                  {s.readyNotice}
                 </div>
               </div>
             </div>
@@ -180,21 +337,21 @@ export function PipelineComposition() {
           {currentStep === 2 && (
             <div className="space-y-3 bg-black/40 p-4 rounded-lg border border-white/10 font-mono text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-white/40">Scope Package:</span>
+                <span className="text-white/40">{s.scopeLabel}</span>
                 <span className="text-white font-bold">{s.deliverable}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-white/40">Itemized Price Hook:</span>
+                <span className="text-white/40">{s.priceLabel}</span>
                 <span className="text-[#e8ff5c] text-sm font-extrabold">{s.price}</span>
               </div>
               <div className="flex items-center gap-3 pt-2 border-t border-white/10">
-                <span className="text-white/40">Auto Brand Palette:</span>
+                <span className="text-white/40">{s.brandPaletteLabel}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded bg-[#0284c7] border border-white/30" title="Primary" />
                   <div className="w-5 h-5 rounded bg-[#f0f9ff] border border-white/30" title="Background Alt" />
                   <div className="w-5 h-5 rounded bg-[#0f172a] border border-white/30" title="Dark Base" />
                 </div>
-                <span className="text-[10px] text-white/50">Extracted from original logo</span>
+                <span className="text-[10px] text-white/50">{s.extractedLabel}</span>
               </div>
             </div>
           )}
@@ -203,7 +360,7 @@ export function PipelineComposition() {
             <div className="space-y-3 bg-emerald-950/30 border border-emerald-500/30 p-4 rounded-lg font-mono text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-emerald-400 font-bold flex items-center gap-1.5">
-                  <Send className="w-3.5 h-3.5" /> 1-CLICK OUTREACH SCRIPT
+                  <Send className="w-3.5 h-3.5" /> {s.scriptLabel}
                 </span>
                 <span className="bg-[#e8ff5c] text-black font-bold px-2 py-0.5 rounded text-[10px]">
                   {s.dealTier}
@@ -213,8 +370,8 @@ export function PipelineComposition() {
                 "{s.waMessage}"
               </div>
               <div className="flex items-center justify-between text-[11px] text-white/50 pt-1">
-                <span>Direct WhatsApp Deep-Link Generated</span>
-                <span className="text-emerald-400 font-bold">Ready to Close · Global Scale</span>
+                <span>{s.deepLinkNotice}</span>
+                <span className="text-emerald-400 font-bold">{s.readyCloseNotice}</span>
               </div>
             </div>
           )}
@@ -224,9 +381,9 @@ export function PipelineComposition() {
       {/* Bottom Progress Bar */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-[11px] font-mono text-white/50">
-          <span>PIPELINE VELOCITY: 100% AUTOMATED</span>
+          <span>{h.velocityLabel}</span>
           <span className="text-[#e8ff5c] font-bold">
-            {Math.round(((frame + 1) / PIPELINE_DURATION_FRAMES) * 100)}% COMPLETE
+            {Math.round(((frame + 1) / PIPELINE_DURATION_FRAMES) * 100)}% {h.completeLabel}
           </span>
         </div>
         <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
