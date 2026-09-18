@@ -1,5 +1,8 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
+import { StrategicBriefingSection } from "@/components/StrategicBriefingSection";
+import { RemotionPipelineDemo } from "@/components/RemotionPipelineDemo";
+import { InteractiveShowcaseSection } from "@/components/InteractiveShowcaseSection";
 import { HowItWorks } from "@/components/HowItWorks";
 import { RoiCalculator } from "@/components/RoiCalculator";
 import { SetupSection } from "@/components/SetupSection";
@@ -22,6 +25,9 @@ function App() {
     <div className="min-h-screen bg-background text-foreground selection:bg-[#e8ff5c] selection:text-black">
       <Nav />
       <Hero />
+      <StrategicBriefingSection />
+      <RemotionPipelineDemo />
+      <InteractiveShowcaseSection />
       <RoiCalculator />
       <HowItWorks />
       <SetupSection />

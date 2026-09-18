@@ -1,6 +1,7 @@
 import type { Env, LeadSourceRow } from "./types";
 import { searchPlaces, getPlaceDetails } from "./lib/places";
 import { newId } from "./lib/db";
+import { resolveTargetLanguage } from "./lib/language";
 
 interface HunterResult {
   newLeadIds: string[];
@@ -13,6 +14,12 @@ export async function runHunterForSource(env: Env, source: LeadSourceRow): Promi
   const query = source.region ? `${source.query} in ${source.region}` : source.query;
   const results = await searchPlaces(env.GOOGLE_PLACES_API_KEY, query);
 
+  const session = source.hunt_session_id
+    ? await env.DB.prepare("SELECT language, region FROM hunt_sessions WHERE id = ?")
+        .bind(source.hunt_session_id)
+        .first<{ language?: string; region?: string }>()
+    : null;
+
   const newLeadIds: string[] = [];
   let skippedNoWebsite = 0;
   let skippedExisting = 0;
@@ -24,17 +31,29 @@ export async function runHunterForSource(env: Env, source: LeadSourceRow): Promi
       continue;
     }
 
-    const details = await getPlaceDetails(env.GOOGLE_PLACES_API_KEY, place.place_id);
+    let details;
+    try {
+      details = await getPlaceDetails(env.GOOGLE_PLACES_API_KEY, place.place_id);
+    } catch (placeErr) {
+      console.error(`Failed to get details for place ${place.place_id}:`, placeErr);
+      continue;
+    }
     if (!details.website) {
       skippedNoWebsite++;
       continue;
     }
 
+    const leadLang = resolveTargetLanguage(
+      session?.language,
+      source.region || session?.region || place.formatted_address,
+      details.website
+    );
+
     const id = newId();
     try {
       await env.DB.prepare(
-        `INSERT INTO leads (id, business_name, url, place_id, phone, address, category, source_id, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'discovered')`,
+        `INSERT INTO leads (id, business_name, url, place_id, phone, address, category, source_id, status, language)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'discovered', ?)`,
       )
         .bind(
           id,
@@ -45,6 +64,7 @@ export async function runHunterForSource(env: Env, source: LeadSourceRow): Promi
           place.formatted_address ?? null,
           source.category,
           source.id,
+          leadLang,
         )
         .run();
       newLeadIds.push(id);

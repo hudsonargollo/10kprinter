@@ -124,7 +124,8 @@ app.get("/api/leads", async (c) => {
       (SELECT count(*) FROM audits WHERE audits.lead_id = leads.id) AS audit_count,
       (SELECT count(*) FROM prds WHERE prds.lead_id = leads.id) AS prd_count,
       (SELECT count(*) FROM scrapes WHERE scrapes.lead_id = leads.id) AS scrape_count,
-      (SELECT count(*) FROM proposals WHERE proposals.lead_id = leads.id) AS proposal_count
+      (SELECT count(*) FROM proposals WHERE proposals.lead_id = leads.id) AS proposal_count,
+      (SELECT message FROM pipeline_events WHERE pipeline_events.lead_id = leads.id AND pipeline_events.status = 'failed' ORDER BY created_at DESC LIMIT 1) AS last_error
     FROM leads
     ORDER BY discovered_at DESC
   `).all<LeadRow & { audit_count: number; prd_count: number; scrape_count: number; proposal_count: number }>();

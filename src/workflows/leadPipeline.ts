@@ -25,7 +25,7 @@ import { generateStructured, generateStructuredFromImage } from "../lib/anthropi
 import { generateCoverImage } from "../lib/imageGen";
 import { buildCoverImagePrompt, buildProposalHtml, buildWaLink } from "../lib/proposal";
 import { syncLeadToCrm } from "../lib/crmSync";
-import { resolveTargetLanguage, getLanguagePromptInstruction } from "../lib/language";
+import { resolveTargetLanguage, getLanguagePromptInstruction, VERTICAL_LABELS_I18N } from "../lib/language";
 import { VERTICALS } from "../verticals";
 
 const AUDIT_SCHEMA = {
@@ -103,19 +103,17 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
     const targetLang = resolveTargetLanguage(lead.language, null, lead.url, scrapeData.summary.bodyText);
     const langPrompt = getLanguagePromptInstruction(targetLang);
 
-    function hashString(s: string): number {
-      let h = 0;
-      for (let i = 0; i < s.length; i++) h = (Math.imul(h, 31) + s.charCodeAt(i)) >>> 0;
-      return h;
+    if (lead.language !== targetLang) {
+      await env.DB.prepare("UPDATE leads SET language = ? WHERE id = ?").bind(targetLang, leadId).run();
     }
 
     const tektoneAiEndpoint = env.TEKTONE_AI_ENDPOINT || "https://ai.tektone.com.br/v1";
     const groqProxyToken = env.TEKTONE_AI_TOKEN || env.FALAI_TOKEN;
 
     const LLM_STEP_RETRIES = {
-      limit: 300,
-      delay: 180_000 + (hashString(leadId) % 180) * 1000,
-      backoff: "constant" as const,
+      limit: 3,
+      delay: 2000,
+      backoff: "exponential" as const,
     };
 
     const audits: AuditFinding[] = [];
@@ -223,15 +221,22 @@ export class LeadPipeline extends WorkflowEntrypoint<Env, WorkflowPayload> {
       });
 
       await step.do(`proposal-draft-${vertical.key}`, async () => {
+        const localizedVerticalLabel = VERTICAL_LABELS_I18N[targetLang]?.[vertical.key] || vertical.label;
+        const defaultWaGreeting = targetLang === "pt"
+          ? `Olá ${lead.business_name ?? ""}, tudo bem? `
+          : targetLang === "es"
+          ? `Hola ${lead.business_name ?? ""}, ¿cómo estás? `
+          : `Hi ${lead.business_name ?? "there"}, `;
+
         const html = buildProposalHtml({
           lead,
-          verticalLabel: vertical.label,
+          verticalLabel: localizedVerticalLabel,
           scrapeSummary: scrapeData.summary,
           finding,
           brandTokens,
           priceUsd,
           coverImageUrl: `/api/leads/${leadId}/proposals/${vertical.key}/cover`,
-          waLink: buildWaLink(lead.phone, `Hi ${lead.business_name ?? "there"}, `),
+          waLink: buildWaLink(lead.phone, defaultWaGreeting),
           lang: targetLang,
         });
         const r2Key = await putProposalHtml(env.ASSETS_BUCKET, leadId, vertical.key, html);

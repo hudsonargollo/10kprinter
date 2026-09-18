@@ -8,11 +8,11 @@ const LANGS: Lang[] = ["en", "pt", "es"];
 export function Nav() {
   const { t, lang, setLang } = useLanguage();
   const LINKS = [
-    { href: "#how-it-works", label: t.nav.links.howItWorks },
+    { href: "#strategic-briefing", label: lang === "es" ? "Misión y Briefing" : lang === "pt" ? "Missão & Briefing" : "Mission Briefing" },
+    { href: "#pipeline-demo", label: "Remotion Engine" },
+    { href: "#interactive-showcase", label: lang === "es" ? "Módulos" : lang === "pt" ? "Módulos" : "System Preview" },
     { href: "#roi-calculator", label: "ROI Estimator" },
-    { href: "#features", label: t.nav.links.features },
     { href: "#pricing", label: t.nav.links.pricing },
-    { href: "#faq", label: t.nav.links.faq },
   ];
 
   return (

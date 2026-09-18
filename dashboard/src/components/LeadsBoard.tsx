@@ -189,7 +189,15 @@ export function LeadsBoard() {
 
       {/* Leads Columns */}
       {leads === null ? (
-        <p className="py-10 text-center text-muted-foreground font-mono text-xs">{t.board.loading}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="p-4 bg-card/50 border-white/5 space-y-3 animate-pulse">
+              <div className="h-4 bg-white/10 rounded w-1/3" />
+              <div className="h-16 bg-white/5 rounded-xl" />
+              <div className="h-16 bg-white/5 rounded-xl" />
+            </Card>
+          ))}
+        </div>
       ) : filteredLeads.length === 0 ? (
         <div className="py-16 text-center border border-dashed border-white/10 rounded-2xl p-8 bg-white/[0.01]">
           <p className="text-sm text-white/70 font-medium">{t.board.emptyTitle}</p>
@@ -216,6 +224,7 @@ export function LeadsBoard() {
                     status={lead.status}
                     auditCount={lead.audit_count}
                     prdCount={lead.prd_count}
+                    lastError={lead.last_error}
                     compact
                   />
                 </a>

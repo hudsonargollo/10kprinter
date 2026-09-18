@@ -15,7 +15,18 @@ export async function scrapeSite(browserBinding: Fetcher, url: string): Promise<
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
     const start = Date.now();
-    await page.goto(url, { waitUntil: "networkidle0", timeout: 30_000 });
+    try {
+      await page.goto(url, { waitUntil: "networkidle2", timeout: 20_000 });
+    } catch {
+      // Fallback if networkidle2 times out due to persistent streams / ads
+      try {
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15_000 });
+        // Give page a short moment to render initial content
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      } catch (fallbackErr) {
+        throw new Error(`Failed to load URL ${url}: ${fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr)}`);
+      }
+    }
     const loadTimeMs = Date.now() - start;
 
     const html = await page.content();

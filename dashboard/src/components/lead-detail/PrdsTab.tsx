@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { getPrdMarkdown } from "../../api";
 import type { BrandTokens, Prd } from "../../types";
-import { VERTICAL_LABELS } from "../../types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export function PrdsTab({ leadId, prds }: { leadId: string; prds: Prd[] }) {
+  const { t } = useLanguage();
   const [activeId, setActiveId] = useState<string | null>(prds[0]?.id ?? null);
   const [markdown, setMarkdown] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,13 @@ export function PrdsTab({ leadId, prds }: { leadId: string; prds: Prd[] }) {
       .finally(() => setLoading(false));
   }, [leadId, activeId]);
 
-  if (prds.length === 0) return <p className="py-10 text-center text-muted-foreground">No PRDs generated yet — this lead may not have qualified for any vertical.</p>;
+  if (prds.length === 0) {
+    return (
+      <p className="py-10 text-center text-muted-foreground font-mono text-xs">
+        {t.prdsTab.noPrds}
+      </p>
+    );
+  }
 
   const active = prds.find((p) => p.id === activeId);
   const tokens: BrandTokens | null = active ? JSON.parse(active.brand_tokens_json) : null;
@@ -40,8 +47,8 @@ export function PrdsTab({ leadId, prds }: { leadId: string; prds: Prd[] }) {
       <Tabs value={activeId ?? undefined} onValueChange={setActiveId} className="mb-3 gap-0">
         <TabsList>
           {prds.map((p) => (
-            <TabsTrigger key={p.id} value={p.id}>
-              {VERTICAL_LABELS[p.vertical]}
+            <TabsTrigger key={p.id} value={p.id} className="text-xs">
+              {t.verticals[p.vertical] || p.vertical}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -66,11 +73,11 @@ export function PrdsTab({ leadId, prds }: { leadId: string; prds: Prd[] }) {
 
       <div className="mb-2 flex justify-end">
         <Button variant="outline" size="sm" onClick={download} disabled={loading}>
-          Download .md
+          {t.prdsTab.downloadMd}
         </Button>
       </div>
 
-      <div className="prd-markdown">{loading ? "Loading…" : markdown}</div>
+      <div className="prd-markdown">{loading ? t.prdsTab.loading : markdown}</div>
     </Card>
   );
 }

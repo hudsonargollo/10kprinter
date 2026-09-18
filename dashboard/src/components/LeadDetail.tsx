@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLead, retryLead, updateLeadStatus } from "../api";
 import type { LeadDetail as LeadDetailData, LeadStatus } from "../types";
-import { STATUS_LABELS, STATUS_ORDER, TIER_LABELS } from "../types";
+import { STATUS_ORDER } from "../types";
 import { TIER_CLASS } from "@/lib/tier";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -79,6 +79,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
 
   const { lead, scrapes, audits, prds, proposals, events } = data;
   const latestScrape = scrapes[scrapes.length - 1];
+  const latestErrorEvent = events.filter((e) => e.status === "failed").slice(-1)[0];
 
   async function onStatusChange(status: LeadStatus) {
     await updateLeadStatus(leadId, status);
@@ -98,13 +99,13 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
           <div className="flex items-center gap-2">
             {lead.tier && (
               <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-bold border", TIER_CLASS[lead.tier])}>
-                {TIER_LABELS[lead.tier]} · {lead.score}
+                {t.tier[lead.tier]} · {lead.score}
               </span>
             )}
-            <span className="rounded-full bg-border px-2 py-0.5 text-[11px] font-bold">{STATUS_LABELS[lead.status]}</span>
+            <span className="rounded-full bg-border px-2 py-0.5 text-[11px] font-bold">{t.status[lead.status] || lead.status}</span>
             {lead.status === "failed" && (
               <Button variant="outline" size="sm" onClick={() => retryLead(leadId).then(refresh)}>
-                Retry
+                {t.leadDetail.retry}
               </Button>
             )}
             <Select value={lead.status} onValueChange={(v) => onStatusChange(v as LeadStatus)}>
@@ -114,7 +115,7 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
               <SelectContent>
                 {STATUS_ORDER.map((s) => (
                   <SelectItem key={s} value={s}>
-                    {STATUS_LABELS[s]}
+                    {t.status[s] || s}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -127,6 +128,8 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
           status={lead.status}
           auditCount={audits.length}
           prdCount={prds.length}
+          lastError={latestErrorEvent?.message || lead.last_error}
+          onRetry={() => retryLead(leadId).then(refresh)}
         />
       </div>
 

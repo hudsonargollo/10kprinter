@@ -1,71 +1,72 @@
 import { CheckCircle2, CircleDashed, Loader2, AlertTriangle, Sparkles } from "lucide-react";
 import type { LeadStatus } from "../types";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface PipelineProgressBarProps {
   status: LeadStatus;
   auditCount?: number;
   prdCount?: number;
+  lastError?: string | null;
+  onRetry?: () => void;
   className?: string;
   compact?: boolean;
-}
-
-const STAGES: { key: string; label: string }[] = [
-  { key: "discovered", label: "Discovered" },
-  { key: "scraping", label: "Scraping Site" },
-  { key: "audited", label: "4-Vertical Audit" },
-  { key: "prd_ready", label: "Proposal & PRD" },
-];
-
-function getStageProgress(
-  status: LeadStatus,
-  auditCount?: number,
-  prdCount?: number
-): { percent: number; stageIndex: number; activeLabel: string } {
-  if (status === "failed") {
-    return { percent: 100, stageIndex: -1, activeLabel: "Pipeline Failed" };
-  }
-
-  if (["prd_ready", "reviewed", "proposal_sent", "won", "lost"].includes(status)) {
-    return { percent: 100, stageIndex: 4, activeLabel: "Audits & Proposal Ready" };
-  }
-
-  if (status === "discovered") {
-    return { percent: 10, stageIndex: 0, activeLabel: "Discovered • Queued" };
-  }
-
-  if (status === "scraping") {
-    return { percent: 25, stageIndex: 1, activeLabel: "Scraping DOM & Screenshot..." };
-  }
-
-  const count = auditCount ?? 0;
-  if (status === "scraped" || (count > 0 && count < 4)) {
-    const percent = 30 + Math.min(count, 4) * 12;
-    const activeLabel = count > 0 ? `Auditing (${count}/4 verticals finished)...` : "Starting 4-Vertical Audits...";
-    return { percent, stageIndex: 2, activeLabel };
-  }
-
-  if (status === "audited" || count >= 4) {
-    const prds = prdCount ?? 0;
-    const percent = 80 + (prds > 0 ? 10 : 0);
-    const activeLabel = prds > 0 ? `Generating Proposals (${prds} ready)...` : "Audits 4/4 Complete • Writing PRDs...";
-    return { percent, stageIndex: 3, activeLabel };
-  }
-
-  return { percent: 50, stageIndex: 2, activeLabel: "Processing Lead..." };
 }
 
 export function PipelineProgressBar({
   status,
   auditCount,
   prdCount,
+  lastError,
+  onRetry,
   className,
   compact = false,
 }: PipelineProgressBarProps) {
-  const { percent, stageIndex, activeLabel } = getStageProgress(status, auditCount, prdCount);
+  const { t } = useLanguage();
+
+  const count = auditCount ?? 0;
+  const prds = prdCount ?? 0;
+
+  let percent = 50;
+  let stageIndex = 2;
+  let activeLabel = t.pipelineProgress.processing;
+
+  if (status === "failed") {
+    percent = 100;
+    stageIndex = -1;
+    activeLabel = t.pipelineProgress.failed;
+  } else if (["prd_ready", "reviewed", "proposal_sent", "won", "lost"].includes(status)) {
+    percent = 100;
+    stageIndex = 4;
+    activeLabel = t.pipelineProgress.ready;
+  } else if (status === "discovered") {
+    percent = 10;
+    stageIndex = 0;
+    activeLabel = t.pipelineProgress.discovered;
+  } else if (status === "scraping") {
+    percent = 25;
+    stageIndex = 1;
+    activeLabel = t.pipelineProgress.scraping;
+  } else if (status === "scraped" || (count > 0 && count < 4)) {
+    percent = 30 + Math.min(count, 4) * 12;
+    stageIndex = 2;
+    activeLabel = count > 0 ? t.pipelineProgress.auditing : t.pipelineProgress.startingAudits;
+  } else if (status === "audited" || count >= 4) {
+    percent = 80 + (prds > 0 ? 10 : 0);
+    stageIndex = 3;
+    activeLabel = prds > 0 ? t.pipelineProgress.generatingProposals : t.pipelineProgress.auditsCompleteWritingPrds;
+  }
+
   const isFailed = status === "failed";
   const isComplete = percent === 100 && !isFailed;
   const inProgress = ["discovered", "scraping", "scraped", "audited"].includes(status);
+
+  const stages = [
+    { key: "discovered", label: t.pipelineProgress.stages.discovered },
+    { key: "scraping", label: t.pipelineProgress.stages.scraping },
+    { key: "audited", label: t.pipelineProgress.stages.audited },
+    { key: "prd_ready", label: t.pipelineProgress.stages.prd_ready },
+  ];
 
   if (compact) {
     return (
@@ -75,7 +76,7 @@ export function PipelineProgressBar({
             {inProgress && <Loader2 className="w-3 h-3 text-[#e8ff5c] animate-spin shrink-0" />}
             {isComplete && <Sparkles className="w-3 h-3 text-emerald-400 shrink-0" />}
             {isFailed && <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" />}
-            <span className="truncate">{activeLabel}</span>
+            <span className="truncate">{isFailed && lastError ? `${activeLabel}: ${lastError}` : activeLabel}</span>
           </span>
           <span className="text-[#e8ff5c] font-bold shrink-0 ml-1">{percent}%</span>
         </div>
@@ -101,11 +102,13 @@ export function PipelineProgressBar({
             <div className="w-2.5 h-2.5 rounded-full bg-[#e8ff5c] animate-ping" />
           )}
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-white/90">
-            Pipeline Progression
+            {t.pipelineProgress.title}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-[#e8ff5c] font-semibold">{activeLabel}</span>
+          <span className={cn("text-xs font-mono font-semibold", isFailed ? "text-rose-400" : "text-[#e8ff5c]")}>
+            {activeLabel}
+          </span>
           <span className="text-xs font-mono text-white/40">({percent}%)</span>
         </div>
       </div>
@@ -125,9 +128,27 @@ export function PipelineProgressBar({
         />
       </div>
 
+      {/* If Failed, display error banner with one-click retry */}
+      {isFailed && (
+        <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 p-3 text-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-rose-300">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span className="font-mono">{lastError || "Pipeline interrupted or timed out."}</span>
+          </div>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="shrink-0 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 text-white font-mono font-bold text-xs transition-colors cursor-pointer"
+            >
+              {t.leadDetail.retry}
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Visual Step Markers */}
       <div className="grid grid-cols-4 gap-2 pt-1">
-        {STAGES.map((s, idx) => {
+        {stages.map((s, idx) => {
           const isDone = stageIndex > idx || isComplete;
           const isCurrent = stageIndex === idx && inProgress;
           return (

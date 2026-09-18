@@ -50,6 +50,12 @@ export interface DashboardTranslations {
     warm: string;
     cold: string;
   };
+  verticals: {
+    "website-redesign": string;
+    "marketing-automation": string;
+    "email-marketing": string;
+    "social-media": string;
+  };
   newLead: {
     title: string;
     urlLabel: string;
@@ -119,6 +125,83 @@ export interface DashboardTranslations {
       timeline: string;
     };
   };
+  auditsTab: {
+    noAudits: string;
+    qualifies: string;
+    doesNotQualify: string;
+    score: string;
+    good: string;
+    bad: string;
+    fix: string;
+    verticalsQualify: string;
+  };
+  salesTab: {
+    thermometer: string;
+    notScored: string;
+    contact: string;
+    messageWa: string;
+    noPhone: string;
+    notes: string;
+    savingNotes: string;
+    saveNotes: string;
+    stage: string;
+    sendProposal: string;
+    markWon: string;
+    reasonPlaceholder: string;
+    markLost: string;
+    closedFor: string;
+    lost: string;
+  };
+  offerTab: {
+    showcaseTitle: string;
+    showcaseDesc: string;
+    draftSuffix: string;
+    preview: string;
+    useAsShowcase: string;
+    saving: string;
+    save: string;
+    openShowcase: string;
+    offerTitle: string;
+    noPrds: string;
+    consultAddon: string;
+    bundleTotal: string;
+    stackNote: string;
+  };
+  prdsTab: {
+    noPrds: string;
+    downloadMd: string;
+    loading: string;
+  };
+  overviewTab: {
+    notCompleted: string;
+    title: string;
+    loadTime: string;
+    emailCapture: string;
+    phoneNumbers: string;
+    yes: string;
+    no: string;
+  };
+  timelineTab: {
+    noEvents: string;
+  };
+  pipelineProgress: {
+    title: string;
+    failed: string;
+    ready: string;
+    discovered: string;
+    scraping: string;
+    auditing: string;
+    startingAudits: string;
+    generatingProposals: string;
+    auditsCompleteWritingPrds: string;
+    processing: string;
+    stages: {
+      discovered: string;
+      scraping: string;
+      audited: string;
+      prd_ready: string;
+    };
+  };
   login: {
     signInTab: string;
     registerTab: string;
@@ -181,6 +264,12 @@ export const translations: Record<Lang, DashboardTranslations> = {
       hot: "CALIENTE",
       warm: "TIBIO",
       cold: "FRÍO",
+    },
+    verticals: {
+      "website-redesign": "Rediseño de Sitio Web",
+      "marketing-automation": "Automatización de Marketing",
+      "email-marketing": "Email Marketing",
+      "social-media": "Gestión de Redes Sociales",
     },
     newLead: {
       title: "Auditar un nuevo prospecto",
@@ -251,6 +340,83 @@ export const translations: Record<Lang, DashboardTranslations> = {
         timeline: "Historial",
       },
     },
+    auditsTab: {
+      noAudits: "Aún no hay auditorías.",
+      qualifies: "Califica",
+      doesNotQualify: "No califica",
+      score: "Puntaje",
+      good: "Puntos Fuertes",
+      bad: "Fricción / Fugas de Conversión",
+      fix: "Solución Propuesta",
+      verticalsQualify: "verticales califican",
+    },
+    salesTab: {
+      thermometer: "Termómetro del Lead",
+      notScored: "Aún no calificado — esperando auditorías.",
+      contact: "Contacto Directo",
+      messageWa: "Escribir por WhatsApp",
+      noPhone: "No se encontró número de teléfono.",
+      notes: "Notas del Operador",
+      savingNotes: "Guardando…",
+      saveNotes: "Guardar notas",
+      stage: "Etapa de Venta",
+      sendProposal: "Enviar Propuesta",
+      markWon: "Marcar como Ganado",
+      reasonPlaceholder: "Motivo de pérdida (opcional)",
+      markLost: "Marcar como Perdido",
+      closedFor: "Cerrado por",
+      lost: "Perdido",
+    },
+    offerTab: {
+      showcaseTitle: "Página de Demostración (Showcase)",
+      showcaseDesc: "Envía esto primero — antes de explicar puntos débiles o precios. Los borradores automáticos abajo son el punto de partida listo para enviar.",
+      draftSuffix: "borrador",
+      preview: "Vista previa",
+      useAsShowcase: "Usar como showcase",
+      saving: "Guardando…",
+      save: "Guardar",
+      openShowcase: "Abrir página de showcase →",
+      offerTitle: "Estructura de la Oferta",
+      noPrds: "Sin ítems cotizados aún — esperando auditorías/PRDs.",
+      consultAddon: "+ Adicional: 1 hora de consultoría estratégica con Hudson",
+      bundleTotal: "Total del paquete completo",
+      stackNote: "Cada ítem se puede vender por separado — comienza con el de menor fricción y mayor impacto, luego haz stack.",
+    },
+    prdsTab: {
+      noPrds: "Aún no se generaron PRDs — es posible que este lead no haya calificado para ninguna vertical.",
+      downloadMd: "Descargar .md",
+      loading: "Cargando…",
+    },
+    overviewTab: {
+      notCompleted: "La extracción del sitio aún no ha finalizado.",
+      title: "Título",
+      loadTime: "Tiempo de carga",
+      emailCapture: "Captura de emails",
+      phoneNumbers: "Teléfonos detectados",
+      yes: "Sí",
+      no: "No",
+    },
+    timelineTab: {
+      noEvents: "Aún no hay eventos registrados.",
+    },
+    pipelineProgress: {
+      title: "Progreso del Pipeline",
+      failed: "Pipeline Fallido",
+      ready: "Auditorías y Propuestas Listas",
+      discovered: "Descubierto • En cola",
+      scraping: "Extrayendo DOM y Capturas...",
+      auditing: "Auditando verticales...",
+      startingAudits: "Iniciando 4 Auditorías Verticales...",
+      generatingProposals: "Generando Propuestas...",
+      auditsCompleteWritingPrds: "4/4 Auditorías Listas • Redactando PRDs...",
+      processing: "Procesando Lead...",
+      stages: {
+        discovered: "Descubierto",
+        scraping: "Extrayendo Sitio",
+        audited: "4 Auditorías",
+        prd_ready: "Propuesta y PRD",
+      },
+    },
     login: {
       signInTab: "Iniciar Sesión",
       registerTab: "Crear Cuenta",
@@ -312,6 +478,12 @@ export const translations: Record<Lang, DashboardTranslations> = {
       hot: "HOT",
       warm: "WARM",
       cold: "COLD",
+    },
+    verticals: {
+      "website-redesign": "Website Redesign",
+      "marketing-automation": "Marketing Automation",
+      "email-marketing": "Email Marketing",
+      "social-media": "Social Media Management",
     },
     newLead: {
       title: "Audit a new prospect",
@@ -382,6 +554,83 @@ export const translations: Record<Lang, DashboardTranslations> = {
         timeline: "Timeline",
       },
     },
+    auditsTab: {
+      noAudits: "No audits yet.",
+      qualifies: "Qualifies",
+      doesNotQualify: "Does not qualify",
+      score: "Score",
+      good: "Good",
+      bad: "Friction / Leaks",
+      fix: "Proposed Fix",
+      verticalsQualify: "verticals qualify",
+    },
+    salesTab: {
+      thermometer: "Lead Thermometer",
+      notScored: "Not scored yet — waiting on audits.",
+      contact: "Direct Contact",
+      messageWa: "Message on WhatsApp",
+      noPhone: "No phone number found.",
+      notes: "Operator Notes",
+      savingNotes: "Saving…",
+      saveNotes: "Save notes",
+      stage: "Sales Stage",
+      sendProposal: "Send Proposal",
+      markWon: "Mark Won",
+      reasonPlaceholder: "Reason (optional)",
+      markLost: "Mark Lost",
+      closedFor: "Closed for",
+      lost: "Lost",
+    },
+    offerTab: {
+      showcaseTitle: "Showcase Page",
+      showcaseDesc: "Send this first — before walking the prospect through pain points or pricing. Auto-generated drafts below are ready to review and send.",
+      draftSuffix: "draft",
+      preview: "Preview",
+      useAsShowcase: "Use as showcase",
+      saving: "Saving…",
+      save: "Save",
+      openShowcase: "Open showcase page →",
+      offerTitle: "Offer Breakdown",
+      noPrds: "No priced line items yet — waiting on audits/PRDs.",
+      consultAddon: "+ Add-on: 1-hour strategy consultation with Hudson",
+      bundleTotal: "Full bundle total",
+      stackNote: "Each line item is also sellable standalone at its own price — lead with the cheapest, highest-impact one, then stack.",
+    },
+    prdsTab: {
+      noPrds: "No PRDs generated yet — this lead may not have qualified for any vertical.",
+      downloadMd: "Download .md",
+      loading: "Loading…",
+    },
+    overviewTab: {
+      notCompleted: "Scrape hasn't completed yet.",
+      title: "Title",
+      loadTime: "Load time",
+      emailCapture: "Email capture form",
+      phoneNumbers: "Phone numbers found",
+      yes: "Yes",
+      no: "No",
+    },
+    timelineTab: {
+      noEvents: "No events recorded yet.",
+    },
+    pipelineProgress: {
+      title: "Pipeline Progression",
+      failed: "Pipeline Failed",
+      ready: "Audits & Proposal Ready",
+      discovered: "Discovered • Queued",
+      scraping: "Scraping DOM & Screenshot...",
+      auditing: "Auditing verticals...",
+      startingAudits: "Starting 4-Vertical Audits...",
+      generatingProposals: "Generating Proposals...",
+      auditsCompleteWritingPrds: "Audits 4/4 Complete • Writing PRDs...",
+      processing: "Processing Lead...",
+      stages: {
+        discovered: "Discovered",
+        scraping: "Scraping Site",
+        audited: "4-Vertical Audit",
+        prd_ready: "Proposal & PRD",
+      },
+    },
     login: {
       signInTab: "Sign In",
       registerTab: "Create Account",
@@ -443,6 +692,12 @@ export const translations: Record<Lang, DashboardTranslations> = {
       hot: "QUENTE",
       warm: "MORNO",
       cold: "FRIO",
+    },
+    verticals: {
+      "website-redesign": "Redesign de Website",
+      "marketing-automation": "Automação de Marketing",
+      "email-marketing": "Email Marketing",
+      "social-media": "Gestão de Redes Sociais",
     },
     newLead: {
       title: "Auditar um novo prospecto",
@@ -511,6 +766,83 @@ export const translations: Record<Lang, DashboardTranslations> = {
         audits: "Auditorias",
         prds: "PRDs",
         timeline: "Histórico",
+      },
+    },
+    auditsTab: {
+      noAudits: "Nenhuma auditoria ainda.",
+      qualifies: "Qualifica",
+      doesNotQualify: "Não qualifica",
+      score: "Pontuação",
+      good: "Pontos Fortes",
+      bad: "Fricção / Fugas de Conversão",
+      fix: "Solução Proposta",
+      verticalsQualify: "verticais qualificam",
+    },
+    salesTab: {
+      thermometer: "Termômetro do Lead",
+      notScored: "Ainda não pontuado — aguardando auditorias.",
+      contact: "Contato Direto",
+      messageWa: "Conversar no WhatsApp",
+      noPhone: "Nenhum número de telefone encontrado.",
+      notes: "Notas do Operador",
+      savingNotes: "Salvando…",
+      saveNotes: "Salvar notas",
+      stage: "Etapa de Venda",
+      sendProposal: "Enviar Proposta",
+      markWon: "Marcar como Ganho",
+      reasonPlaceholder: "Motivo da perda (opcional)",
+      markLost: "Marcar como Perdido",
+      closedFor: "Fechado por",
+      lost: "Perdido",
+    },
+    offerTab: {
+      showcaseTitle: "Página de Demonstração (Showcase)",
+      showcaseDesc: "Envie isto primeiro — antes de explicar problemas ou preços. Os rascunhos automáticos abaixo são o ponto de partida pronto para envio.",
+      draftSuffix: "rascunho",
+      preview: "Visualizar",
+      useAsShowcase: "Usar como showcase",
+      saving: "Salvando…",
+      save: "Salvar",
+      openShowcase: "Abrir página de showcase →",
+      offerTitle: "Estrutura da Proposta",
+      noPrds: "Sem itens cotados ainda — aguardando auditorias/PRDs.",
+      consultAddon: "+ Adicional: 1 hora de consultoria estratégica com Hudson",
+      bundleTotal: "Total do pacote completo",
+      stackNote: "Cada item pode ser vendido separadamente — comece pelo de menor atrito e maior impacto, depois empilhe.",
+    },
+    prdsTab: {
+      noPrds: "Nenhum PRD gerado ainda — este lead pode não ter se qualificado para nenhuma vertical.",
+      downloadMd: "Baixar .md",
+      loading: "Carregando…",
+    },
+    overviewTab: {
+      notCompleted: "A extração do site ainda não foi concluída.",
+      title: "Título",
+      loadTime: "Tempo de carregamento",
+      emailCapture: "Captura de emails",
+      phoneNumbers: "Telefones encontrados",
+      yes: "Sim",
+      no: "Não",
+    },
+    timelineTab: {
+      noEvents: "Nenhum evento registrado ainda.",
+    },
+    pipelineProgress: {
+      title: "Progresso do Pipeline",
+      failed: "Pipeline Falhou",
+      ready: "Auditorias e Propostas Prontas",
+      discovered: "Descoberto • Na fila",
+      scraping: "Extraindo DOM e Capturas...",
+      auditing: "Auditando verticais...",
+      startingAudits: "Iniciando 4 Auditorias Verticais...",
+      generatingProposals: "Gerando Propostas...",
+      auditsCompleteWritingPrds: "4/4 Auditorias Prontas • Redigindo PRDs...",
+      processing: "Processando Lead...",
+      stages: {
+        discovered: "Descoberto",
+        scraping: "Extraindo Site",
+        audited: "4 Auditorias",
+        prd_ready: "Proposta e PRD",
       },
     },
     login: {

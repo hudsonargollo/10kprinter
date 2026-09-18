@@ -45,6 +45,7 @@ export interface Lead {
   prd_count?: number;
   scrape_count?: number;
   proposal_count?: number;
+  last_error?: string | null;
 }
 
 export interface Scrape {
