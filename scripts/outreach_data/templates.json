@@ -1,0 +1,18 @@
+{
+  "influencer_repost": {
+    "name": "Niche Partner / Influencer Repost (Cold-Start Bypass)",
+    "description": "Bypasses new-account algorithmic delays by leveraging established pages for paid posts/stories.",
+    "text": "Hey {name}, love the content you're putting out on {niche}. We just launched a specialized contract-automation pipeline via moneymaker and want to feature it in front of {niche} creators.\n\nDo you offer paid reposts or sponsored posts on your page? If so, send over your current rate card\u2014we'd love to partner up this week.",
+    "counter_offer_text": "Thanks for sharing! Rather than just a single post for your base rate, would you be open to doing a bulk package of 5 posts for $100 spread over the next 10 days? We'll supply high-converting graphics and direct contract links to make it seamless."
+  },
+  "b2b_agency": {
+    "name": "Direct B2B Agency Contract Closing",
+    "description": "Pitches moneymaker as an automated contract closing engine to eliminate checkout/signing friction.",
+    "text": "Hey {name}, noticed your team is scaling {niche}. Most agencies in your space lose high-intent deals due to slow contract turnaround and unnecessary checkout friction.\n\nWe built moneymaker to automate the contract lifecycle\u2014allowing your clients to review, select service add-ons, and execute contracts instantly.\n\nWe're opening a low-friction entry tier for new partners this week, complete with setup templates and webhook fulfillment.\n\nYou can test the interactive demo and lock in your contract here: {contract_link}"
+  },
+  "value_stack_followup": {
+    "name": "Value-Stack Follow-Up (Trust Friction Elimination)",
+    "description": "Converts warm leads who didn't sign by stacking free digital bonuses and offering order bumps.",
+    "text": "Hey {name}, following up on this! To make this a seamless transition for your team, we're bundling {bonus_asset} at zero extra cost with every contract signed this week.\n\nPlus, you can add our {order_bump} directly at checkout to handle post-contract fulfillment automatically.\n\nLock in the upgraded offer here: {contract_link}"
+  }
+}
