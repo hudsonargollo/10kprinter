@@ -72,7 +72,7 @@ A ferramenta de linha de comando `scripts/outreach.py` disponibiliza 3 modelos p
 python3 scripts/outreach.py init
 
 # Adicionar lead de alto valor
-python3 scripts/outreach.py add-lead --name "Digital Edge Agency" --handle "@digitaledge" --niche "SaaS Marketing" --template b2b_agency --contract-link "https://1kprint.clubemkt.digital/app/"
+python3 scripts/outreach.py add-lead --name "Digital Edge Agency" --handle "@digitaledge" --niche "SaaS Marketing" --template b2b_agency --contract-link "https://moneymachine.clubemkt.online/app/"
 
 # Visualizar DMs renderizadas
 python3 scripts/outreach.py preview

@@ -11,8 +11,8 @@ tracks the resulting lead through a sales pipeline — built by a solo web-desig
 operator (Hudson) to run his own outbound motion without manual prospecting.
 
 **Live URLs:**
-- Marketing site: `https://1kprint.clubemkt.digital/`
-- Internal ops dashboard: `https://1kprint.clubemkt.digital/app/`
+- Marketing site: `https://moneymachine.clubemkt.online/` / `https://1kprint.clubemkt.online/`
+- Internal ops dashboard: `https://moneymachine.clubemkt.online/app/`
 - Also reachable at: `https://10kprinter.hudsonargollo2.workers.dev` (workers.dev fallback)
 
 ## The core pipeline

@@ -7,8 +7,10 @@
   "account_id": "cb27e1a67198789eb42d11ab90737652",
 
   "routes": [
-    { "pattern": "1kprint.clubemkt.digital", "custom_domain": true },
-    { "pattern": "moneymachine.clubemkt.digital", "custom_domain": true }
+    { "pattern": "moneymachine.clubemkt.online", "custom_domain": true },
+    { "pattern": "1kprint.clubemkt.online", "custom_domain": true },
+    { "pattern": "moneymachine.clubemkt.digital", "custom_domain": true },
+    { "pattern": "1kprint.clubemkt.digital", "custom_domain": true }
   ],
   "workers_dev": true,
 
@@ -20,8 +22,8 @@
     // TheLeadMachine CRM integration (theleadmachine/docs/PRD.md §2).
     // THELEADMACHINE_SYNC_TOKEN and THELEADMACHINE_WEBHOOK_SECRET are set
     // as secrets (`wrangler secret put ...`), not here.
-    "THELEADMACHINE_SYNC_URL": "https://leadmachine.clubemkt.digital/api/integrations/leads/sync",
-    "TWENTY_API_URL": "https://crm.clubemkt.digital"
+    "THELEADMACHINE_SYNC_URL": "https://leadmachine.clubemkt.online/api/integrations/leads/sync",
+    "TWENTY_API_URL": "https://crm.clubemkt.online"
   },
 
   "d1_databases": [

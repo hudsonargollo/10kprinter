@@ -126,7 +126,7 @@ def add_lead(args):
         "platform": args.platform,
         "niche": args.niche,
         "template_type": args.template,
-        "contract_link": args.contract_link or "https://1kprint.clubemkt.digital/app/",
+        "contract_link": args.contract_link or "https://moneymachine.clubemkt.online/app/",
         "bonus_asset": args.bonus or "Onboarding Automation Script",
         "order_bump": args.order_bump or "Priority Support & Maintenance",
         "status": "PENDING",
@@ -149,7 +149,7 @@ def render_dm(lead, templates):
     text = tmpl["text"].format(
         name=lead.get("name", "there"),
         niche=lead.get("niche", "your industry"),
-        contract_link=lead.get("contract_link", "https://1kprint.clubemkt.digital/app/"),
+        contract_link=lead.get("contract_link", "https://moneymachine.clubemkt.online/app/"),
         bonus_asset=lead.get("bonus_asset", "Automation Setup Package"),
         order_bump=lead.get("order_bump", "Monthly Maintenance Bundle")
     )

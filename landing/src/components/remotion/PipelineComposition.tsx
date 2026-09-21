@@ -64,7 +64,7 @@ export function PipelineComposition({ lang = "es" }: PipelineCompositionProps) {
         subtitle: "Contacto por WhatsApp en 1 clic personalizado para el dueño del negocio...",
         scriptLabel: "SCRIPT DE CONTACTO EN 1 CLIC",
         waMessage:
-          "Hola Dr. San Martín, auditamos la web de su clínica y encontramos 3 fugas de reservas móviles. Le armamos la propuesta interactiva y demo aquí: 1kprint.clubemkt.digital/p/scz-dental",
+          "Hola Dr. San Martín, auditamos la web de su clínica y encontramos 3 fugas de reservas móviles. Le armamos la propuesta interactiva y demo aquí: moneymachine.clubemkt.online/p/scz-dental",
         dealTier: "LEAD CALIENTE · Valor del Trato: $300 + $100/mes",
         deepLinkNotice: "Enlace Directo de WhatsApp Generado",
         readyCloseNotice: "Listo para Cerrar · Escala Global",
@@ -119,7 +119,7 @@ export function PipelineComposition({ lang = "es" }: PipelineCompositionProps) {
         subtitle: "Contato no WhatsApp em 1 clique personalizado para o dono do negócio...",
         scriptLabel: "SCRIPT DE CONTATO EM 1 CLIQUE",
         waMessage:
-          "Olá Dr. San Martín, auditamos o site da sua clínica e encontramos 3 vazamentos de agendamentos no celular. Preparamos a proposta interativa e demo aqui: 1kprint.clubemkt.digital/p/scz-dental",
+          "Olá Dr. San Martín, auditamos o site da sua clínica e encontramos 3 vazamentos de agendamentos no celular. Preparamos a proposta interativa e demo aqui: moneymachine.clubemkt.online/p/scz-dental",
         dealTier: "LEAD QUENTE · Valor do Negócio: $300 + $100/mês",
         deepLinkNotice: "Link Direto do WhatsApp Gerado",
         readyCloseNotice: "Pronto para Fechar · Escala Global",
@@ -174,7 +174,7 @@ export function PipelineComposition({ lang = "es" }: PipelineCompositionProps) {
         subtitle: "1-Click WhatsApp outreach personalized for the business owner...",
         scriptLabel: "1-CLICK OUTREACH SCRIPT",
         waMessage:
-          "Hello Dr. San Martín, we audited your clinic's website and found 3 mobile booking leaks. We prepared a full interactive proposal and demo for you here: 1kprint.clubemkt.digital/p/scz-dental",
+          "Hello Dr. San Martín, we audited your clinic's website and found 3 mobile booking leaks. We prepared a full interactive proposal and demo for you here: moneymachine.clubemkt.online/p/scz-dental",
         dealTier: "HOT LEAD · Deal Value: $300 + $100/mo",
         deepLinkNotice: "Direct WhatsApp Deep-Link Generated",
         readyCloseNotice: "Ready to Close · Global Scale",
