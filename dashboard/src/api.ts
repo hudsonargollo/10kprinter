@@ -24,6 +24,10 @@ export function register(email: string, password: string, name?: string): Promis
   return request("/api/auth/register", { method: "POST", body: JSON.stringify({ email, password, name }) });
 }
 
+export function registrationStatus(): Promise<{ open: boolean }> {
+  return request("/api/auth/registration");
+}
+
 export function logout(): Promise<{ ok: true }> {
   return request("/api/auth/logout", { method: "POST" });
 }

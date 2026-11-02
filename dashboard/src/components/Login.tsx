@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { login, register } from "../api";
+import { useEffect, useState } from "react";
+import { login, register, registrationStatus } from "../api";
 import type { AuthUser } from "../types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,7 +14,17 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
   const { t } = useLanguage();
+
+  useEffect(() => {
+    registrationStatus()
+      .then((r) => {
+        setRegistrationOpen(r.open);
+        if (!r.open) setMode("login");
+      })
+      .catch(() => setRegistrationOpen(false));
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,7 +60,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
         {/* Card */}
         <Card className="p-6 bg-[#161020] border-white/10 shadow-2xl rounded-2xl">
           {/* Mode Switcher */}
-          <div className="grid grid-cols-2 p-1 mb-5 bg-white/5 rounded-xl border border-white/5">
+          <div className={`grid ${registrationOpen ? "grid-cols-2" : "grid-cols-1"} p-1 mb-5 bg-white/5 rounded-xl border border-white/5`}>
             <button
               type="button"
               onClick={() => {
@@ -65,20 +75,22 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
             >
               {t.login.signInTab}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("register");
-                setError(null);
-              }}
-              className={`py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
-                mode === "register"
-                  ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
-                  : "text-white/60 hover:text-white"
-              }`}
-            >
-              {t.login.registerTab}
-            </button>
+            {registrationOpen && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("register");
+                  setError(null);
+                }}
+                className={`py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+                  mode === "register"
+                    ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                {t.login.registerTab}
+              </button>
+            )}
           </div>
 
           <form onSubmit={submit} className="space-y-3.5">

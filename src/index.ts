@@ -37,6 +37,14 @@ app.post("/api/auth/login", async (c) => {
   return c.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
 });
 
+// Registration exists only to create the very first account. Once any user
+// exists the endpoint is closed: otherwise anyone on the internet can mint a
+// super_admin session. Later accounts are seeded by an administrator.
+app.get("/api/auth/registration", async (c) => {
+  const row = await c.env.DB.prepare("SELECT count(*) AS n FROM users").first<{ n: number }>();
+  return c.json({ open: (row?.n ?? 0) === 0 });
+});
+
 app.post("/api/auth/register", async (c) => {
   const { email, password, name } = await c.req.json<{ email: string; password: string; name?: string }>();
   if (!email || !email.includes("@")) {
@@ -52,11 +60,19 @@ app.post("/api/auth/register", async (c) => {
   }
   const id = newId();
   const password_hash = await hashPassword(password);
-  await c.env.DB.prepare(
-    "INSERT INTO users (id, email, name, password_hash, role) VALUES (?, ?, ?, ?, 'super_admin')",
+  // Single statement so two concurrent first-registrations cannot both pass a
+  // check-then-insert: the second one inserts zero rows.
+  const result = await c.env.DB.prepare(
+    `INSERT INTO users (id, email, name, password_hash, role)
+     SELECT ?, ?, ?, ?, 'super_admin'
+     WHERE NOT EXISTS (SELECT 1 FROM users)`,
   )
     .bind(id, normalizedEmail, name?.trim() ?? null, password_hash)
     .run();
+
+  if ((result.meta.changes ?? 0) === 0) {
+    return c.json({ error: "Registration is closed. Ask an administrator to create your account." }, 403);
+  }
 
   c.header("Set-Cookie", await createSessionCookie(c.env, id));
   return c.json({ user: { id, email: normalizedEmail, name: name?.trim() ?? null, role: "super_admin" } }, 201);
