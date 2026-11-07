@@ -86,6 +86,8 @@ app.post("/api/auth/logout", async (c) => {
 async function requireAuth(c: Context<{ Bindings: Env }>, next: Next) {
   const userId = await getSessionUserId(c.req.raw, c.env);
   if (!userId) return c.json({ error: "unauthorized" }, 401);
+  // A deleted user's cookie keeps its valid signature until it expires.
+  if (!(await getUserById(c.env.DB, userId))) return c.json({ error: "unauthorized" }, 401);
   await next();
 }
 
