@@ -1,13 +1,14 @@
 import { Hono } from "hono";
 import type { Context, Next } from "hono";
-import type { Env, HuntSessionRow, LeadRow, LeadSourceRow, OutreachTimelineRow } from "./types";
-import { newId, setLeadNotes, transitionLeadStage, saveQualification, saveSalesArtifact, saveNextAction, updateOnboarding } from "./lib/db";
+import type { AuditFinding, BrandTokens, Env, HuntSessionRow, LeadRow, LeadSourceRow, OutreachTimelineRow, VerticalKey } from "./types";
+import { newId, setLeadNotes, transitionLeadStage, saveQualification, saveSalesArtifact, saveNextAction, updateOnboarding, logEvent, insertWebsiteBuild, attachKrikkitBuild, syncWebsiteBuild, listWebsiteBuilds, getWebsiteBuild } from "./lib/db";
 import { runHunterCycle, runHunterForSource } from "./hunter";
 import { generateText } from "./lib/anthropic";
 import { autocompleteCities } from "./lib/places";
 import { verifyCrmWebhookSignature } from "./lib/crmSync";
 import { getSessionUserId, getUserByEmail, getUserById, verifyPassword, hashPassword, createSessionCookie, clearSessionCookie } from "./lib/auth";
 import { resolveTargetLanguage, getLanguagePromptInstruction } from "./lib/language";
+import { createBuild, getBuild, publishBuild, buildProposalBrief, suggestSubdomain, KrikkitError } from "./lib/krikkit";
 
 export { LeadPipeline } from "./workflows/leadPipeline";
 
@@ -108,6 +109,10 @@ for (const path of [
   "/api/leads/:id/onboarding",
   "/api/leads/:id/showcase",
   "/api/leads/:id/status",
+  "/api/leads/:id/website-build",
+  "/api/leads/:id/website-builds",
+  "/api/website-builds/:id",
+  "/api/website-builds/:id/publish",
   "/api/sources",
   "/api/sources/:id",
   "/api/sources/:id/run",
@@ -360,6 +365,104 @@ app.post("/api/webhooks/theleadmachine-won", async (c) => {
 });
 
 // --- Lead sources (Hunter configuration) ---
+
+// ── Krikkit website builds (lead → published proposal site) ───────────
+// Operator-triggered bridge to the Krikkit headless build API. The lead's real
+// audit + PRD price/brand become a proposal brief; Krikkit generates and (on a
+// separate publish call) serves it at <slug>.clubemkt.digital. See
+// docs/KRIKKIT_BUILD_API.md. All four routes are session-gated above.
+app.post("/api/leads/:id/website-build", async (c) => {
+  const id = c.req.param("id");
+  if (!c.env.KRIKKIT_API_KEY) return c.json({ error: "Krikkit integration is not configured" }, 503);
+  const lead = await c.env.DB.prepare("SELECT * FROM leads WHERE id = ?").bind(id).first<LeadRow>();
+  if (!lead) return c.json({ error: "not found" }, 404);
+
+  const body = await c.req.json<{ vertical?: VerticalKey }>().catch(() => ({}) as { vertical?: VerticalKey });
+  const audits = await c.env.DB.prepare(
+    "SELECT vertical, qualifies, score, findings_json FROM audits WHERE lead_id = ? ORDER BY score DESC, created_at",
+  ).bind(id).all<{ vertical: VerticalKey; qualifies: number; score: number; findings_json: string }>();
+  const rows = audits.results ?? [];
+  const chosen = body.vertical
+    ? rows.find((a) => a.vertical === body.vertical)
+    : rows.find((a) => a.qualifies === 1);
+  if (!chosen) return c.json({ error: "no qualifying audit for this lead" }, 409);
+
+  const finding = JSON.parse(chosen.findings_json) as AuditFinding;
+  const prd = await c.env.DB.prepare(
+    "SELECT price_usd, brand_tokens_json FROM prds WHERE lead_id = ? AND vertical = ? ORDER BY created_at DESC LIMIT 1",
+  ).bind(id, chosen.vertical).first<{ price_usd: number | null; brand_tokens_json: string | null }>();
+  const priceUsd = prd?.price_usd ?? 250;
+  const brand = prd?.brand_tokens_json ? (JSON.parse(prd.brand_tokens_json) as BrandTokens) : null;
+
+  const brief = buildProposalBrief(lead, finding, priceUsd, brand);
+  const subdomain = suggestSubdomain(lead);
+  const rowId = await insertWebsiteBuild(c.env.DB, { subjectType: "lead", subjectId: id, kind: "proposal", subdomain });
+
+  try {
+    const created = await createBuild(c.env, { kind: "proposal", title: lead.business_name ?? lead.url, brief }, rowId);
+    await attachKrikkitBuild(c.env.DB, rowId, created.id, created.status);
+    await logEvent(c.env.DB, id, "website-build", "queued", created.id);
+    return c.json({ id: rowId, krikkitBuildId: created.id, status: created.status, subdomain }, 202);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await syncWebsiteBuild(c.env.DB, rowId, { status: "failed", error: message });
+    await logEvent(c.env.DB, id, "website-build", "failed", message);
+    return c.json({ error: message }, 502);
+  }
+});
+
+app.get("/api/leads/:id/website-builds", async (c) => {
+  const id = c.req.param("id");
+  const builds = await listWebsiteBuilds(c.env.DB, "lead", id);
+  return c.json({ builds });
+});
+
+app.get("/api/website-builds/:id", async (c) => {
+  const id = c.req.param("id");
+  const row = await getWebsiteBuild(c.env.DB, id);
+  if (!row) return c.json({ error: "not found" }, 404);
+  // Best-effort refresh from Krikkit while the build is still in flight; on a
+  // transient failure fall back to the last known local state.
+  if (row.krikkit_build_id && row.status !== "live" && row.status !== "failed") {
+    try {
+      const remote = await getBuild(c.env, row.krikkit_build_id);
+      await syncWebsiteBuild(c.env.DB, id, { status: remote.status, liveUrl: remote.live_url, error: remote.error });
+      row.status = remote.status;
+      row.live_url = remote.live_url;
+      row.last_error = remote.error;
+    } catch {
+      // keep last known state
+    }
+  }
+  return c.json({ build: row });
+});
+
+app.post("/api/website-builds/:id/publish", async (c) => {
+  const id = c.req.param("id");
+  const row = await getWebsiteBuild(c.env.DB, id);
+  if (!row) return c.json({ error: "not found" }, 404);
+  if (!row.krikkit_build_id) return c.json({ error: "build has no Krikkit id" }, 409);
+  const body = await c.req.json<{ subdomain?: string }>().catch(() => ({}) as { subdomain?: string });
+  const subdomain = (body.subdomain ?? row.subdomain ?? "").trim().toLowerCase();
+  if (!/^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/.test(subdomain)) {
+    return c.json({ error: "invalid subdomain" }, 422);
+  }
+  try {
+    const published = await publishBuild(c.env, row.krikkit_build_id, subdomain);
+    await syncWebsiteBuild(c.env.DB, id, { status: published.status, liveUrl: published.live_url, subdomain });
+    return c.json({ id, status: published.status, liveUrl: published.live_url, subdomain }, 202);
+  } catch (err) {
+    if (err instanceof KrikkitError) {
+      await syncWebsiteBuild(c.env.DB, id, { status: row.status, error: err.message });
+      if (err.status === 409) return c.json({ error: err.message }, 409);
+      if (err.status === 422) return c.json({ error: err.message }, 422);
+      return c.json({ error: err.message }, 502);
+    }
+    const message = err instanceof Error ? err.message : String(err);
+    await syncWebsiteBuild(c.env.DB, id, { status: "failed", error: message });
+    return c.json({ error: message }, 502);
+  }
+});
 
 app.get("/api/sources", async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM lead_sources ORDER BY created_at DESC").all<LeadSourceRow>();

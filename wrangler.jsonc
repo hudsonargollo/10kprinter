@@ -23,7 +23,9 @@
     // THELEADMACHINE_SYNC_TOKEN and THELEADMACHINE_WEBHOOK_SECRET are set
     // as secrets (`wrangler secret put ...`), not here.
     "THELEADMACHINE_SYNC_URL": "https://leadmachine.clubemkt.online/api/integrations/leads/sync",
-    "TWENTY_API_URL": "https://crm.clubemkt.online"
+    "TWENTY_API_URL": "https://crm.clubemkt.online",
+    // Krikkit build API base. KRIKKIT_API_KEY is a secret, not a var.
+    "KRIKKIT_BASE_URL": "https://web.clubemkt.digital"
   },
 
   "d1_databases": [

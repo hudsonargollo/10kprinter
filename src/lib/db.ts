@@ -216,3 +216,59 @@ export async function getProposal(
     .first<{ id: string; r2_html_key: string; r2_cover_image_key: string | null; status: string }>();
   return row ?? null;
 }
+
+
+// ── website_builds (MoneyMachine ↔ Krikkit bridge) ────────────────────
+export interface WebsiteBuildRow {
+  id: string;
+  subject_type: "lead" | "niche";
+  subject_id: string;
+  kind: "site" | "proposal";
+  krikkit_build_id: string | null;
+  subdomain: string | null;
+  live_url: string | null;
+  status: string;
+  attempts: number;
+  last_error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function insertWebsiteBuild(
+  db: D1Database,
+  input: { subjectType: "lead" | "niche"; subjectId: string; kind: "site" | "proposal"; subdomain?: string | null },
+): Promise<string> {
+  const id = newId();
+  await db.prepare(
+    "INSERT INTO website_builds (id, subject_type, subject_id, kind, subdomain) VALUES (?, ?, ?, ?, ?)",
+  ).bind(id, input.subjectType, input.subjectId, input.kind, input.subdomain ?? null).run();
+  return id;
+}
+
+export async function attachKrikkitBuild(db: D1Database, id: string, krikkitBuildId: string, status: string): Promise<void> {
+  await db.prepare(
+    "UPDATE website_builds SET krikkit_build_id = ?, status = ?, updated_at = datetime('now') WHERE id = ?",
+  ).bind(krikkitBuildId, status, id).run();
+}
+
+export async function syncWebsiteBuild(
+  db: D1Database,
+  id: string,
+  patch: { status: string; liveUrl?: string | null; subdomain?: string | null; error?: string | null },
+): Promise<void> {
+  await db.prepare(
+    "UPDATE website_builds SET status = ?, live_url = COALESCE(?, live_url), subdomain = COALESCE(?, subdomain), last_error = ?, updated_at = datetime('now') WHERE id = ?",
+  ).bind(patch.status, patch.liveUrl ?? null, patch.subdomain ?? null, patch.error ?? null, id).run();
+}
+
+export async function listWebsiteBuilds(db: D1Database, subjectType: string, subjectId: string): Promise<WebsiteBuildRow[]> {
+  const res = await db.prepare(
+    "SELECT * FROM website_builds WHERE subject_type = ? AND subject_id = ? ORDER BY created_at DESC",
+  ).bind(subjectType, subjectId).all<WebsiteBuildRow>();
+  return res.results ?? [];
+}
+
+export async function getWebsiteBuild(db: D1Database, id: string): Promise<WebsiteBuildRow | null> {
+  const row = await db.prepare("SELECT * FROM website_builds WHERE id = ?").bind(id).first<WebsiteBuildRow>();
+  return row ?? null;
+}

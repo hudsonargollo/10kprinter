@@ -19,6 +19,10 @@ export interface Env {
   THELEADMACHINE_SYNC_URL?: string;
   THELEADMACHINE_SYNC_TOKEN?: string;
   THELEADMACHINE_WEBHOOK_SECRET?: string;
+  // Krikkit build integration (docs/KRIKKIT_BUILD_API.md). KRIKKIT_API_KEY is
+  // a Worker secret (`wrangler secret put KRIKKIT_API_KEY`), not a var.
+  KRIKKIT_BASE_URL?: string;
+  KRIKKIT_API_KEY?: string;
 }
 
 export type VerticalKey =
