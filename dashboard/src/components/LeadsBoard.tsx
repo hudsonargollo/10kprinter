@@ -58,11 +58,11 @@ export function LeadsBoard() {
   function LeadCard({ lead }: { lead: Lead }) {
     return (
       <a
-        className="mb-2.5 block rounded-xl border border-white/10 bg-card p-3 hover:border-white transition-all hover:scale-[1.01] shadow-sm group"
+        className="mb-2.5 block rounded-xl border border-white/10 bg-card p-3 hover:border-[#e8ff5c] transition-all hover:scale-[1.01] shadow-sm group"
         href={`#/leads/${lead.id}`}
       >
         <div className="flex items-start justify-between gap-2">
-          <div className="mb-0.5 font-semibold text-xs text-white truncate group-hover:text-white transition-colors">
+          <div className="mb-0.5 font-semibold text-xs text-white truncate group-hover:text-[#e8ff5c] transition-colors">
             {lead.business_name || lead.url}
           </div>
           {lead.tier && (
@@ -92,7 +92,7 @@ export function LeadsBoard() {
               onClick={() => setActiveActionTab(activeActionTab === "hunt" ? "none" : "hunt")}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeActionTab === "hunt"
-                  ? "bg-white text-black font-semibold shadow-sm"
+                  ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
                   : "text-white/70 hover:text-white"
               }`}
             >
@@ -104,7 +104,7 @@ export function LeadsBoard() {
               onClick={() => setActiveActionTab(activeActionTab === "single" ? "none" : "single")}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeActionTab === "single"
-                  ? "bg-white text-black font-semibold shadow-sm"
+                  ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
                   : "text-white/70 hover:text-white"
               }`}
             >
@@ -118,8 +118,8 @@ export function LeadsBoard() {
             <span>{t.board.total}: <strong className="text-white">{totalCount}</strong></span>
             <span>🔥 {t.board.hot}: <strong className="text-rose-400">{hotCount}</strong></span>
             {inProgressCount > 0 && (
-              <span className="flex items-center gap-1 text-white">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+              <span className="flex items-center gap-1 text-[#e8ff5c]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#e8ff5c] animate-ping" />
                 {t.board.active}: <strong>{inProgressCount}</strong>
               </span>
             )}
@@ -155,7 +155,7 @@ export function LeadsBoard() {
           <button
             onClick={() => setFilterTier("all")}
             className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
-              filterTier === "all" ? "bg-white text-black" : "text-white/50 hover:text-white"
+              filterTier === "all" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
             }`}
           >
             {t.board.filterAll}
@@ -163,7 +163,7 @@ export function LeadsBoard() {
           <button
             onClick={() => setFilterTier("hot")}
             className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
-              filterTier === "hot" ? "bg-white text-black" : "text-white/50 hover:text-white"
+              filterTier === "hot" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
             }`}
           >
             {t.board.filterHot}
@@ -171,7 +171,7 @@ export function LeadsBoard() {
           <button
             onClick={() => setFilterTier("warm")}
             className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
-              filterTier === "warm" ? "bg-white text-black" : "text-white/50 hover:text-white"
+              filterTier === "warm" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
             }`}
           >
             {t.board.filterWarm}
@@ -179,7 +179,7 @@ export function LeadsBoard() {
           <button
             onClick={() => setFilterTier("cold")}
             className={`px-2 py-0.5 rounded-lg uppercase text-[10px] font-bold transition-colors cursor-pointer ${
-              filterTier === "cold" ? "bg-white text-black" : "text-white/50 hover:text-white"
+              filterTier === "cold" ? "bg-[#e8ff5c] text-black" : "text-white/50 hover:text-white"
             }`}
           >
             {t.board.filterCold}
@@ -207,13 +207,13 @@ export function LeadsBoard() {
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] items-start gap-4">
           {inProgressLeads.length > 0 && (
             <Card className="min-h-20 gap-0 p-3 bg-card border-white/10">
-              <h3 className="mb-2.5 ml-1 text-xs font-semibold tracking-wide text-white uppercase flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+              <h3 className="mb-2.5 ml-1 text-xs font-semibold tracking-wide text-[#e8ff5c] uppercase flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-[#e8ff5c] animate-pulse" />
                 <span>{t.board.inProgress} ({inProgressLeads.length})</span>
               </h3>
               {inProgressLeads.map((lead) => (
                 <a
-                  className="mb-2.5 block rounded-xl border border-white/10 bg-background/80 p-3 hover:border-white transition-all space-y-2 shadow-sm"
+                  className="mb-2.5 block rounded-xl border border-white/10 bg-background/80 p-3 hover:border-[#e8ff5c] transition-all space-y-2 shadow-sm"
                   key={lead.id}
                   href={`#/leads/${lead.id}`}
                 >

@@ -74,7 +74,7 @@ export function SourcesView() {
                 <Label className="flex-row items-center gap-1.5 font-normal normal-case text-xs text-white/70 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="accent-white rounded"
+                    className="accent-[#e8ff5c] rounded"
                     checked={!!source.cron_enabled}
                     onChange={(e) => setSourceCronEnabled(source.id, e.target.checked).then(refresh)}
                   />
@@ -89,7 +89,7 @@ export function SourcesView() {
               </div>
             </div>
             {runResults[source.id] && (
-              <div className="mt-2.5 text-xs text-white font-mono">{runResults[source.id]}</div>
+              <div className="mt-2.5 text-xs text-[#e8ff5c] font-mono">{runResults[source.id]}</div>
             )}
           </Card>
         ))
@@ -145,7 +145,7 @@ function NewSourceForm({ onCreated }: { onCreated: () => void }) {
           <Label htmlFor="category" className="text-xs text-white/70">{t.sources.categoryLabel}</Label>
           <Input id="category" placeholder={t.sources.categoryPlaceholder} value={category} onChange={(e) => setCategory(e.target.value)} className="bg-white/[0.03] border-white/10 text-white text-xs" />
         </div>
-        <Button type="submit" disabled={submitting} className="bg-white text-black font-semibold hover:bg-white/90">
+        <Button type="submit" disabled={submitting} className="bg-[#e8ff5c] text-black font-semibold hover:bg-[#d8ef4c]">
           {submitting ? t.sources.submitting : t.sources.submitAdd}
         </Button>
       </Card>

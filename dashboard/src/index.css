@@ -14,8 +14,8 @@
   --card-foreground: #fafafa;
   --popover: #1a1a1a;
   --popover-foreground: #fafafa;
-  --primary: #ffffff;
-  --primary-foreground: #1a1a1a;
+  --primary: #e8ff5c;
+  --primary-foreground: #17111d;
   --secondary: #262626;
   --secondary-foreground: #fafafa;
   --muted: #262626;
@@ -25,7 +25,7 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: #262626;
   --input: #262626;
-  --ring: #ffffff;
+  --ring: #e8ff5c;
   --radius: 0.75rem;
   --bg-inset: #0a0a0a;
   --good: #4ade80;

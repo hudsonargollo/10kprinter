@@ -163,7 +163,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       onClick={item.action}
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors text-left cursor-pointer",
-                        isSelected ? "bg-white text-black font-semibold" : "text-white/80 hover:bg-white/5"
+                        isSelected ? "bg-[#e8ff5c] text-black font-semibold" : "text-white/80 hover:bg-white/5"
                       )}
                     >
                       <div className="flex items-center gap-2.5">
@@ -202,11 +202,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       }}
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors text-left cursor-pointer",
-                        isSelected ? "bg-white text-black font-semibold" : "text-white/80 hover:bg-white/5"
+                        isSelected ? "bg-[#e8ff5c] text-black font-semibold" : "text-white/80 hover:bg-white/5"
                       )}
                     >
                       <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                        <Sparkles className={cn("w-3.5 h-3.5 shrink-0", isSelected ? "text-black" : "text-white")} />
+                        <Sparkles className={cn("w-3.5 h-3.5 shrink-0", isSelected ? "text-black" : "text-[#e8ff5c]")} />
                         <div className="truncate">
                           <span className="font-medium block truncate">{lead.business_name || lead.url}</span>
                           <span className={cn("text-[11px] block truncate", isSelected ? "text-black/60" : "text-white/40")}>

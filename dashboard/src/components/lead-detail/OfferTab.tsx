@@ -117,7 +117,7 @@ export function OfferTab({
               <strong className="font-mono text-white/90">${CONSULT_ADDON_USD}</strong>
             </li>
           </ul>
-          <div className="flex justify-between text-sm font-bold text-white">
+          <div className="flex justify-between text-sm font-bold text-[#e8ff5c]">
             <span>{t.offerTab.bundleTotal}</span>
             <span className="font-mono">${bundleTotal}</span>
           </div>

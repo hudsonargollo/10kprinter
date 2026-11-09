@@ -252,7 +252,7 @@ export function SalesTab({
       <Card className="p-5 border-white/10 bg-card space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-white" />
+            <Sparkles className="w-4 h-4 text-[#e8ff5c]" />
             <h3 className="font-heading text-sm font-bold text-white">
               {lang === "pt" ? "Playbook de Abordagem & Scripts de Venda" : lang === "es" ? "Playbook de Venta & Guiones Personalizados" : "Multi-Channel Sales Scripts & Playbook"}
             </h3>
@@ -288,7 +288,7 @@ export function SalesTab({
                 <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-white" />
+                      <span className="w-2 h-2 rounded-full bg-[#e8ff5c]" />
                       {item.title}
                     </span>
                     <Button
@@ -331,7 +331,7 @@ export function SalesTab({
         <Card className="p-5 border-white/10 bg-card space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
-              <DollarSign className="w-4 h-4 text-white" />
+              <DollarSign className="w-4 h-4 text-[#e8ff5c]" />
               <span>{lang === "pt" ? "Estrutura Comercial & Precificação" : lang === "es" ? "Estructura Comercial & Precios" : "Commercial Pricing Architecture"}</span>
             </h3>
           </div>
@@ -353,7 +353,7 @@ export function SalesTab({
                     className={cn(
                       "p-1.5 rounded-lg border text-center font-mono transition-all text-xs",
                       retainerTier === amt
-                        ? "border-white bg-white/10 text-white font-bold"
+                        ? "border-[#e8ff5c] bg-[#e8ff5c]/10 text-[#e8ff5c] font-bold"
                         : "border-white/10 text-white/70 hover:border-white/30"
                     )}
                   >
@@ -364,8 +364,8 @@ export function SalesTab({
             </div>
 
             <div className="flex justify-between py-2 border-b border-white/10 text-sm font-bold">
-              <span className="text-white">{lang === "pt" ? "Valor Contratual 12 Meses (LTV)" : lang === "es" ? "Valor Contrato Anual (LTV)" : "12-Month Contract LTV"}</span>
-              <span className="font-mono text-white">${annualLtv}</span>
+              <span className="text-[#e8ff5c]">{lang === "pt" ? "Valor Contratual 12 Meses (LTV)" : lang === "es" ? "Valor Contrato Anual (LTV)" : "12-Month Contract LTV"}</span>
+              <span className="font-mono text-[#e8ff5c]">${annualLtv}</span>
             </div>
 
             <div className="flex justify-between py-1 text-[11px] text-emerald-400 font-mono">
@@ -379,22 +379,22 @@ export function SalesTab({
         <Card className="p-5 border-white/10 bg-card space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-white" />
+              <Clock className="w-4 h-4 text-[#e8ff5c]" />
               <span>{lang === "pt" ? "Cronograma de Entrega (7 Dias)" : lang === "es" ? "Cronograma de Entrega (7 Días)" : "7-Day Implementation Sprint"}</span>
             </h3>
           </div>
 
           <div className="space-y-2 text-xs">
             <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="font-mono text-white font-bold shrink-0">D1-2:</span>
+              <span className="font-mono text-[#e8ff5c] font-bold shrink-0">D1-2:</span>
               <span className="text-white/80">{lang === "pt" ? "Design tokens, tipografia e arquitetura Shadcn" : lang === "es" ? "Design tokens, tipografía y arquitectura Shadcn" : "Design tokens, typography and Shadcn UI architecture"}</span>
             </div>
             <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="font-mono text-white font-bold shrink-0">D3-4:</span>
+              <span className="font-mono text-[#e8ff5c] font-bold shrink-0">D3-4:</span>
               <span className="text-white/80">{lang === "pt" ? "Construção de componentes, formulários e n8n" : lang === "es" ? "Construcción de componentes, formularios y n8n" : "Component build, smart forms & n8n workflows"}</span>
             </div>
             <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="font-mono text-white font-bold shrink-0">D5-6:</span>
+              <span className="font-mono text-[#e8ff5c] font-bold shrink-0">D5-6:</span>
               <span className="text-white/80">{lang === "pt" ? "Funil WhatsApp em 1-clique e testes de conversão" : lang === "es" ? "Embudo WhatsApp en 1-clic y pruebas de conversión" : "1-click WhatsApp funnel & conversion testing"}</span>
             </div>
             <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
@@ -408,7 +408,7 @@ export function SalesTab({
       {/* Operator Notes & Stage Control */}
       <Card className="p-5 border-white/10 bg-card space-y-4">
         <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
-          <Layers className="w-4 h-4 text-white" />
+          <Layers className="w-4 h-4 text-[#e8ff5c]" />
           <span>{t.salesTab.stage} &amp; {t.salesTab.notes}</span>
         </h3>
 
