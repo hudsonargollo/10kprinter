@@ -236,3 +236,19 @@ export const STATUS_ORDER: LeadStatus[] = [
   "lost",
   "failed",
 ];
+
+
+export interface WebsiteBuild {
+  id: string;
+  subject_type: "lead" | "niche";
+  subject_id: string;
+  kind: "site" | "proposal";
+  krikkit_build_id: string | null;
+  subdomain: string | null;
+  live_url: string | null;
+  status: string;
+  attempts: number;
+  last_error: string | null;
+  created_at: string;
+  updated_at: string;
+}

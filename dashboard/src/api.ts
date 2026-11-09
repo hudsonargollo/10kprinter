@@ -1,4 +1,4 @@
-import type { AuthUser, HuntSession, Lead, LeadDetail, LeadSource, LeadStatus, NicheDef, OutreachTimeline } from "./types";
+import type { AuthUser, HuntSession, Lead, LeadDetail, LeadSource, LeadStatus, NicheDef, OutreachTimeline, WebsiteBuild } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -118,4 +118,33 @@ export function generateOutreachTimeline(
   input: { capacityPerWeek: number; priorityOrder: string[]; contactMethod: string },
 ): Promise<{ id: string; timelineMarkdown: string }> {
   return request(`/api/hunt-sessions/${id}/timeline`, { method: "POST", body: JSON.stringify(input) });
+}
+
+
+export function buildProposalSite(
+  leadId: string,
+  vertical?: string,
+): Promise<{ id: string; krikkitBuildId: string; status: string; subdomain: string }> {
+  return request(`/api/leads/${leadId}/website-build`, {
+    method: "POST",
+    body: JSON.stringify(vertical ? { vertical } : {}),
+  });
+}
+
+export function listWebsiteBuilds(leadId: string): Promise<{ builds: WebsiteBuild[] }> {
+  return request(`/api/leads/${leadId}/website-builds`);
+}
+
+export function getWebsiteBuild(id: string): Promise<{ build: WebsiteBuild }> {
+  return request(`/api/website-builds/${id}`);
+}
+
+export function publishWebsiteBuild(
+  id: string,
+  subdomain?: string,
+): Promise<{ id: string; status: string; liveUrl: string | null; subdomain: string }> {
+  return request(`/api/website-builds/${id}/publish`, {
+    method: "POST",
+    body: JSON.stringify(subdomain ? { subdomain } : {}),
+  });
 }

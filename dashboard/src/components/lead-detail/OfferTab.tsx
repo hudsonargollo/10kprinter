@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "../../i18n/LanguageContext";
+import { WebsiteBuildsPanel } from "./WebsiteBuildsPanel";
 
 export function OfferTab({
   lead,
@@ -36,6 +37,7 @@ export function OfferTab({
   }
 
   return (
+    <>
     <Card className="p-4.5">
       <h2 className="font-heading text-[15px] font-bold">{t.offerTab.showcaseTitle}</h2>
       <p className="mt-[-6px] mb-3 text-[13px] text-muted-foreground">
@@ -125,5 +127,7 @@ export function OfferTab({
         </>
       )}
     </Card>
+    <WebsiteBuildsPanel leadId={lead.id} />
+    </>
   );
 }

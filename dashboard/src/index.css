@@ -1,35 +1,33 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Sora", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   color-scheme: dark;
-  --background: #17111d;
-  --foreground: #f4f2f7;
-  --card: #211a29;
-  --card-foreground: #f4f2f7;
-  --popover: #211a29;
-  --popover-foreground: #f4f2f7;
-  --primary: #e8ff5c;
-  --primary-foreground: #17111d;
-  --secondary: #2a2233;
-  --secondary-foreground: #f4f2f7;
-  --muted: #2a2233;
-  --muted-foreground: #9d93a8;
-  --accent: #2a2233;
-  --accent-foreground: #f4f2f7;
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #1a1a1a;
+  --card-foreground: #fafafa;
+  --popover: #1a1a1a;
+  --popover-foreground: #fafafa;
+  --primary: #ffffff;
+  --primary-foreground: #1a1a1a;
+  --secondary: #262626;
+  --secondary-foreground: #fafafa;
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+  --accent: #262626;
+  --accent-foreground: #fafafa;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #332941;
-  --input: #332941;
-  --ring: #e8ff5c;
-  --radius: 0.875rem;
-  --bg-inset: #0f0a14;
+  --border: #262626;
+  --input: #262626;
+  --ring: #ffffff;
+  --radius: 0.75rem;
+  --bg-inset: #0a0a0a;
   --good: #4ade80;
   --bad: #ff6b6b;
   --tier-hot: #ff6b4a;
@@ -44,8 +42,8 @@ body {
 }
 
 @theme inline {
-  --font-heading: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Geist Variable', sans-serif;
+  --font-heading: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
   --color-bg-inset: var(--bg-inset);
   --color-good: var(--good);
   --color-bad: var(--bad);

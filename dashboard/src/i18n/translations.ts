@@ -221,6 +221,24 @@ export interface DashboardTranslations {
     bundleTotal: string;
     stackNote: string;
   };
+  websiteBuilds: {
+    title: string;
+    desc: string;
+    build: string;
+    working: string;
+    noBuilds: string;
+    publish: string;
+    openLive: string;
+    inProgress: string;
+    buildError: string;
+    queued: string;
+    planning: string;
+    building: string;
+    ready: string;
+    publishing: string;
+    live: string;
+    failed: string;
+  };
   prdsTab: {
     noPrds: string;
     downloadMd: string;
@@ -519,6 +537,24 @@ export const translations: Record<Lang, DashboardTranslations> = {
       bundleTotal: "Total del paquete completo",
       stackNote: "Cada ítem se puede vender por separado — comienza con el de menor fricción y mayor impacto, luego haz stack.",
     },
+    websiteBuilds: {
+      title: "Sitio de Propuesta (Krikkit)",
+      desc: "Genera un sitio web de propuesta publicado a partir de la auditoría y oferta de este lead. Se construye en Krikkit; publícalo cuando esté listo.",
+      build: "Crear sitio de propuesta",
+      working: "Procesando…",
+      noBuilds: "Aún no se creó ningún sitio de propuesta.",
+      publish: "Publicar",
+      openLive: "Abrir sitio en vivo →",
+      inProgress: "Generando… puede tardar unos minutos.",
+      buildError: "No se pudo iniciar la construcción.",
+      queued: "En cola",
+      planning: "Planificando",
+      building: "Construyendo",
+      ready: "Listo para publicar",
+      publishing: "Publicando",
+      live: "En vivo",
+      failed: "Fallido",
+    },
     prdsTab: {
       noPrds: "Aún no se generaron PRDs — es posible que este lead no haya calificado para ninguna vertical.",
       downloadMd: "Descargar .md",
@@ -816,6 +852,24 @@ export const translations: Record<Lang, DashboardTranslations> = {
       bundleTotal: "Full Bundle Total",
       stackNote: "Every item can be sold separately — start with lowest friction & highest impact, then stack.",
     },
+    websiteBuilds: {
+      title: "Proposal Site (Krikkit)",
+      desc: "Generate a published proposal website from this lead's audit and offer. Builds run on Krikkit; publish when ready.",
+      build: "Build proposal site",
+      working: "Working…",
+      noBuilds: "No proposal site built yet.",
+      publish: "Publish",
+      openLive: "Open live site →",
+      inProgress: "Generating… this can take a few minutes.",
+      buildError: "Could not start the build.",
+      queued: "Queued",
+      planning: "Planning",
+      building: "Building",
+      ready: "Ready to publish",
+      publishing: "Publishing",
+      live: "Live",
+      failed: "Failed",
+    },
     prdsTab: {
       noPrds: "No PRDs generated yet — this lead may not have qualified for any vertical.",
       downloadMd: "Download .md",
@@ -1112,6 +1166,24 @@ export const translations: Record<Lang, DashboardTranslations> = {
       consultAddon: "+ Adicional: 1 hora de consultoria estratégica com Hudson",
       bundleTotal: "Total do pacote completo",
       stackNote: "Cada item pode ser vendido separadamente — comece pelo de menor atrito e maior impacto, depois empilhe.",
+    },
+    websiteBuilds: {
+      title: "Site de Proposta (Krikkit)",
+      desc: "Gere um site de proposta publicado a partir da auditoria e oferta deste lead. Construído no Krikkit; publique quando estiver pronto.",
+      build: "Criar site de proposta",
+      working: "Processando…",
+      noBuilds: "Nenhum site de proposta criado ainda.",
+      publish: "Publicar",
+      openLive: "Abrir site ao vivo →",
+      inProgress: "Gerando… pode levar alguns minutos.",
+      buildError: "Não foi possível iniciar a construção.",
+      queued: "Na fila",
+      planning: "Planejando",
+      building: "Construindo",
+      ready: "Pronto para publicar",
+      publishing: "Publicando",
+      live: "Ao vivo",
+      failed: "Falhou",
     },
     prdsTab: {
       noPrds: "Nenhum PRD gerado ainda — este lead pode não ter se qualificado para nenhuma vertical.",
