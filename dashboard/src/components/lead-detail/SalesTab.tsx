@@ -176,15 +176,15 @@ export function SalesTab({
   return (
     <div className="space-y-6">
       {/* Top Banner: Thermometer & Quick Actions */}
-      <Card className="p-5 border-white/10 bg-card">
+      <Card className="p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-white/70">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t.salesTab.thermometer}
               </span>
               {lead.tier && (
-                <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold border font-mono", TIER_CLASS[lead.tier])}>
+                <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold border", TIER_CLASS[lead.tier])}>
                   {t.tier[lead.tier]} · {lead.score} / 100
                 </span>
               )}
@@ -196,21 +196,21 @@ export function SalesTab({
 
           <div className="flex items-center gap-2">
             {directWa ? (
-              <Button asChild size="sm" className="bg-[#25D366] text-black font-semibold hover:bg-[#20bd5a]">
+              <Button asChild className="bg-[#25D366] text-white font-semibold hover:bg-[#20bd5a]">
                 <a href={directWa} target="_blank" rel="noreferrer">
-                  <MessageSquare className="w-4 h-4 mr-1.5" />
+                  <MessageSquare className="size-4" />
                   {lang === "pt" ? "Enviar Pitch no WhatsApp" : lang === "es" ? "Enviar Pitch en WhatsApp" : "Send Pitch on WhatsApp"}
                 </a>
               </Button>
             ) : (
-              <Button disabled variant="outline" size="sm" className="opacity-50">
+              <Button disabled variant="outline">
                 {t.salesTab.noPhone}
               </Button>
             )}
 
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline">
               <a href={showcaseUrl} target="_blank" rel="noreferrer">
-                <ExternalLink className="w-4 h-4 mr-1.5" />
+                <ExternalLink className="size-4" />
                 {t.offerTab.preview}
               </a>
             </Button>
@@ -219,11 +219,11 @@ export function SalesTab({
       </Card>
 
       {/* Human-in-the-loop sales cockpit: qualification, next action, and onboarding */}
-      <Card className="p-4 border-white/10 bg-card">
+      <Card className="p-4">
         <div className="grid gap-3 sm:grid-cols-3">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.salesTab.qualification}</div>
-            <div className="mt-1 text-sm font-semibold text-white">
+            <div className="mt-1 text-sm font-semibold text-foreground">
               {lead.qualification_status === "qualified" ? t.salesTab.qualificationQualified
                 : lead.qualification_status === "needs_review" ? t.salesTab.qualificationNeedsReview
                 : lead.qualification_status === "disqualified" ? t.salesTab.qualificationDisqualified
@@ -233,12 +233,12 @@ export function SalesTab({
           </div>
           <div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.salesTab.nextAction}</div>
-            <div className="mt-1 text-sm font-semibold text-white">{lead.next_action_type || t.salesTab.noNextAction}</div>
+            <div className="mt-1 text-sm font-semibold text-foreground">{lead.next_action_type || t.salesTab.noNextAction}</div>
             {lead.next_action_at && <div className="text-[11px] text-muted-foreground">{lead.next_action_at}</div>}
           </div>
           <div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.salesTab.onboarding}</div>
-            <div className="mt-1 text-sm font-semibold text-white">
+            <div className="mt-1 text-sm font-semibold text-foreground">
               {lead.onboarding_status === "first_win" ? t.salesTab.onboardingFirstWin
                 : lead.onboarding_status === "activated" ? t.salesTab.onboardingActivated
                 : lead.onboarding_status === "in_progress" ? t.salesTab.onboardingInProgress
@@ -249,35 +249,35 @@ export function SalesTab({
       </Card>
 
       {/* Multi-Channel Pitch Scripts Section */}
-      <Card className="p-5 border-white/10 bg-card space-y-4">
+      <Card className="p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#e8ff5c]" />
-            <h3 className="font-heading text-sm font-bold text-white">
+            <Sparkles className="size-4 text-primary" />
+            <h3 className="font-heading text-sm font-semibold text-foreground">
               {lang === "pt" ? "Playbook de Abordagem & Scripts de Venda" : lang === "es" ? "Playbook de Venta & Guiones Personalizados" : "Multi-Channel Sales Scripts & Playbook"}
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-muted-foreground">
+          <span className="text-[11px] text-muted-foreground">
             {lang === "pt" ? "Idioma: Português" : lang === "es" ? "Idioma: Español" : "Language: English"}
           </span>
         </div>
 
         <Tabs value={activeScriptTab} onValueChange={setActiveScriptTab}>
-          <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl w-full justify-start">
+          <TabsList>
             <TabsTrigger value="whatsapp" className="flex items-center gap-1.5 text-xs">
-              <MessageSquare className="w-3.5 h-3.5" />
+              <MessageSquare className="size-3.5" />
               <span>WhatsApp</span>
             </TabsTrigger>
             <TabsTrigger value="call" className="flex items-center gap-1.5 text-xs">
-              <Phone className="w-3.5 h-3.5" />
+              <Phone className="size-3.5" />
               <span>{lang === "pt" ? "Ligação Telefônica" : lang === "es" ? "Llamada Telefónica" : "Phone Call"}</span>
             </TabsTrigger>
             <TabsTrigger value="walkin" className="flex items-center gap-1.5 text-xs">
-              <UserCheck className="w-3.5 h-3.5" />
+              <UserCheck className="size-3.5" />
               <span>{lang === "pt" ? "Presencial / Visita" : lang === "es" ? "Visita Presencial" : "Walk-in"}</span>
             </TabsTrigger>
             <TabsTrigger value="meeting" className="flex items-center gap-1.5 text-xs">
-              <Calendar className="w-3.5 h-3.5" />
+              <Calendar className="size-3.5" />
               <span>{lang === "pt" ? "Reunião de Cierre" : lang === "es" ? "Reunión de Cierre" : "Closing Meeting"}</span>
             </TabsTrigger>
           </TabsList>
@@ -285,36 +285,35 @@ export function SalesTab({
           {Object.entries(scripts).map(([channelKey, items]) => (
             <TabsContent key={channelKey} value={channelKey} className="space-y-3 mt-3">
               {items.map((item) => (
-                <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2.5">
+                <div key={item.id} className="rounded-2xl bg-secondary p-4 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#e8ff5c]" />
+                    <span className="text-xs font-semibold text-foreground flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-primary" />
                       {item.title}
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-7 text-xs font-mono"
                       onClick={() => copyToClipboard(item.id, item.script)}
                     >
                       {copiedScriptId === item.id ? (
                         <>
-                          <Check className="w-3 h-3 mr-1 text-emerald-400" />
+                          <Check className="size-3.5 text-emerald-400" />
                           {lang === "pt" ? "Copiado!" : lang === "es" ? "¡Copiado!" : "Copied!"}
                         </>
                       ) : (
                         <>
-                          <Copy className="w-3 h-3 mr-1" />
+                          <Copy className="size-3.5" />
                           {lang === "pt" ? "Copiar Script" : lang === "es" ? "Copiar Guión" : "Copy Script"}
                         </>
                       )}
                     </Button>
                   </div>
-                  <pre className="font-sans text-xs text-white/90 whitespace-pre-wrap bg-black/40 p-3 rounded-lg border border-white/5 leading-relaxed">
+                  <pre className="font-sans text-xs text-foreground/90 whitespace-pre-wrap bg-background p-3 rounded-xl border border-border leading-relaxed">
                     {item.script}
                   </pre>
                   {item.tip && (
-                    <p className="text-[11px] font-mono text-muted-foreground flex items-center gap-1">
+                    <p className="text-[11px] text-muted-foreground flex items-center gap-1">
                       💡 <span>{item.tip}</span>
                     </p>
                   )}
@@ -328,21 +327,21 @@ export function SalesTab({
       {/* Financial & Contract Architect: One-time + MRR */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Solution Investment Structure */}
-        <Card className="p-5 border-white/10 bg-card space-y-3">
+        <Card className="p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
-              <DollarSign className="w-4 h-4 text-[#e8ff5c]" />
+            <h3 className="font-heading text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <DollarSign className="size-4 text-primary" />
               <span>{lang === "pt" ? "Estrutura Comercial & Precificação" : lang === "es" ? "Estructura Comercial & Precios" : "Commercial Pricing Architecture"}</span>
             </h3>
           </div>
 
           <div className="space-y-2 text-xs">
-            <div className="flex justify-between py-1.5 border-b border-white/5 text-white/80">
+            <div className="flex justify-between py-1.5 border-b border-border text-foreground/80">
               <span>{lang === "pt" ? "Setup & Implementação (PRDs)" : lang === "es" ? "Setup e Implementación (PRDs)" : "One-Time Setup & Build"}</span>
-              <strong className="font-mono text-white">${oneTimeTotal}</strong>
+              <strong className="font-mono text-foreground">${oneTimeTotal}</strong>
             </div>
 
-            <div className="py-2 border-b border-white/5 space-y-1.5">
+            <div className="py-2 border-b border-border space-y-1.5">
               <span className="text-muted-foreground">{lang === "pt" ? "Mensalidade Recorrente (MRR)" : lang === "es" ? "Membresía Mensual (MRR)" : "Monthly Retainer (MRR)"}</span>
               <div className="grid grid-cols-3 gap-1.5">
                 {[97, 197, 297].map((amt) => (
@@ -351,10 +350,10 @@ export function SalesTab({
                     type="button"
                     onClick={() => setRetainerTier(amt)}
                     className={cn(
-                      "p-1.5 rounded-lg border text-center font-mono transition-all text-xs",
+                      "h-9 rounded-full border-0 text-center text-xs font-semibold transition-all cursor-pointer",
                       retainerTier === amt
-                        ? "border-[#e8ff5c] bg-[#e8ff5c]/10 text-[#e8ff5c] font-bold"
-                        : "border-white/10 text-white/70 hover:border-white/30"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
                     )}
                   >
                     ${amt}/mo
@@ -363,12 +362,12 @@ export function SalesTab({
               </div>
             </div>
 
-            <div className="flex justify-between py-2 border-b border-white/10 text-sm font-bold">
-              <span className="text-[#e8ff5c]">{lang === "pt" ? "Valor Contratual 12 Meses (LTV)" : lang === "es" ? "Valor Contrato Anual (LTV)" : "12-Month Contract LTV"}</span>
-              <span className="font-mono text-[#e8ff5c]">${annualLtv}</span>
+            <div className="flex justify-between py-2 border-b border-border text-sm font-semibold">
+              <span className="text-primary">{lang === "pt" ? "Valor Contratual 12 Meses (LTV)" : lang === "es" ? "Valor Contrato Anual (LTV)" : "12-Month Contract LTV"}</span>
+              <span className="font-mono text-primary">${annualLtv}</span>
             </div>
 
-            <div className="flex justify-between py-1 text-[11px] text-emerald-400 font-mono">
+            <div className="flex justify-between py-1 text-[11px] text-emerald-400">
               <span>{lang === "pt" ? "Margem de Lucro Bruta Est." : lang === "es" ? "Margen Bruto Estimado" : "Estimated Gross Margin"}</span>
               <span>&gt; 94% (Cloudflare Edge Stack)</span>
             </div>
@@ -376,45 +375,45 @@ export function SalesTab({
         </Card>
 
         {/* 7-Day Sprint Timeline */}
-        <Card className="p-5 border-white/10 bg-card space-y-3">
+        <Card className="p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-[#e8ff5c]" />
+            <h3 className="font-heading text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Clock className="size-4 text-primary" />
               <span>{lang === "pt" ? "Cronograma de Entrega (7 Dias)" : lang === "es" ? "Cronograma de Entrega (7 Días)" : "7-Day Implementation Sprint"}</span>
             </h3>
           </div>
 
           <div className="space-y-2 text-xs">
-            <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="font-mono text-[#e8ff5c] font-bold shrink-0">D1-2:</span>
-              <span className="text-white/80">{lang === "pt" ? "Design tokens, tipografia e arquitetura Shadcn" : lang === "es" ? "Design tokens, tipografía y arquitectura Shadcn" : "Design tokens, typography and Shadcn UI architecture"}</span>
+            <div className="flex items-start gap-2 p-2.5 rounded-xl bg-secondary">
+              <span className="font-mono text-primary font-semibold shrink-0">D1-2:</span>
+              <span className="text-foreground/80">{lang === "pt" ? "Design tokens, tipografia e arquitetura Shadcn" : lang === "es" ? "Design tokens, tipografía y arquitectura Shadcn" : "Design tokens, typography and Shadcn UI architecture"}</span>
             </div>
-            <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="font-mono text-[#e8ff5c] font-bold shrink-0">D3-4:</span>
-              <span className="text-white/80">{lang === "pt" ? "Construção de componentes, formulários e n8n" : lang === "es" ? "Construcción de componentes, formularios y n8n" : "Component build, smart forms & n8n workflows"}</span>
+            <div className="flex items-start gap-2 p-2.5 rounded-xl bg-secondary">
+              <span className="font-mono text-primary font-semibold shrink-0">D3-4:</span>
+              <span className="text-foreground/80">{lang === "pt" ? "Construção de componentes, formulários e n8n" : lang === "es" ? "Construcción de componentes, formularios y n8n" : "Component build, smart forms & n8n workflows"}</span>
             </div>
-            <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="font-mono text-[#e8ff5c] font-bold shrink-0">D5-6:</span>
-              <span className="text-white/80">{lang === "pt" ? "Funil WhatsApp em 1-clique e testes de conversão" : lang === "es" ? "Embudo WhatsApp en 1-clic y pruebas de conversión" : "1-click WhatsApp funnel & conversion testing"}</span>
+            <div className="flex items-start gap-2 p-2.5 rounded-xl bg-secondary">
+              <span className="font-mono text-primary font-semibold shrink-0">D5-6:</span>
+              <span className="text-foreground/80">{lang === "pt" ? "Funil WhatsApp em 1-clique e testes de conversão" : lang === "es" ? "Embudo WhatsApp en 1-clic y pruebas de conversión" : "1-click WhatsApp funnel & conversion testing"}</span>
             </div>
-            <div className="flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
-              <span className="font-mono text-emerald-400 font-bold shrink-0">D7:</span>
-              <span className="text-white/80">{lang === "pt" ? "Virada de DNS na Cloudflare e entrega com SLA" : lang === "es" ? "Lanzamiento oficial en Cloudflare y entrega con SLA" : "Live Cloudflare Edge cutover & final SLA handover"}</span>
+            <div className="flex items-start gap-2 p-2.5 rounded-xl bg-secondary">
+              <span className="font-mono text-emerald-400 font-semibold shrink-0">D7:</span>
+              <span className="text-foreground/80">{lang === "pt" ? "Virada de DNS na Cloudflare e entrega com SLA" : lang === "es" ? "Lanzamiento oficial en Cloudflare y entrega con SLA" : "Live Cloudflare Edge cutover & final SLA handover"}</span>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Operator Notes & Stage Control */}
-      <Card className="p-5 border-white/10 bg-card space-y-4">
-        <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
-          <Layers className="w-4 h-4 text-[#e8ff5c]" />
+      <Card className="p-5 space-y-4">
+        <h3 className="font-heading text-sm font-semibold text-foreground flex items-center gap-1.5">
+          <Layers className="size-4 text-primary" />
           <span>{t.salesTab.stage} &amp; {t.salesTab.notes}</span>
         </h3>
 
         <div className="space-y-2">
           <textarea
-            className="min-h-20 w-full rounded-lg border border-input bg-background p-2.5 font-sans text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 text-xs"
+            className="min-h-20 w-full rounded-2xl border-0 bg-secondary p-3 text-sm text-foreground outline-none placeholder:text-muted-foreground transition-[color,box-shadow] focus-visible:ring-3 focus-visible:ring-ring/50"
             placeholder={lang === "pt" ? "Adicione notas da negociação, histórico de contato, objeções..." : lang === "es" ? "Agrega notas de negociación, historial, objeciones..." : "Add sales notes, call outcomes, objections..."}
             value={notesDraft}
             onChange={(e) => setNotesDraft(e.target.value)}
@@ -427,7 +426,7 @@ export function SalesTab({
             <div className="flex items-center gap-2">
               {(lead.status === "prd_ready" || lead.status === "reviewed") && (
                 <Button onClick={() => doTransition("proposal_sent")} disabled={busy} size="sm">
-                  <Send className="w-3.5 h-3.5 mr-1" />
+                  <Send className="size-3.5" />
                   {t.salesTab.sendProposal}
                 </Button>
               )}
@@ -436,23 +435,23 @@ export function SalesTab({
         </div>
 
         {lead.status === "proposal_sent" && (
-          <div className="pt-3 border-t border-white/10 flex flex-wrap items-center gap-3">
+          <div className="pt-3 border-t border-border flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground font-mono">$</span>
+              <span className="text-sm text-muted-foreground">$</span>
               <Input
                 type="number"
-                className="w-28 font-mono text-xs"
+                className="w-28"
                 value={amountDraft}
                 onChange={(e) => setAmountDraft(e.target.value)}
               />
-              <Button onClick={() => doTransition("won", { closedAmountUsd: Number(amountDraft) })} disabled={busy} size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-black font-bold">
+              <Button onClick={() => doTransition("won", { closedAmountUsd: Number(amountDraft) })} disabled={busy} size="sm" className="bg-emerald-500 hover:bg-emerald-500/90 text-white font-semibold">
                 {t.salesTab.markWon}
               </Button>
             </div>
             <div className="flex items-center gap-2 flex-1 min-w-[200px]">
               <Input
                 placeholder={t.salesTab.reasonPlaceholder}
-                className="flex-1 text-xs"
+                className="flex-1"
                 value={lostReasonDraft}
                 onChange={(e) => setLostReasonDraft(e.target.value)}
               />
@@ -464,13 +463,13 @@ export function SalesTab({
         )}
 
         {lead.status === "won" && (
-          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400">
+          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400">
             🎉 {t.salesTab.closedFor} <strong>${lead.closed_amount_usd}</strong> {lead.closed_at ? `(${new Date(lead.closed_at).toLocaleDateString()})` : ""}
           </div>
         )}
 
         {lead.status === "lost" && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-mono text-rose-400 flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-center justify-between">
             <span>{t.salesTab.lost}: {lead.lost_reason || "—"}</span>
             <Button variant="outline" size="sm" onClick={() => doTransition("proposal_sent")} disabled={busy}>
               Reopen Deal

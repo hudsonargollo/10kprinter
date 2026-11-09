@@ -90,10 +90,10 @@ export function WebsiteBuildsPanel({ leadId }: { leadId: string }) {
   }
 
   return (
-    <Card className="mt-4 p-4.5">
+    <Card className="mt-4 p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="font-heading text-[15px] font-bold">{L.title}</h2>
+          <h2 className="font-heading text-[15px] font-semibold">{L.title}</h2>
           <p className="mt-[-6px] text-[13px] text-muted-foreground">{L.desc}</p>
         </div>
         <Button onClick={trigger} disabled={busy} size="sm" className="shrink-0">

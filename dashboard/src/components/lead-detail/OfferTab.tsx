@@ -38,8 +38,8 @@ export function OfferTab({
 
   return (
     <>
-    <Card className="p-4.5">
-      <h2 className="font-heading text-[15px] font-bold">{t.offerTab.showcaseTitle}</h2>
+    <Card className="p-5">
+      <h2 className="font-heading text-[15px] font-semibold">{t.offerTab.showcaseTitle}</h2>
       <p className="mt-[-6px] mb-3 text-[13px] text-muted-foreground">
         {t.offerTab.showcaseDesc}
       </p>
@@ -81,7 +81,7 @@ export function OfferTab({
       <div className={`flex gap-2 ${lead.showcase_url ? "mb-3" : ""}`}>
         <Input
           className="flex-1 text-xs"
-          placeholder="https://... (URL personalizada do showcase ou selecione acima)"
+          placeholder={t.offerTab.showcaseUrlPlaceholder}
           value={urlDraft}
           onChange={(e) => setUrlDraft(e.target.value)}
         />
@@ -97,16 +97,16 @@ export function OfferTab({
         </Button>
       )}
 
-      <h2 className="mt-6 font-heading text-[15px] font-bold">{t.offerTab.offerTitle}</h2>
+      <h2 className="mt-6 font-heading text-[15px] font-semibold">{t.offerTab.offerTitle}</h2>
       {prds.length === 0 ? (
-        <p className="py-8 text-center text-muted-foreground font-mono text-xs">{t.offerTab.noPrds}</p>
+        <p className="py-8 text-center text-muted-foreground text-sm">{t.offerTab.noPrds}</p>
       ) : (
         <>
           <ul className="mb-3 list-none p-0 text-xs">
             {prds.map((p) => {
               const label = t.verticals[p.vertical] || p.vertical;
               return (
-                <li key={p.id} className="flex justify-between border-b border-border py-2 text-white/90">
+                <li key={p.id} className="flex justify-between border-b border-border py-2 text-foreground">
                   <span>{label}</span>
                   <strong className="font-mono">${p.price_usd ?? "—"}</strong>
                 </li>
@@ -114,10 +114,10 @@ export function OfferTab({
             })}
             <li className="flex justify-between border-b border-border py-2 text-muted-foreground">
               <span>{t.offerTab.consultAddon}</span>
-              <strong className="font-mono text-white/90">${CONSULT_ADDON_USD}</strong>
+              <strong className="font-mono text-foreground">${CONSULT_ADDON_USD}</strong>
             </li>
           </ul>
-          <div className="flex justify-between text-sm font-bold text-[#e8ff5c]">
+          <div className="flex justify-between text-sm font-semibold text-primary">
             <span>{t.offerTab.bundleTotal}</span>
             <span className="font-mono">${bundleTotal}</span>
           </div>

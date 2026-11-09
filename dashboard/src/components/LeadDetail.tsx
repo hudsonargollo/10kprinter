@@ -74,8 +74,8 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
   }, []);
 
   if (error)
-    return <div className="mb-4 rounded-lg border border-bad bg-bad/15 px-3.5 py-2.5 text-bad">{error}</div>;
-  if (!data) return <p className="py-10 text-center text-muted-foreground font-mono text-xs">{t.leadDetail.loading}</p>;
+    return <div className="mb-4 rounded-xl border border-bad bg-bad/15 px-4 py-3 text-bad text-sm">{error}</div>;
+  if (!data) return <p className="py-10 text-center text-muted-foreground text-sm">{t.leadDetail.loading}</p>;
 
   const { lead, scrapes, audits, prds, proposals, events } = data;
   const latestScrape = scrapes[scrapes.length - 1];
@@ -88,28 +88,28 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
 
   return (
     <>
-      <div className="mb-4 rounded-xl bg-card p-4.5 ring-1 ring-foreground/10 border border-white/5 space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="mb-1 font-heading text-[15px] font-bold text-white">{lead.business_name || lead.url}</h2>
-            <a href={lead.url} target="_blank" rel="noreferrer" className="text-[13px] text-muted-foreground hover:text-white transition-colors">
+      <div className="mb-4 rounded-2xl bg-card p-5 ring-1 ring-foreground/10 space-y-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0 max-w-full">
+            <h2 className="mb-1 font-heading text-[15px] font-semibold text-foreground">{lead.business_name || lead.url}</h2>
+            <a href={lead.url} target="_blank" rel="noreferrer" className="block break-all text-[13px] text-muted-foreground hover:text-foreground transition-colors">
               {lead.url}
             </a>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             {lead.tier && (
-              <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-bold border", TIER_CLASS[lead.tier])}>
+              <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-bold border", TIER_CLASS[lead.tier])}>
                 {t.tier[lead.tier]} · {lead.score}
               </span>
             )}
-            <span className="rounded-full bg-border px-2 py-0.5 text-[11px] font-bold">{t.status[lead.status] || lead.status}</span>
+            <span className="rounded-full bg-secondary px-2.5 py-0.5 text-[11px] font-bold">{t.status[lead.status] || lead.status}</span>
             {lead.status === "failed" && (
               <Button variant="outline" size="sm" onClick={() => retryLead(leadId).then(refresh)}>
                 {t.leadDetail.retry}
               </Button>
             )}
             <Select value={lead.status} onValueChange={(v) => onStatusChange(v as LeadStatus)}>
-              <SelectTrigger>
+              <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -134,30 +134,30 @@ export function LeadDetailView({ leadId }: { leadId: string }) {
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
-        <TabsList className="bg-card/80 border border-white/10 p-1 rounded-xl">
+        <TabsList>
           <TabsTrigger value="offer" className="flex items-center gap-1.5 text-xs">
             <span>{t.leadDetail.tabs.offer}</span>
-            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">1</kbd>
+            <kbd className="text-[10px] opacity-50 bg-muted px-1.5 py-0.5 rounded-md">1</kbd>
           </TabsTrigger>
           <TabsTrigger value="sales" className="flex items-center gap-1.5 text-xs">
             <span>{t.leadDetail.tabs.sales}</span>
-            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">2</kbd>
+            <kbd className="text-[10px] opacity-50 bg-muted px-1.5 py-0.5 rounded-md">2</kbd>
           </TabsTrigger>
           <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs">
             <span>{t.leadDetail.tabs.overview}</span>
-            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">3</kbd>
+            <kbd className="text-[10px] opacity-50 bg-muted px-1.5 py-0.5 rounded-md">3</kbd>
           </TabsTrigger>
           <TabsTrigger value="audits" className="flex items-center gap-1.5 text-xs">
             <span>{t.leadDetail.tabs.audits} ({audits.length})</span>
-            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">4</kbd>
+            <kbd className="text-[10px] opacity-50 bg-muted px-1.5 py-0.5 rounded-md">4</kbd>
           </TabsTrigger>
           <TabsTrigger value="prds" className="flex items-center gap-1.5 text-xs">
             <span>{t.leadDetail.tabs.prds} ({prds.length})</span>
-            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">5</kbd>
+            <kbd className="text-[10px] opacity-50 bg-muted px-1.5 py-0.5 rounded-md">5</kbd>
           </TabsTrigger>
           <TabsTrigger value="timeline" className="flex items-center gap-1.5 text-xs">
             <span>{t.leadDetail.tabs.timeline}</span>
-            <kbd className="text-[10px] font-mono opacity-50 bg-white/10 px-1 py-0.2 rounded">6</kbd>
+            <kbd className="text-[10px] opacity-50 bg-muted px-1.5 py-0.5 rounded-md">6</kbd>
           </TabsTrigger>
         </TabsList>
 

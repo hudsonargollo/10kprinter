@@ -22,7 +22,7 @@ export function PrdsTab({ leadId, prds }: { leadId: string; prds: Prd[] }) {
 
   if (prds.length === 0) {
     return (
-      <p className="py-10 text-center text-muted-foreground font-mono text-xs">
+      <p className="py-10 text-center text-muted-foreground text-sm">
         {t.prdsTab.noPrds}
       </p>
     );
@@ -43,7 +43,7 @@ export function PrdsTab({ leadId, prds }: { leadId: string; prds: Prd[] }) {
   }
 
   return (
-    <Card className="p-4.5">
+    <Card className="p-5">
       <Tabs value={activeId ?? undefined} onValueChange={setActiveId} className="mb-3 gap-0">
         <TabsList>
           {prds.map((p) => (

@@ -92,43 +92,43 @@ export function App() {
   if (!user) return <Login onLoggedIn={setUser} />;
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-[#e8ff5c] selection:text-black">
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-card/90 backdrop-blur-md px-6 py-3 shadow-md">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
+      <header className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-border bg-card/90 backdrop-blur-md px-4 py-3 shadow-md sm:px-6">
         <div className="flex items-center gap-4">
           <a href="#/" className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-6 h-6 rounded-lg bg-[#e8ff5c] flex items-center justify-center text-black font-black text-xs group-hover:scale-105 transition-transform">
+            <div className="size-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs group-hover:scale-105 transition-transform">
               M
             </div>
-            <h1 className="font-heading text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-              {t.nav.title} <span className="font-mono text-[11px] font-normal text-[#e8ff5c] px-1.5 py-0.2 rounded bg-[#e8ff5c]/10 border border-[#e8ff5c]/20">{t.nav.proBadge}</span>
+            <h1 className="font-heading text-sm font-semibold tracking-tight text-foreground flex items-center gap-1.5">
+              {t.nav.title} <span className="text-[11px] text-primary px-1.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">{t.nav.proBadge}</span>
             </h1>
           </a>
 
           {/* Linear-Style Search / Command Palette Trigger */}
           <button
             onClick={() => setPaletteOpen(true)}
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-white/20 text-xs text-white/50 hover:text-white transition-colors cursor-pointer"
+            className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
-            <Search className="w-3.5 h-3.5" />
+            <Search className="size-3.5" />
             <span>{t.nav.searchPlaceholder}</span>
-            <kbd className="px-1.5 py-0.2 text-[10px] font-mono text-white/40 bg-white/5 rounded border border-white/10">
+            <kbd className="px-1.5 py-0.5 text-[10px] text-muted-foreground bg-muted rounded-md">
               ⌘K
             </kbd>
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           {/* Global Language Selector */}
-          <div className="flex items-center gap-0.5 rounded-full bg-white/5 p-0.5 border border-white/10 mr-1" role="group" aria-label="Language">
-            <Globe className="w-3 h-3 text-white/40 ml-1.5 mr-0.5" />
+          <div className="flex items-center gap-0.5 rounded-full bg-secondary p-0.5 mr-1" role="group" aria-label="Language">
+            <Globe className="size-3 text-muted-foreground ml-1.5 mr-0.5" />
             {LANGS.map((l) => (
               <button
                 key={l}
                 type="button"
                 onClick={() => setLang(l)}
                 aria-pressed={lang === l}
-                className={`rounded-full px-2 py-0.5 text-[11px] font-mono font-semibold transition-colors cursor-pointer ${
-                  lang === l ? "bg-[#e8ff5c] text-black shadow-sm" : "text-white/50 hover:text-white"
+                className={`rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors cursor-pointer ${
+                  lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {LANG_LABELS[l]}
@@ -137,33 +137,33 @@ export function App() {
           </div>
 
           {route.name !== "board" && (
-            <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-white/10">
+            <Button asChild variant="outline" size="sm">
               <a href="#/" className="flex items-center gap-1.5">
-                <ArrowLeft className="w-3.5 h-3.5" /> {t.nav.allLeads}
+                <ArrowLeft className="size-3.5" /> <span className="hidden sm:inline">{t.nav.allLeads}</span>
               </a>
             </Button>
           )}
           {route.name !== "hunt" && (
-            <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-[#e8ff5c] hover:text-black transition-colors">
+            <Button asChild size="sm">
               <a href="#/hunt" className="flex items-center gap-1.5">
-                <Radar className="w-3.5 h-3.5" /> {t.nav.huntWizard}
+                <Radar className="size-3.5" /> <span className="hidden sm:inline">{t.nav.huntWizard}</span>
               </a>
             </Button>
           )}
           {route.name !== "sources" && (
-            <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-white/10">
+            <Button asChild variant="outline" size="sm">
               <a href="#/sources" className="flex items-center gap-1.5">
-                <MapPinned className="w-3.5 h-3.5" /> {t.nav.sources}
+                <MapPinned className="size-3.5" /> <span className="hidden sm:inline">{t.nav.sources}</span>
               </a>
             </Button>
           )}
-          <Button variant="ghost" size="sm" onClick={onLogout} className="h-8 text-xs text-white/60 hover:text-rose-400">
-            <LogOut className="w-3.5 h-3.5 mr-1" /> {t.nav.signOut}
+          <Button variant="ghost" size="sm" onClick={onLogout} className="text-muted-foreground hover:text-destructive">
+            <LogOut className="size-3.5" /> {t.nav.signOut}
           </Button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl p-6">
+      <main className="mx-auto max-w-6xl p-4 sm:p-6">
         {route.name === "board" && <LeadsBoard />}
         {route.name === "lead" && <LeadDetailView leadId={route.id} />}
         {route.name === "sources" && <SourcesView />}

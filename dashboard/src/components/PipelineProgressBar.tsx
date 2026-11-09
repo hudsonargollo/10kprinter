@@ -1,6 +1,7 @@
 import { CheckCircle2, CircleDashed, Loader2, AlertTriangle, Sparkles } from "lucide-react";
 import type { LeadStatus } from "../types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "../i18n/LanguageContext";
 
 interface PipelineProgressBarProps {
@@ -71,20 +72,20 @@ export function PipelineProgressBar({
   if (compact) {
     return (
       <div className={cn("space-y-1.5", className)}>
-        <div className="flex items-center justify-between text-[11px] font-mono">
-          <span className="text-white/70 flex items-center gap-1.5 truncate">
-            {inProgress && <Loader2 className="w-3 h-3 text-[#e8ff5c] animate-spin shrink-0" />}
-            {isComplete && <Sparkles className="w-3 h-3 text-emerald-400 shrink-0" />}
-            {isFailed && <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" />}
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="text-muted-foreground flex items-center gap-1.5 truncate">
+            {inProgress && <Loader2 className="size-3 text-primary animate-spin shrink-0" />}
+            {isComplete && <Sparkles className="size-3 text-emerald-400 shrink-0" />}
+            {isFailed && <AlertTriangle className="size-3 text-rose-400 shrink-0" />}
             <span className="truncate">{isFailed && lastError ? `${activeLabel}: ${lastError}` : activeLabel}</span>
           </span>
-          <span className="text-[#e8ff5c] font-bold shrink-0 ml-1">{percent}%</span>
+          <span className="text-primary font-bold shrink-0 ml-1">{percent}%</span>
         </div>
-        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
+        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
           <div
             className={cn(
               "h-full transition-all duration-700 ease-out rounded-full",
-              isFailed ? "bg-rose-500" : isComplete ? "bg-emerald-400" : "bg-gradient-to-r from-[#e8ff5c] via-emerald-400 to-[#e8ff5c]"
+              isFailed ? "bg-rose-500" : isComplete ? "bg-emerald-400" : "bg-primary"
             )}
             style={{ width: `${percent}%` }}
           />
@@ -94,35 +95,35 @@ export function PipelineProgressBar({
   }
 
   return (
-    <div className={cn("rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-3 font-sans", className)}>
+    <div className={cn("rounded-2xl bg-secondary p-4 space-y-3 font-sans", className)}>
       {/* Header with live stage */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {inProgress && (
-            <div className="w-2.5 h-2.5 rounded-full bg-[#e8ff5c] animate-ping" />
+            <div className="size-2.5 rounded-full bg-primary animate-ping" />
           )}
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white/90">
+          <span className="text-xs font-semibold uppercase tracking-wider text-foreground">
             {t.pipelineProgress.title}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className={cn("text-xs font-mono font-semibold", isFailed ? "text-rose-400" : "text-[#e8ff5c]")}>
+          <span className={cn("text-xs font-semibold", isFailed ? "text-rose-400" : "text-primary")}>
             {activeLabel}
           </span>
-          <span className="text-xs font-mono text-white/40">({percent}%)</span>
+          <span className="text-xs text-muted-foreground">({percent}%)</span>
         </div>
       </div>
 
       {/* Main Animated Progress Track */}
-      <div className="relative h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
+      <div className="relative h-2 w-full bg-muted rounded-full overflow-hidden">
         <div
           className={cn(
             "h-full transition-all duration-700 ease-out rounded-full",
             isFailed
               ? "bg-rose-500"
               : isComplete
-              ? "bg-gradient-to-r from-emerald-400 to-[#e8ff5c]"
-              : "bg-gradient-to-r from-[#e8ff5c] via-emerald-400 to-[#e8ff5c] animate-pulse"
+              ? "bg-gradient-to-r from-emerald-400 to-primary"
+              : "bg-primary animate-pulse"
           )}
           style={{ width: `${percent}%` }}
         />
@@ -130,18 +131,15 @@ export function PipelineProgressBar({
 
       {/* If Failed, display error banner with one-click retry */}
       {isFailed && (
-        <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 p-3 text-xs flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-rose-300">
-            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
-            <span className="font-mono">{lastError || "Pipeline interrupted or timed out."}</span>
+        <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-3 text-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="size-4 shrink-0" />
+            <span>{lastError || "Pipeline interrupted or timed out."}</span>
           </div>
           {onRetry && (
-            <button
-              onClick={onRetry}
-              className="shrink-0 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 text-white font-mono font-bold text-xs transition-colors cursor-pointer"
-            >
+            <Button variant="destructive" size="xs" onClick={onRetry} className="shrink-0 cursor-pointer">
               {t.leadDetail.retry}
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -155,17 +153,17 @@ export function PipelineProgressBar({
             <div key={s.key} className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center mb-1">
                 {isDone ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className="size-4 text-emerald-400" />
                 ) : isCurrent ? (
-                  <Loader2 className="w-4 h-4 text-[#e8ff5c] animate-spin" />
+                  <Loader2 className="size-4 text-primary animate-spin" />
                 ) : (
-                  <CircleDashed className="w-4 h-4 text-white/20" />
+                  <CircleDashed className="size-4 text-muted-foreground/40" />
                 )}
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-mono leading-tight",
-                  isDone ? "text-white/80 font-medium" : isCurrent ? "text-[#e8ff5c] font-bold" : "text-white/30"
+                  "text-[10px] leading-tight",
+                  isDone ? "text-foreground/80 font-medium" : isCurrent ? "text-primary font-semibold" : "text-muted-foreground/60"
                 )}
               >
                 {s.label}

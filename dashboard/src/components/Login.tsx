@@ -46,31 +46,31 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-background text-foreground font-sans selection:bg-[#e8ff5c] selection:text-black">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       <div className="w-full max-w-[380px] space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#e8ff5c] text-black font-black text-base shadow-lg shadow-[#e8ff5c]/20 mb-1">
+          <div className="inline-flex items-center justify-center size-11 rounded-full bg-primary text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 mb-1">
             M
           </div>
-          <h1 className="font-heading text-xl font-bold tracking-tight text-white">MoneyMachine Ops</h1>
-          <p className="text-xs text-white/50 font-mono">{t.login.subtitle}</p>
+          <h1 className="font-heading text-xl font-semibold tracking-tight text-foreground">MoneyMachine Ops</h1>
+          <p className="text-xs text-muted-foreground">{t.login.subtitle}</p>
         </div>
 
         {/* Card */}
-        <Card className="p-6 bg-card border-white/10 shadow-2xl rounded-2xl">
+        <Card className="p-6 shadow-2xl">
           {/* Mode Switcher */}
-          <div className={`grid ${registrationOpen ? "grid-cols-2" : "grid-cols-1"} p-1 mb-5 bg-white/5 rounded-xl border border-white/5`}>
+          <div className={`grid ${registrationOpen ? "grid-cols-2" : "grid-cols-1"} gap-1 p-1 mb-5 rounded-full bg-secondary`}>
             <button
               type="button"
               onClick={() => {
                 setMode("login");
                 setError(null);
               }}
-              className={`py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+              className={`h-8 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 mode === "login"
-                  ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
-                  : "text-white/60 hover:text-white"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {t.login.signInTab}
@@ -82,10 +82,10 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
                   setMode("register");
                   setError(null);
                 }}
-                className={`py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+                className={`h-8 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   mode === "register"
-                    ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
-                    : "text-white/60 hover:text-white"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t.login.registerTab}
@@ -95,26 +95,26 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
 
           <form onSubmit={submit} className="space-y-3.5">
             {mode === "register" && (
-              <div className="space-y-1">
-                <label className="text-[11px] font-mono text-white/60">{t.login.nameLabel}</label>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-muted-foreground">{t.login.nameLabel}</label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-white/40 absolute left-3 top-2.5" />
+                  <User className="size-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <Input
                     type="text"
                     required
                     placeholder={t.login.namePlaceholder}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="pl-9 bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
+                    className="pl-10"
                   />
                 </div>
               </div>
             )}
 
-            <div className="space-y-1">
-              <label className="text-[11px] font-mono text-white/60">{t.login.emailLabel}</label>
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-medium text-muted-foreground">{t.login.emailLabel}</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-white/40 absolute left-3 top-2.5" />
+                <Mail className="size-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <Input
                   type="email"
                   autoFocus
@@ -122,15 +122,15 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
                   placeholder={t.login.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-9 bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
+                  className="pl-10"
                 />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[11px] font-mono text-white/60">{t.login.passwordLabel}</label>
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-medium text-muted-foreground">{t.login.passwordLabel}</label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-white/40 absolute left-3 top-2.5" />
+                <Lock className="size-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <Input
                   type="password"
                   required
@@ -138,32 +138,28 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
                   placeholder={mode === "register" ? t.login.passwordPlaceholderRegister : t.login.passwordPlaceholderLogin}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-9 bg-white/[0.03] border-white/10 text-white placeholder:text-white/30 h-9 text-xs rounded-xl"
+                  className="pl-10"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-mono">
+              <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs">
                 {error}
               </div>
             )}
 
-            <Button
-              type="submit"
-              disabled={busy}
-              className="w-full h-10 mt-2 bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#e8ff5c]/20"
-            >
+            <Button type="submit" disabled={busy} className="w-full mt-2">
               {busy ? (
                 <span>{t.login.submitBusy}</span>
               ) : mode === "login" ? (
                 <>
                   <span>{t.login.submitSignIn}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="size-4" />
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="size-4" />
                   <span>{t.login.submitRegister}</span>
                 </>
               )}
@@ -172,8 +168,8 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
         </Card>
 
         {/* Security badge */}
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-white/40 font-mono">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <ShieldCheck className="size-3.5 text-emerald-400" />
           <span>{t.login.securityNote}</span>
         </div>
       </div>

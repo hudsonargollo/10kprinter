@@ -57,12 +57,12 @@ export function PlaceAutocomplete({
         autoComplete="off"
       />
       {open && suggestions.length > 0 && (
-        <ul className="absolute top-[calc(100%+4px)] right-0 left-0 z-10 max-h-60 overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-md">
+        <ul className="absolute top-[calc(100%+4px)] right-0 left-0 z-10 max-h-60 overflow-y-auto rounded-2xl border border-border bg-popover p-1 text-popover-foreground shadow-md">
           {suggestions.map((s) => (
             <li
               key={s.placeId}
               onMouseDown={() => selectSuggestion(s.description)}
-              className="cursor-pointer rounded-md px-2.5 py-2 hover:bg-background"
+              className="cursor-pointer rounded-full px-3 py-2 hover:bg-muted"
             >
               {s.description}
             </li>

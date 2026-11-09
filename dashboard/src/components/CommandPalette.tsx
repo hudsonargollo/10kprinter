@@ -127,22 +127,22 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
       <div
-        className="w-full max-w-xl rounded-2xl border border-white/15 bg-popover shadow-2xl overflow-hidden text-foreground flex flex-col font-sans"
+        className="w-full max-w-xl rounded-2xl border border-border bg-popover shadow-2xl overflow-hidden text-foreground flex flex-col font-sans"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Search Header */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-white/[0.02]">
-          <Search className="w-4 h-4 text-white/40 shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border bg-secondary">
+          <Search className="size-4 text-muted-foreground shrink-0" />
           <input
             autoFocus
             type="text"
             placeholder={t.commandPalette.searchPlaceholder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
-          <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-white/40 bg-white/5 border border-white/10 rounded">
+          <kbd className="px-1.5 py-0.5 text-[10px] text-muted-foreground bg-muted border border-border rounded-md">
             ESC
           </kbd>
         </div>
@@ -152,7 +152,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           {/* Actions */}
           {filteredActions.length > 0 && (
             <div>
-              <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-white/40">{t.commandPalette.commandsGroup}</div>
+              <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">{t.commandPalette.commandsGroup}</div>
               <div className="space-y-0.5">
                 {filteredActions.map((item, idx) => {
                   const Icon = item.icon;
@@ -162,18 +162,18 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       key={item.id}
                       onClick={item.action}
                       className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors text-left cursor-pointer",
-                        isSelected ? "bg-[#e8ff5c] text-black font-semibold" : "text-white/80 hover:bg-white/5"
+                        "w-full flex items-center justify-between px-3.5 py-2 rounded-full text-sm transition-colors text-left cursor-pointer",
+                        isSelected ? "bg-primary text-primary-foreground font-semibold" : "text-foreground hover:bg-muted"
                       )}
                     >
                       <div className="flex items-center gap-2.5">
-                        <Icon className={cn("w-4 h-4", isSelected ? "text-black" : "text-white/40")} />
+                        <Icon className={cn("size-4", isSelected ? "text-primary-foreground" : "text-muted-foreground")} />
                         <span>{item.title}</span>
                       </div>
                       <kbd
                         className={cn(
-                          "px-1.5 py-0.5 text-[10px] font-mono rounded border",
-                          isSelected ? "bg-black/10 border-black/20 text-black" : "bg-white/5 border-white/10 text-white/40"
+                          "px-1.5 py-0.5 text-[10px] rounded-md border",
+                          isSelected ? "bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground" : "bg-muted border-border text-muted-foreground"
                         )}
                       >
                         {item.shortcut}
@@ -188,7 +188,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           {/* Leads */}
           {filteredLeads.length > 0 && (
             <div>
-              <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-white/40">{t.commandPalette.leadsGroup}</div>
+              <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">{t.commandPalette.leadsGroup}</div>
               <div className="space-y-0.5">
                 {filteredLeads.map((lead, idx) => {
                   const itemIndex = filteredActions.length + idx;
@@ -201,15 +201,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                         onOpenChange(false);
                       }}
                       className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors text-left cursor-pointer",
-                        isSelected ? "bg-[#e8ff5c] text-black font-semibold" : "text-white/80 hover:bg-white/5"
+                        "w-full flex items-center justify-between px-3.5 py-2 rounded-full text-sm transition-colors text-left cursor-pointer",
+                        isSelected ? "bg-primary text-primary-foreground font-semibold" : "text-foreground hover:bg-muted"
                       )}
                     >
                       <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                        <Sparkles className={cn("w-3.5 h-3.5 shrink-0", isSelected ? "text-black" : "text-[#e8ff5c]")} />
+                        <Sparkles className={cn("size-3.5 shrink-0", isSelected ? "text-primary-foreground" : "text-primary")} />
                         <div className="truncate">
                           <span className="font-medium block truncate">{lead.business_name || lead.url}</span>
-                          <span className={cn("text-[11px] block truncate", isSelected ? "text-black/60" : "text-white/40")}>
+                          <span className={cn("text-[11px] block truncate", isSelected ? "text-primary-foreground/70" : "text-muted-foreground")}>
                             {lead.url}
                           </span>
                         </div>
@@ -225,7 +225,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                             {lead.score}
                           </span>
                         )}
-                        <ArrowRight className={cn("w-3 h-3", isSelected ? "text-black" : "text-white/30")} />
+                        <ArrowRight className={cn("size-3", isSelected ? "text-primary-foreground" : "text-muted-foreground")} />
                       </div>
                     </button>
                   );
@@ -235,16 +235,16 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           )}
 
           {allItemsCount === 0 && (
-            <div className="py-8 text-center text-xs text-white/40 font-mono">{t.commandPalette.noResults}</div>
+            <div className="py-8 text-center text-sm text-muted-foreground">{t.commandPalette.noResults}</div>
           )}
         </div>
 
         {/* Footer info */}
-        <div className="px-4 py-2 border-t border-white/10 bg-white/[0.02] flex items-center justify-between text-[11px] text-white/40 font-mono">
+        <div className="px-4 py-2 border-t border-border bg-secondary flex items-center justify-between text-[11px] text-muted-foreground">
           <div className="flex items-center gap-3">
             <span>{t.commandPalette.navigateHint}</span>
             <span className="flex items-center gap-1">
-              <CornerDownLeft className="w-3 h-3" /> {t.commandPalette.selectHint}
+              <CornerDownLeft className="size-3" /> {t.commandPalette.selectHint}
             </span>
           </div>
           <span>{t.commandPalette.footerTitle}</span>

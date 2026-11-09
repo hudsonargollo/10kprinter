@@ -215,6 +215,7 @@ export interface DashboardTranslations {
     saving: string;
     save: string;
     openShowcase: string;
+    showcaseUrlPlaceholder: string;
     offerTitle: string;
     noPrds: string;
     consultAddon: string;
@@ -531,6 +532,7 @@ export const translations: Record<Lang, DashboardTranslations> = {
       saving: "Guardando…",
       save: "Guardar",
       openShowcase: "Abrir página de showcase →",
+      showcaseUrlPlaceholder: "https://... (URL del showcase o selecciona uno arriba)",
       offerTitle: "Estructura de la Oferta",
       noPrds: "Sin ítems cotizados aún — esperando auditorías/PRDs.",
       consultAddon: "+ Adicional: 1 hora de consultoría estratégica con Hudson",
@@ -846,6 +848,7 @@ export const translations: Record<Lang, DashboardTranslations> = {
       saving: "Saving…",
       save: "Save",
       openShowcase: "Open showcase page →",
+      showcaseUrlPlaceholder: "https://... (showcase URL, or pick one above)",
       offerTitle: "Offer Stack",
       noPrds: "No priced items yet — waiting for audits/PRDs.",
       consultAddon: "+ Add-on: 1hr strategic consult with Hudson",
@@ -1161,6 +1164,7 @@ export const translations: Record<Lang, DashboardTranslations> = {
       saving: "Salvando…",
       save: "Salvar",
       openShowcase: "Abrir página de showcase →",
+      showcaseUrlPlaceholder: "https://... (URL do showcase ou selecione acima)",
       offerTitle: "Estrutura da Proposta",
       noPrds: "Sem itens cotados ainda — aguardando auditorias/PRDs.",
       consultAddon: "+ Adicional: 1 hora de consultoria estratégica com Hudson",

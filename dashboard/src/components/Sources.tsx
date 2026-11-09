@@ -52,44 +52,44 @@ export function SourcesView() {
       )}
 
       {sources === null ? (
-        <p className="py-10 text-center text-muted-foreground font-mono text-xs">{t.sources.loading}</p>
+        <p className="py-10 text-center text-muted-foreground text-sm">{t.sources.loading}</p>
       ) : sources.length === 0 ? (
-        <p className="py-10 text-center text-muted-foreground font-mono text-xs max-w-lg mx-auto">
+        <p className="py-10 text-center text-muted-foreground text-sm max-w-lg mx-auto">
           {t.sources.emptyDesc}
         </p>
       ) : (
         sources.map((source) => (
-          <Card className="p-4.5 mb-3" key={source.id}>
+          <Card className="p-4 mb-3" key={source.id}>
             <div className="flex items-start justify-between">
               <div>
-                <div className="font-semibold text-white text-sm">{source.query}</div>
+                <div className="font-semibold text-foreground text-sm">{source.query}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">
                   {[source.region, source.category].filter(Boolean).join(" · ") || t.sources.noRegionCategory}
                 </div>
-                <div className="mt-1 text-xs text-muted-foreground font-mono">
+                <div className="mt-1 text-xs text-muted-foreground">
                   {t.sources.lastRun} {source.last_run_at ?? t.sources.never}
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Label className="flex-row items-center gap-1.5 font-normal normal-case text-xs text-white/70 cursor-pointer">
+                <Label className="flex-row items-center gap-1.5 font-normal normal-case text-xs text-muted-foreground cursor-pointer">
                   <input
                     type="checkbox"
-                    className="accent-[#e8ff5c] rounded"
+                    className="accent-primary size-4"
                     checked={!!source.cron_enabled}
                     onChange={(e) => setSourceCronEnabled(source.id, e.target.checked).then(refresh)}
                   />
                   {t.sources.cronEnabled}
                 </Label>
-                <Button variant="outline" size="sm" disabled={running === source.id} onClick={() => onRunNow(source.id)} className="text-xs">
+                <Button variant="outline" size="sm" disabled={running === source.id} onClick={() => onRunNow(source.id)}>
                   {running === source.id ? t.sources.runningBtn : t.sources.runNowBtn}
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => deleteSource(source.id).then(refresh)} className="text-xs text-rose-300 hover:text-rose-200">
+                <Button variant="ghost" size="sm" onClick={() => deleteSource(source.id).then(refresh)} className="text-destructive hover:text-destructive">
                   {t.sources.deleteBtn}
                 </Button>
               </div>
             </div>
             {runResults[source.id] && (
-              <div className="mt-2.5 text-xs text-[#e8ff5c] font-mono">{runResults[source.id]}</div>
+              <div className="mt-2.5 text-xs text-primary">{runResults[source.id]}</div>
             )}
           </Card>
         ))
@@ -126,26 +126,26 @@ function NewSourceForm({ onCreated }: { onCreated: () => void }) {
 
   return (
     <form onSubmit={submit}>
-      <Card className="mb-4 p-4.5">
-        <h2 className="mb-3 font-heading text-[15px] font-bold text-white">{t.sources.addSource}</h2>
+      <Card className="mb-4 p-4">
+        <h2 className="mb-3 font-heading text-[15px] font-semibold text-foreground">{t.sources.addSource}</h2>
         {error && (
           <div className="mb-4 rounded-lg border border-bad bg-bad/15 px-3.5 py-2.5 text-bad">
             {error}
           </div>
         )}
-        <div className="mb-3 flex flex-col gap-1">
-          <Label htmlFor="query" className="text-xs text-white/70">{t.sources.queryLabel}</Label>
-          <Input id="query" required placeholder={t.sources.queryPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} className="bg-white/[0.03] border-white/10 text-white text-xs" />
+        <div className="mb-3 flex flex-col gap-1.5">
+          <Label htmlFor="query" className="text-xs text-muted-foreground">{t.sources.queryLabel}</Label>
+          <Input id="query" required placeholder={t.sources.queryPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
-        <div className="mb-3 flex flex-col gap-1">
-          <Label htmlFor="region" className="text-xs text-white/70">{t.sources.regionLabel}</Label>
+        <div className="mb-3 flex flex-col gap-1.5">
+          <Label htmlFor="region" className="text-xs text-muted-foreground">{t.sources.regionLabel}</Label>
           <PlaceAutocomplete id="region" placeholder={t.sources.regionPlaceholder} value={region} onChange={setRegion} />
         </div>
-        <div className="mb-3 flex flex-col gap-1">
-          <Label htmlFor="category" className="text-xs text-white/70">{t.sources.categoryLabel}</Label>
-          <Input id="category" placeholder={t.sources.categoryPlaceholder} value={category} onChange={(e) => setCategory(e.target.value)} className="bg-white/[0.03] border-white/10 text-white text-xs" />
+        <div className="mb-3 flex flex-col gap-1.5">
+          <Label htmlFor="category" className="text-xs text-muted-foreground">{t.sources.categoryLabel}</Label>
+          <Input id="category" placeholder={t.sources.categoryPlaceholder} value={category} onChange={(e) => setCategory(e.target.value)} />
         </div>
-        <Button type="submit" disabled={submitting} className="bg-[#e8ff5c] text-black font-semibold hover:bg-[#d8ef4c]">
+        <Button type="submit" disabled={submitting}>
           {submitting ? t.sources.submitting : t.sources.submitAdd}
         </Button>
       </Card>
