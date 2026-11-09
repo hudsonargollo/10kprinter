@@ -52,7 +52,7 @@ export function TimelineTab({ events }: { events: LeadDetailData["events"] }) {
                     ) : isSuccess ? (
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                     ) : (
-                      <Clock className="w-3.5 h-3.5 text-[#e8ff5c]" />
+                      <Clock className="w-3.5 h-3.5 text-white" />
                     )}
                   </div>
                   <div className="min-w-0">

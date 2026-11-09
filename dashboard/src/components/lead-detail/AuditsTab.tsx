@@ -63,7 +63,7 @@ export function AuditsTab({ audits }: { audits: LeadDetailData["audits"] }) {
                 </ul>
               </div>
               <div>
-                <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase text-[#e8ff5c]">{t.auditsTab.fix}</h4>
+                <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase text-white">{t.auditsTab.fix}</h4>
                 <ul className="m-0 pl-4.5 text-xs text-white/90">
                   {finding.fix.map((f, i) => (
                     <li className="mb-1.5" key={i}>

@@ -92,15 +92,15 @@ export function App() {
   if (!user) return <Login onLoggedIn={setUser} />;
 
   return (
-    <div className="min-h-screen bg-[#0e0a14] text-foreground font-sans selection:bg-[#e8ff5c] selection:text-black">
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#161020]/90 backdrop-blur-md px-6 py-3 shadow-md">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-white selection:text-black">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-card/90 backdrop-blur-md px-6 py-3 shadow-md">
         <div className="flex items-center gap-4">
           <a href="#/" className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-6 h-6 rounded-lg bg-[#e8ff5c] flex items-center justify-center text-black font-black text-xs group-hover:scale-105 transition-transform">
+            <div className="w-6 h-6 rounded-lg bg-white flex items-center justify-center text-black font-black text-xs group-hover:scale-105 transition-transform">
               M
             </div>
             <h1 className="font-heading text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-              {t.nav.title} <span className="font-mono text-[11px] font-normal text-[#e8ff5c] px-1.5 py-0.2 rounded bg-[#e8ff5c]/10 border border-[#e8ff5c]/20">{t.nav.proBadge}</span>
+              {t.nav.title} <span className="font-mono text-[11px] font-normal text-white px-1.5 py-0.2 rounded bg-white/10 border border-white/20">{t.nav.proBadge}</span>
             </h1>
           </a>
 
@@ -128,7 +128,7 @@ export function App() {
                 onClick={() => setLang(l)}
                 aria-pressed={lang === l}
                 className={`rounded-full px-2 py-0.5 text-[11px] font-mono font-semibold transition-colors cursor-pointer ${
-                  lang === l ? "bg-[#e8ff5c] text-black shadow-sm" : "text-white/50 hover:text-white"
+                  lang === l ? "bg-white text-black shadow-sm" : "text-white/50 hover:text-white"
                 }`}
               >
                 {LANG_LABELS[l]}
@@ -144,7 +144,7 @@ export function App() {
             </Button>
           )}
           {route.name !== "hunt" && (
-            <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-[#e8ff5c] hover:text-black transition-colors">
+            <Button asChild variant="outline" size="sm" className="h-8 text-xs border-white/15 bg-white/5 text-white hover:bg-white hover:text-black transition-colors">
               <a href="#/hunt" className="flex items-center gap-1.5">
                 <Radar className="w-3.5 h-3.5" /> {t.nav.huntWizard}
               </a>

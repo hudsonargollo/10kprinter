@@ -46,11 +46,11 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-[#0c0812] text-foreground font-sans selection:bg-[#e8ff5c] selection:text-black">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-background text-foreground font-sans selection:bg-white selection:text-black">
       <div className="w-full max-w-[380px] space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#e8ff5c] text-black font-black text-base shadow-lg shadow-[#e8ff5c]/20 mb-1">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black font-black text-base shadow-lg shadow-white/20 mb-1">
             M
           </div>
           <h1 className="font-heading text-xl font-bold tracking-tight text-white">MoneyMachine Ops</h1>
@@ -58,7 +58,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
         </div>
 
         {/* Card */}
-        <Card className="p-6 bg-[#161020] border-white/10 shadow-2xl rounded-2xl">
+        <Card className="p-6 bg-card border-white/10 shadow-2xl rounded-2xl">
           {/* Mode Switcher */}
           <div className={`grid ${registrationOpen ? "grid-cols-2" : "grid-cols-1"} p-1 mb-5 bg-white/5 rounded-xl border border-white/5`}>
             <button
@@ -69,7 +69,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
               }}
               className={`py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
                 mode === "login"
-                  ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
+                  ? "bg-white text-black font-semibold shadow-sm"
                   : "text-white/60 hover:text-white"
               }`}
             >
@@ -84,7 +84,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
                 }}
                 className={`py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
                   mode === "register"
-                    ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
+                    ? "bg-white text-black font-semibold shadow-sm"
                     : "text-white/60 hover:text-white"
                 }`}
               >
@@ -152,7 +152,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (user: AuthUser) => void }) 
             <Button
               type="submit"
               disabled={busy}
-              className="w-full h-10 mt-2 bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#e8ff5c]/20"
+              className="w-full h-10 mt-2 bg-white text-black font-bold hover:bg-white/90 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-white/20"
             >
               {busy ? (
                 <span>{t.login.submitBusy}</span>

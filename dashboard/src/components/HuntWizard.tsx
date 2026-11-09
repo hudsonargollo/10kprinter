@@ -140,14 +140,14 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
   }
 
   return (
-    <Card className="p-6 bg-[#161020] border-white/10 shadow-2xl rounded-2xl mb-6">
+    <Card className="p-6 bg-card border-white/10 shadow-2xl rounded-2xl mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-heading text-base font-bold text-white flex items-center gap-2">
-          <Radar className="w-5 h-5 text-[#e8ff5c]" />
+          <Radar className="w-5 h-5 text-white" />
           <span>{t.huntWizard.title}</span>
         </h2>
         {huntSessionId && (
-          <span className="text-[11px] font-mono text-[#e8ff5c] px-2 py-0.5 rounded-full bg-[#e8ff5c]/10 border border-[#e8ff5c]/20">
+          <span className="text-[11px] font-mono text-white px-2 py-0.5 rounded-full bg-white/10 border border-white/20">
             {t.huntWizard.sessionActive}
           </span>
         )}
@@ -171,7 +171,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
               className={cn(
                 "rounded-lg px-3 py-1.5 font-mono text-xs font-medium transition-all flex items-center gap-1.5",
                 isCurrent
-                  ? "bg-[#e8ff5c] text-black font-semibold shadow-sm"
+                  ? "bg-white text-black font-semibold shadow-sm"
                   : isPassed
                   ? "bg-white/10 text-white"
                   : "text-white/40"
@@ -193,7 +193,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="hunt-language" className="text-xs text-white/80 flex items-center gap-1">
-                <Globe className="w-3.5 h-3.5 text-[#e8ff5c]" />
+                <Globe className="w-3.5 h-3.5 text-white" />
                 <span>{t.huntWizard.langLabel}</span>
               </Label>
               <select
@@ -202,17 +202,17 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                 onChange={(e) => setLanguage(e.target.value)}
                 className="bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none h-9"
               >
-                <option value="auto" className="bg-[#161020] text-white">🌐 Auto (Español)</option>
-                <option value="es" className="bg-[#161020] text-white">🇪🇸 Español (LatAm / ES)</option>
-                <option value="en" className="bg-[#161020] text-white">🇺🇸 English (US/Global)</option>
-                <option value="pt" className="bg-[#161020] text-white">🇧🇷 Português (Brasil / PT)</option>
+                <option value="auto" className="bg-card text-white">🌐 Auto (Español)</option>
+                <option value="es" className="bg-card text-white">🇪🇸 Español (LatAm / ES)</option>
+                <option value="en" className="bg-card text-white">🇺🇸 English (US/Global)</option>
+                <option value="pt" className="bg-card text-white">🇧🇷 Português (Brasil / PT)</option>
               </select>
             </div>
           </div>
           <Button
             disabled={!region}
             onClick={() => setStep("niches")}
-            className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] rounded-xl text-xs h-9 px-5 shadow-md shadow-[#e8ff5c]/20 flex items-center gap-1.5 cursor-pointer"
+            className="bg-white text-black font-bold hover:bg-white/90 rounded-xl text-xs h-9 px-5 shadow-md shadow-white/20 flex items-center gap-1.5 cursor-pointer"
           >
             <span>{t.huntWizard.nextNiches}</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
               <h3 className="font-heading text-xs uppercase font-mono tracking-wider text-white/50">
                 {t.huntWizard.selectNiches}
               </h3>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[#e8ff5c]">
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white">
                 {selectedKeys.size} / {NICHE_PACKAGE.length} {t.huntWizard.selectedCount}
               </span>
             </div>
@@ -239,7 +239,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                 onClick={selectAllNiches}
                 className="h-7 px-2.5 text-[11px] font-mono border-white/10 text-white/80 hover:text-white hover:bg-white/5 rounded-lg"
               >
-                <CheckCheck className="w-3 h-3 mr-1 text-[#e8ff5c]" />
+                <CheckCheck className="w-3 h-3 mr-1 text-white" />
                 {t.huntWizard.selectAll}
               </Button>
               <Button
@@ -264,7 +264,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                   className={cn(
                     "flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all",
                     checked
-                      ? "bg-[#e8ff5c]/10 border-[#e8ff5c]/30 text-white font-medium shadow-sm shadow-[#e8ff5c]/5"
+                      ? "bg-white/10 border-white/30 text-white font-medium shadow-sm shadow-white/5"
                       : "bg-white/[0.02] border-white/5 text-white/60 hover:bg-white/5"
                   )}
                 >
@@ -272,7 +272,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                     type="checkbox"
                     checked={checked}
                     onChange={() => toggleNiche(n.key)}
-                    className="accent-[#e8ff5c] rounded"
+                    className="accent-white rounded"
                   />
                   <span className="truncate">{t.niches[n.key] || n.label}</span>
                 </label>
@@ -291,7 +291,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
           {customNiches.length > 0 && (
             <div className="space-y-1">
               {customNiches.map((n) => (
-                <div key={n.key} className="text-xs text-[#e8ff5c] font-mono">
+                <div key={n.key} className="text-xs text-white font-mono">
                   + {n.label} ({n.queryVariants[0]})
                 </div>
               ))}
@@ -319,7 +319,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                 disabled={allNiches.length === 0}
                 size="sm"
                 onClick={() => setStep("run")}
-                className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]"
+                className="bg-white text-black font-bold hover:bg-white/90"
               >
                 <span>{t.huntWizard.reviewRun}</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -339,13 +339,13 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
               </p>
             </div>
             {!running && !huntSessionId && (
-              <Button onClick={startHunt} className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] shadow-lg shadow-[#e8ff5c]/20">
+              <Button onClick={startHunt} className="bg-white text-black font-bold hover:bg-white/90 shadow-lg shadow-white/20">
                 <Sparkles className="w-4 h-4 mr-1.5" />
                 <span>{t.huntWizard.launchHunt}</span>
               </Button>
             )}
             {running && (
-              <div className="flex items-center gap-2 text-xs font-mono text-[#e8ff5c]">
+              <div className="flex items-center gap-2 text-xs font-mono text-white">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>{t.huntWizard.huntingLive}</span>
               </div>
@@ -364,9 +364,9 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                 >
                   <span className="font-medium text-white">{n.label}</span>
                   <div className="flex items-center gap-1.5 font-mono text-[11px]">
-                    {isRunning && <Loader2 className="w-3.5 h-3.5 text-[#e8ff5c] animate-spin" />}
+                    {isRunning && <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />}
                     {isDone && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
-                    <span className={isDone ? "text-emerald-400 font-bold" : isRunning ? "text-[#e8ff5c]" : "text-white/40"}>
+                    <span className={isDone ? "text-emerald-400 font-bold" : isRunning ? "text-white" : "text-white/40"}>
                       {!p || p.status === "pending" ? t.huntWizard.queued : `${p.count} ${t.huntWizard.found}`}
                     </span>
                   </div>
@@ -380,7 +380,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
               <span className="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4" /> {t.huntWizard.discoveryComplete}
               </span>
-              <Button onClick={() => setStep("interview")} className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]">
+              <Button onClick={() => setStep("interview")} className="bg-white text-black font-bold hover:bg-white/90">
                 <span>{t.huntWizard.generateOutreachPlan}</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
@@ -415,7 +415,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                       name="contactMethod"
                       checked={contactMethod === m}
                       onChange={() => setContactMethod(m)}
-                      className="accent-[#e8ff5c]"
+                      className="accent-white"
                     />
                     <span>{t.huntWizard.channels[m]}</span>
                   </label>
@@ -433,7 +433,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
                 return (
                   <div key={key} className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs text-white">
                     <span className="font-mono">
-                      <span className="text-[#e8ff5c] font-bold mr-2">#{i + 1}</span> {niche.label}
+                      <span className="text-white font-bold mr-2">#{i + 1}</span> {niche.label}
                     </span>
                     <div className="flex gap-1">
                       <Button variant="outline" size="sm" onClick={() => movePriority(key, -1)} disabled={i === 0} className="h-6 px-2 text-[10px] border-white/10">
@@ -449,7 +449,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
             </div>
           </div>
 
-          <Button disabled={generating} onClick={submitInterview} className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]">
+          <Button disabled={generating} onClick={submitInterview} className="bg-white text-black font-bold hover:bg-white/90">
             {generating ? (
               <span className="flex items-center gap-1.5"><Loader2 className="w-3.5 h-3.5 animate-spin" /> {t.huntWizard.generatingPlan}</span>
             ) : (
@@ -470,7 +470,7 @@ export function HuntWizard({ onLeadDiscovered }: { onLeadDiscovered?: () => void
           <div className="p-4 rounded-xl bg-black/30 border border-white/10 text-xs text-white/80 font-mono whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto">
             {timelineMarkdown}
           </div>
-          <Button asChild className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c]">
+          <Button asChild className="bg-white text-black font-bold hover:bg-white/90">
             <a href="#/">{t.huntWizard.viewAllLeads}</a>
           </Button>
         </div>

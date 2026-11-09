@@ -127,7 +127,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
       <div
-        className="w-full max-w-xl rounded-2xl border border-white/15 bg-[#140f1c] shadow-2xl overflow-hidden text-foreground flex flex-col font-sans"
+        className="w-full max-w-xl rounded-2xl border border-white/15 bg-popover shadow-2xl overflow-hidden text-foreground flex flex-col font-sans"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
@@ -163,7 +163,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       onClick={item.action}
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors text-left cursor-pointer",
-                        isSelected ? "bg-[#e8ff5c] text-black font-semibold" : "text-white/80 hover:bg-white/5"
+                        isSelected ? "bg-white text-black font-semibold" : "text-white/80 hover:bg-white/5"
                       )}
                     >
                       <div className="flex items-center gap-2.5">
@@ -202,11 +202,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       }}
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors text-left cursor-pointer",
-                        isSelected ? "bg-[#e8ff5c] text-black font-semibold" : "text-white/80 hover:bg-white/5"
+                        isSelected ? "bg-white text-black font-semibold" : "text-white/80 hover:bg-white/5"
                       )}
                     >
                       <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                        <Sparkles className={cn("w-3.5 h-3.5 shrink-0", isSelected ? "text-black" : "text-[#e8ff5c]")} />
+                        <Sparkles className={cn("w-3.5 h-3.5 shrink-0", isSelected ? "text-black" : "text-white")} />
                         <div className="truncate">
                           <span className="font-medium block truncate">{lead.business_name || lead.url}</span>
                           <span className={cn("text-[11px] block truncate", isSelected ? "text-black/60" : "text-white/40")}>

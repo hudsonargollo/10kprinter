@@ -41,23 +41,23 @@ export function NewLeadForm({ onCreated }: { onCreated: () => void }) {
 
   return (
     <form onSubmit={submit} className="mb-6">
-      <Card className="p-5 bg-[#161020] border-white/10 shadow-xl rounded-2xl">
+      <Card className="p-5 bg-card border-white/10 shadow-xl rounded-2xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-heading text-sm font-bold text-white flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#e8ff5c]" />
+            <Sparkles className="w-4 h-4 text-white" />
             <span>{t.newLead.title}</span>
           </h2>
           <div className="flex items-center gap-1.5 text-xs text-white/50">
-            <Globe className="w-3.5 h-3.5 text-[#e8ff5c]" />
+            <Globe className="w-3.5 h-3.5 text-white" />
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
               className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none cursor-pointer"
             >
-              <option value="auto" className="bg-[#161020] text-white">🌐 Auto Language</option>
-              <option value="es" className="bg-[#161020] text-white">🇪🇸 Español</option>
-              <option value="en" className="bg-[#161020] text-white">🇺🇸 English</option>
-              <option value="pt" className="bg-[#161020] text-white">🇧🇷 Português</option>
+              <option value="auto" className="bg-card text-white">🌐 Auto Language</option>
+              <option value="es" className="bg-card text-white">🇪🇸 Español</option>
+              <option value="en" className="bg-card text-white">🇺🇸 English</option>
+              <option value="pt" className="bg-card text-white">🇧🇷 Português</option>
             </select>
           </div>
         </div>
@@ -106,7 +106,7 @@ export function NewLeadForm({ onCreated }: { onCreated: () => void }) {
         <Button
           type="submit"
           disabled={submitting}
-          className="bg-[#e8ff5c] text-black font-bold hover:bg-[#d8ef4c] rounded-xl text-xs h-9 px-5 shadow-md shadow-[#e8ff5c]/20 cursor-pointer"
+          className="bg-white text-black font-bold hover:bg-white/90 rounded-xl text-xs h-9 px-5 shadow-md shadow-white/20 cursor-pointer"
         >
           {submitting ? t.newLead.submitBusy : t.newLead.submitDefault}
         </Button>

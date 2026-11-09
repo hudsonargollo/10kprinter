@@ -73,18 +73,18 @@ export function PipelineProgressBar({
       <div className={cn("space-y-1.5", className)}>
         <div className="flex items-center justify-between text-[11px] font-mono">
           <span className="text-white/70 flex items-center gap-1.5 truncate">
-            {inProgress && <Loader2 className="w-3 h-3 text-[#e8ff5c] animate-spin shrink-0" />}
+            {inProgress && <Loader2 className="w-3 h-3 text-white animate-spin shrink-0" />}
             {isComplete && <Sparkles className="w-3 h-3 text-emerald-400 shrink-0" />}
             {isFailed && <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" />}
             <span className="truncate">{isFailed && lastError ? `${activeLabel}: ${lastError}` : activeLabel}</span>
           </span>
-          <span className="text-[#e8ff5c] font-bold shrink-0 ml-1">{percent}%</span>
+          <span className="text-white font-bold shrink-0 ml-1">{percent}%</span>
         </div>
         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
           <div
             className={cn(
               "h-full transition-all duration-700 ease-out rounded-full",
-              isFailed ? "bg-rose-500" : isComplete ? "bg-emerald-400" : "bg-gradient-to-r from-[#e8ff5c] via-emerald-400 to-[#e8ff5c]"
+              isFailed ? "bg-rose-500" : isComplete ? "bg-emerald-400" : "bg-gradient-to-r from-white via-emerald-400 to-white"
             )}
             style={{ width: `${percent}%` }}
           />
@@ -99,14 +99,14 @@ export function PipelineProgressBar({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {inProgress && (
-            <div className="w-2.5 h-2.5 rounded-full bg-[#e8ff5c] animate-ping" />
+            <div className="w-2.5 h-2.5 rounded-full bg-white animate-ping" />
           )}
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-white/90">
             {t.pipelineProgress.title}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className={cn("text-xs font-mono font-semibold", isFailed ? "text-rose-400" : "text-[#e8ff5c]")}>
+          <span className={cn("text-xs font-mono font-semibold", isFailed ? "text-rose-400" : "text-white")}>
             {activeLabel}
           </span>
           <span className="text-xs font-mono text-white/40">({percent}%)</span>
@@ -121,8 +121,8 @@ export function PipelineProgressBar({
             isFailed
               ? "bg-rose-500"
               : isComplete
-              ? "bg-gradient-to-r from-emerald-400 to-[#e8ff5c]"
-              : "bg-gradient-to-r from-[#e8ff5c] via-emerald-400 to-[#e8ff5c] animate-pulse"
+              ? "bg-gradient-to-r from-emerald-400 to-white"
+              : "bg-gradient-to-r from-white via-emerald-400 to-white animate-pulse"
           )}
           style={{ width: `${percent}%` }}
         />
@@ -157,7 +157,7 @@ export function PipelineProgressBar({
                 {isDone ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 ) : isCurrent ? (
-                  <Loader2 className="w-4 h-4 text-[#e8ff5c] animate-spin" />
+                  <Loader2 className="w-4 h-4 text-white animate-spin" />
                 ) : (
                   <CircleDashed className="w-4 h-4 text-white/20" />
                 )}
@@ -165,7 +165,7 @@ export function PipelineProgressBar({
               <span
                 className={cn(
                   "text-[10px] font-mono leading-tight",
-                  isDone ? "text-white/80 font-medium" : isCurrent ? "text-[#e8ff5c] font-bold" : "text-white/30"
+                  isDone ? "text-white/80 font-medium" : isCurrent ? "text-white font-bold" : "text-white/30"
                 )}
               >
                 {s.label}
